@@ -1,0 +1,21 @@
+Package: simRestore
+Type: Package
+Title: Simulate the effect of management policies on restoration efforts
+Version: 1.0
+Authors@R: c(person("Thijs","Janzen", 
+             email = "thijsjanzen@gmail.com", 
+             role=c("aut","cre")))
+Description: Simulates the effect of management policies on efforts to restore a population to a target genetic frequency.
+License: GPL (>= 2)
+Encoding: UTF-8
+Imports: Rcpp,
+         assertthat,
+         subplex
+Suggests: 
+    testthat,
+    tibble,
+    knitr,
+    rmarkdown
+LinkingTo: Rcpp
+RoxygenNote: 7.2.1
+SystemRequirements: C++14
