@@ -10,7 +10,8 @@ License: GPL (>= 2)
 Encoding: UTF-8
 Imports: Rcpp,
          assertthat,
-         subplex
+         subplex,
+         shiny
 Suggests: 
     testthat,
     tibble,
