@@ -1,5 +1,9 @@
+require(magrittr)
+require(ggplot2)
+
+
 ui <- fluidPage(
-  theme = shinytheme("slate"),
+  theme = shinythemes::shinytheme("slate"),
   shinyWidgets::chooseSliderSkin(skin = "Flat", color = "#37312c"),
   tags$head(
     tags$style(HTML("
@@ -168,7 +172,7 @@ ui <- fluidPage(
 server <- function(input, output) {
 
 
-  simple_data <- reactive({ simulate_policy(initial_population_size = input$init_pop_size_1,
+  simple_data <- reactive({ simRestore::simulate_policy(initial_population_size = input$init_pop_size_1,
                                             nest_success_rate = input$nest_succes_rate,
                                             nesting_risk = input$fmd,
                                             num_generations = input$num_gen_simple,
@@ -357,7 +361,7 @@ server <- function(input, output) {
            color = "Sex") +
       theme(legend.position = "top")
 
-    p4 <-  gather(to_plot$curve, key = "type", value = "number", -t) %>%
+    p4 <-  tidyr::gather(to_plot$curve, key = "type", value = "number", -t) %>%
       ggplot(aes(x = t, y = number, col = type)) +
       geom_line() +
       ylab("Amount") +
@@ -452,7 +456,7 @@ server <- function(input, output) {
            color = "Sex") +
       theme(legend.position = "top")
 
-    p4 <-  gather(to_plot$curve, key = "type", value = "number", -t) %>%
+    p4 <-  tidyr::gather(to_plot$curve, key = "type", value = "number", -t) %>%
       ggplot(aes(x = t, y = number, col = type)) +
       geom_step() +
       ylab("Amount") +
