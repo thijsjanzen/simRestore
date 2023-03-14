@@ -48,7 +48,6 @@
 #' @param verbose provides verbose output if TRUE.
 #' @rawNamespace useDynLib(simRestore)
 #' @rawNamespace import(Rcpp)
-#' @importFrom rlang .data
 #' @return tibble
 #' @export
 simulate_policy <- function(initial_population_size = 400,

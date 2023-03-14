@@ -11,10 +11,7 @@ Encoding: UTF-8
 Imports: Rcpp,
          assertthat,
          subplex,
-         shiny,
-         rlang,
-         ggplot2,
-         magrittr
+         shiny
 Suggests: 
     testthat,
     tibble,
