@@ -5,7 +5,7 @@
 
 Branch|CodeCov
 ---|---
-master|[![codecov.io](https://codecov.io/gh/thijsjanzen/simRestore/branch/master/graph/badge.svg)](https://codecov.io/gh/thijsjanzen/simRestore)
+master|[![codecov.io](https://codecov.io/gh/thijsjanzen/simRestore/branch/main/graph/badge.svg)](https://codecov.io/gh/thijsjanzen/simRestore)
 
 ## Description
 
