@@ -20,6 +20,7 @@ struct parameters {
     K = 400;
     morgan = 1.0;
     female_death_rate = 0.2;
+    male_death_rate = 0.0;
     nest_failure_rate = 0.387;
     establishment_burnin = 50;
     max_age = 6;
@@ -40,6 +41,7 @@ struct parameters {
              int k,
              double m,
              double f_d_r,
+             double m_d_r,
              double n_f_r,
              int burnin,
              int m_a,
@@ -59,6 +61,7 @@ struct parameters {
   K(k),
   morgan(m),
   female_death_rate(f_d_r),
+  male_death_rate(m_d_r),
   nest_failure_rate(n_f_r),
   establishment_burnin(burnin),
   max_age(m_a),
@@ -80,6 +83,7 @@ struct parameters {
   int K;
   double morgan;
   double female_death_rate;
+  double male_death_rate;
   double nest_failure_rate;
   int establishment_burnin;
   int max_age;
@@ -284,7 +288,7 @@ private:
     pop_size = males.size() + females.size(); // + offspring_male.size() + offspring_female.size();
     double density_dependent_offspring_rate = calculate_death_rate(pop_size);
 
-    // now, mated females experience additional death
+
     if (males.size() < females.size()) {
       // not all females are mated, females should be shuffled
       std::shuffle(females.begin(), females.end(), rndgen.rndgen);
@@ -293,7 +297,8 @@ private:
       std::shuffle(males.begin(), males.end(), rndgen.rndgen);
     }
 
-    for (int i = 0; i < females.size() && i < males.size(); ++i) {
+    for (int i = 0, j = 0; i < females.size() && j < males.size(); ++i, ++j) {
+      // now, mated females and females experience additional death
       if (rndgen.bernouilli(params.female_death_rate)) {
         females[i] = females.back();
         females.pop_back();
@@ -302,11 +307,16 @@ private:
         generate_offspring(offspring_male,
                            offspring_female,
                            females[i],
-                           males[i],
+                           males[j],
                            density_dependent_offspring_rate,
                            params.clutch_size_mean,
                            params.clutch_size_sd,
                            params.sex_ratio_offspring);
+        if (rndgen.bernouilli(params.male_death_rate)) {
+          males[j] = males.back();
+          males.pop_back();
+          --j;
+        }
       }
     }
 

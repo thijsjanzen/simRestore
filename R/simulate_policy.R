@@ -7,8 +7,9 @@
 #' nest. Other sources of failure are calculated from nest_success_rate and
 #' female_death_rate, such that nest failure rate = 1 - nest_success_rate / (1 -
 #' female_death_rate);
-#' @param nesting_risk Additional death rate of females as a result of
-#' protecting the nest.
+#' @param nesting_risk Additional death rate of males and females as a result of
+#' protecting the nest. Provide as a vector where the first index indicates
+#' the risk for females, the second the risk for males.
 #' @param K carrying capacity
 #' @param num_generations number of generations
 #' @param pull vector of the number of individuals pulled per year
@@ -51,7 +52,7 @@
 #' @export
 simulate_policy <- function(initial_population_size = 400,
                             nest_success_rate = 0.387,
-                            nesting_risk = 0.2,
+                            nesting_risk = c(0.2, 0.0),
                             K = 400, # nolint
                             num_generations = 20,
                             pull = 0,
