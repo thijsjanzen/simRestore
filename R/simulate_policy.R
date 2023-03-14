@@ -48,6 +48,7 @@
 #' @param verbose provides verbose output if TRUE.
 #' @rawNamespace useDynLib(simRestore)
 #' @rawNamespace import(Rcpp)
+#' @importFrom rlang .data
 #' @return tibble
 #' @export
 simulate_policy <- function(initial_population_size = 400,
@@ -79,11 +80,16 @@ simulate_policy <- function(initial_population_size = 400,
   addition <- update_vector(put, num_generations)
 
   nest_failure_rate <- 1 - nest_success_rate / (1 - nesting_risk)
+  nest_failure_rate <- max(nest_failure_rate)
 
   seed <- set_seed(seed)
 
   if (smin >= smax) {
     stop("smin has to be smaller than smax")
+  }
+
+  if (length(nesting_risk) != 2) {
+    stop("nesting risk has to be specified for both sexes")
   }
 
   output <- simulate_complete(initial_population_size,

@@ -9,7 +9,7 @@ calc_anc_cpp <- function(pop, anc_info_R) {
     .Call('_simRestore_calc_anc_cpp', PACKAGE = 'simRestore', pop, anc_info_R)
 }
 
-simulate_complete <- function(pop_size, frequency_hawaii_duck, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, female_death_rate, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring) {
-    .Call('_simRestore_simulate_complete', PACKAGE = 'simRestore', pop_size, frequency_hawaii_duck, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, female_death_rate, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring)
+simulate_complete <- function(pop_size, frequency_hawaii_duck, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, nesting_risk, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring) {
+    .Call('_simRestore_simulate_complete', PACKAGE = 'simRestore', pop_size, frequency_hawaii_duck, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, nesting_risk, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring)
 }
 

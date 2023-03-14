@@ -23,8 +23,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // simulate_complete
-List simulate_complete(int pop_size, float frequency_hawaii_duck, float sd_frequency_hawaii, NumericVector introductions, NumericVector removal, int number_of_generations, int replicates, int K, double morgan, double female_death_rate, double nest_failure_rate, int establishment_burnin, int seed, int max_age, bool use_simple, bool verbose, double clutch_size_mean, double clutch_size_sd, double smin, double smax, double p, double b, double sex_ratio_put, double sex_ratio_offspring);
-RcppExport SEXP _simRestore_simulate_complete(SEXP pop_sizeSEXP, SEXP frequency_hawaii_duckSEXP, SEXP sd_frequency_hawaiiSEXP, SEXP introductionsSEXP, SEXP removalSEXP, SEXP number_of_generationsSEXP, SEXP replicatesSEXP, SEXP KSEXP, SEXP morganSEXP, SEXP female_death_rateSEXP, SEXP nest_failure_rateSEXP, SEXP establishment_burninSEXP, SEXP seedSEXP, SEXP max_ageSEXP, SEXP use_simpleSEXP, SEXP verboseSEXP, SEXP clutch_size_meanSEXP, SEXP clutch_size_sdSEXP, SEXP sminSEXP, SEXP smaxSEXP, SEXP pSEXP, SEXP bSEXP, SEXP sex_ratio_putSEXP, SEXP sex_ratio_offspringSEXP) {
+List simulate_complete(int pop_size, float frequency_hawaii_duck, float sd_frequency_hawaii, NumericVector introductions, NumericVector removal, int number_of_generations, int replicates, int K, double morgan, NumericVector nesting_risk, double nest_failure_rate, int establishment_burnin, int seed, int max_age, bool use_simple, bool verbose, double clutch_size_mean, double clutch_size_sd, double smin, double smax, double p, double b, double sex_ratio_put, double sex_ratio_offspring);
+RcppExport SEXP _simRestore_simulate_complete(SEXP pop_sizeSEXP, SEXP frequency_hawaii_duckSEXP, SEXP sd_frequency_hawaiiSEXP, SEXP introductionsSEXP, SEXP removalSEXP, SEXP number_of_generationsSEXP, SEXP replicatesSEXP, SEXP KSEXP, SEXP morganSEXP, SEXP nesting_riskSEXP, SEXP nest_failure_rateSEXP, SEXP establishment_burninSEXP, SEXP seedSEXP, SEXP max_ageSEXP, SEXP use_simpleSEXP, SEXP verboseSEXP, SEXP clutch_size_meanSEXP, SEXP clutch_size_sdSEXP, SEXP sminSEXP, SEXP smaxSEXP, SEXP pSEXP, SEXP bSEXP, SEXP sex_ratio_putSEXP, SEXP sex_ratio_offspringSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,7 +37,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type replicates(replicatesSEXP);
     Rcpp::traits::input_parameter< int >::type K(KSEXP);
     Rcpp::traits::input_parameter< double >::type morgan(morganSEXP);
-    Rcpp::traits::input_parameter< double >::type female_death_rate(female_death_rateSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type nesting_risk(nesting_riskSEXP);
     Rcpp::traits::input_parameter< double >::type nest_failure_rate(nest_failure_rateSEXP);
     Rcpp::traits::input_parameter< int >::type establishment_burnin(establishment_burninSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
@@ -52,7 +52,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type b(bSEXP);
     Rcpp::traits::input_parameter< double >::type sex_ratio_put(sex_ratio_putSEXP);
     Rcpp::traits::input_parameter< double >::type sex_ratio_offspring(sex_ratio_offspringSEXP);
-    rcpp_result_gen = Rcpp::wrap(simulate_complete(pop_size, frequency_hawaii_duck, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, female_death_rate, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring));
+    rcpp_result_gen = Rcpp::wrap(simulate_complete(pop_size, frequency_hawaii_duck, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, nesting_risk, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -1,22 +1,25 @@
 Package: simRestore
 Type: Package
-Title: Simulate the effect of management policies on restoration efforts
+Title: Simulate the Effect of Management Policies on Restoration Efforts
 Version: 1.0
 Authors@R: c(person("Thijs","Janzen", 
              email = "thijsjanzen@gmail.com", 
              role=c("aut","cre")))
-Description: Simulates the effect of management policies on efforts to restore a population to a target genetic frequency.
+Description: A collection of scripts to simulate the effect of management policies on restoration efforts, providing both raw simulation functions, and functions to optimize the management policy, given target objectives.
 License: GPL (>= 2)
 Encoding: UTF-8
 Imports: Rcpp,
          assertthat,
          subplex,
-         shiny
+         shiny,
+         rlang,
+         ggplot2,
+         magrittr
 Suggests: 
     testthat,
     tibble,
     knitr,
     rmarkdown
 LinkingTo: Rcpp
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 SystemRequirements: C++14

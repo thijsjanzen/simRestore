@@ -3,7 +3,6 @@ context("simulate simple and nonsimple")
 test_that("compare use", {
   vx <- simulate_policy(initial_population_size = 1000,
                         nest_success_rate = 0.387,
-                        nesting_risk = 0.2,
                         K = 400,
                         num_generations = 20,
                         pull = 0,
@@ -16,7 +15,7 @@ test_that("compare use", {
 
   vy <- simulate_policy(initial_population_size = 1000,
                         nest_success_rate = 0.387,
-                        nesting_risk = 0.2,
+                        nesting_risk = c(0.2, 0.0),
                         K = 400,
                         num_generations = 20,
                         pull = 0,
@@ -24,7 +23,8 @@ test_that("compare use", {
                         num_replicates = 100,
                         starting_freq = 0.2,
                         seed = 42,
-                        use_simplified_model = TRUE)
+                        use_simplified_model = TRUE,
+                        verbose = FALSE)
 
   for (tt in unique(vx$results$t)) {
     if (tt > 1) {
