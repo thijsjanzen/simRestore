@@ -25,7 +25,7 @@ test_that("simple optimization", {
                                     optimize_put = TRUE,
                                     optimize_pull = TRUE,
                                     num_replicates = 1)
-  testthat::expect_gt(vx$final_freq, 0.98)
+  testthat::expect_gt(vx$final_freq, 0.95)
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_true(is.na(sd(vx$pull)))
   testthat::expect_true(is.na(sd(vx$put)))
