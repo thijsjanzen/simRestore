@@ -29,6 +29,34 @@ test_that("simple optimization", {
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_true(is.na(sd(vx$pull)))
   testthat::expect_true(is.na(sd(vx$put)))
+
+  # check verbose output:
+  testthat::expect_output(
+    vx <- simRestore::optimize_policy(num_generations = 5,
+                                      target_frequency = 0.99,
+                                      optimize_put = TRUE,
+                                      optimize_pull = FALSE,
+                                      num_replicates = 1,
+                                      verbose = TRUE)
+  )
+
+  testthat::expect_output(
+    vx <- simRestore::optimize_policy(num_generations = 5,
+                                      target_frequency = 0.99,
+                                      optimize_put = FALSE,
+                                      optimize_pull = TRUE,
+                                      num_replicates = 1,
+                                      verbose = TRUE)
+  )
+
+  testthat::expect_output(
+    vx <- simRestore::optimize_policy(num_generations = 5,
+                                      target_frequency = 0.99,
+                                      optimize_put = TRUE,
+                                      optimize_pull = TRUE,
+                                      num_replicates = 1,
+                                      verbose = TRUE)
+  )
 })
 
 test_that("fixed optimization", {
@@ -51,4 +79,20 @@ test_that("fixed optimization", {
 
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_equal(vx$put, fixed_level)
+})
+
+test_that("error", {
+  testthat::expect_warning(
+    vx <- simRestore::optimize_policy(num_generations = 200,
+                                    initial_population_size = 3,
+                                    target_frequency = 0.99,
+                                    optimize_put = FALSE,
+                                    optimize_pull = TRUE,
+                                    num_replicates = 1)
+  )
+
+  testthat::expect_true(is.na(vx$pull))
+  testthat::expect_true(is.na(vx$results))
+  testthat::expect_true(is.na(vx$curve))
+  testthat::expect_true(is.na(vx$final_freq))
 })

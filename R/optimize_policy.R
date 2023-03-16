@@ -283,6 +283,14 @@ optimize_policy <- function(num_generations = 20,
     result$pull <- floor(fit_result$minimum[[1]])
     result$put  <- abs(optimize_put)
     result$results <- fit_killing(fit_result$minimum, return_results = TRUE)
+    if (length(result$results) == 1) {
+      warning("No optimum found, most likely the population is extinct")
+      result$pull <- NA
+      result$results <- NA
+      result$curve <- NA
+      result$final_freq <- NA
+      return(result)
+    }
 
     result$curve   <- tibble::tibble(t = 1:num_generations,
                                      pull = rep(result$pull,

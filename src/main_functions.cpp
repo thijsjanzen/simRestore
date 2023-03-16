@@ -132,7 +132,7 @@ List simulate_complete(int pop_size,
       }
     }
 
-    if (verbose) {Rcout << "done simulating, converting to R format\n"; force_output();}
+  //  if (verbose) {Rcout << "done simulating, converting to R format\n"; force_output();}
     NumericMatrix output(results.size(), 8);
     for(int i = 0; i < results.size(); ++i) {
       output(i, 0) = results[i][0];
@@ -158,7 +158,7 @@ List simulate_complete(int pop_size,
 
 
 void force_output() {
-  std::this_thread::sleep_for(std::chrono::milliseconds(30));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
   R_FlushConsole();
   R_ProcessEvents();
   R_CheckUserInterrupt();
