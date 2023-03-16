@@ -478,12 +478,6 @@ private:
     }
   }
 
-  std::vector<organism_emp> create_base_pop(tag<organism_emp>) {
-    return NumericMatrix_to_emp_ANIMAL(base_genomes,
-                                     params.empgen,
-                                     rndgen);
-  }
-
   std::vector<organism_simple> create_base_pop(tag<organism_simple>) {
     return admix();
   }
