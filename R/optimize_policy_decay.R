@@ -5,6 +5,7 @@ get_decay_curve <- function(total_sum, params, num_generations) {
   decay_curve <- round(decay_curve)
   # shouldn't happen:
   decay_curve[decay_curve < 0] <- 0
+  decay_curve[is.na(decay_curve)] <- 0
   while (sum(decay_curve) != total_sum) {
     difference <- total_sum - sum(decay_curve)
     index <- sample(1:length(decay_curve), 1)
@@ -13,6 +14,7 @@ get_decay_curve <- function(total_sum, params, num_generations) {
       decay_curve[index] <- decay_curve[index] - 1
       decay_curve[index] <- max(decay_curve[index], 0)
     }
+    decay_curve[is.na(decay_curve)] <- 0
   }
 
   return(decay_curve)

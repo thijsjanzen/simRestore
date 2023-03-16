@@ -1,11 +1,12 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
-#include "Duck.h"
+#include "organism.h"
 #include <vector>
 #include <array>
 #include <Rcpp.h>
 using namespace Rcpp;
+
 
 struct output_entry {
   int replicate;
@@ -68,31 +69,7 @@ private:
   std::vector< output_entry > data_;
 };
 
-struct genome_data {
-  int t;
-  int r;
-  int ind;
-  float pos;
-  int allele_1;
-  int allele_2;
 
-  genome_data() {};
-
-  genome_data(int time, int repl, int indiv, float location,
-              int a1, int a2) :
-    t(time), r(repl),  ind(indiv), pos(location),
-    allele_1(a1), allele_2(a2) {
-  }
-
-  genome_data(const genome_data& other) {
-    t = other.t;
-    r = other.r;
-    ind = other.ind;
-    pos = other.pos;
-    allele_1 = other.allele_1;
-    allele_2 = other.allele_2;
-  }
-};
 
 void force_output();
 

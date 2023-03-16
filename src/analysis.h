@@ -1,12 +1,11 @@
-#ifndef analysis_hpp
-#define analysis_hpp
+#pragma once
+
 
 #include <vector>
 #include <algorithm>
 
 #include "rand_t.h"
 #include "main_functions.h"
-#include "genome_tools.h"
 
 template <typename> struct tag { };
 
@@ -14,7 +13,7 @@ struct parameters {
 
   parameters() {
     pop_size = 100;
-    frequency_hawaii_duck = 0.2;
+    frequency_hawaii_organism = 0.2;
     sd_frequency_hawaii = 0.05;
     number_of_generations = 20;
     K = 400;
@@ -55,7 +54,7 @@ struct parameters {
              double sex_ratio,
              double sex_ratio_o) :
   pop_size(p),
-  frequency_hawaii_duck(f),
+  frequency_hawaii_organism(f),
   sd_frequency_hawaii(s_f),
   number_of_generations(num_gen),
   K(k),
@@ -77,7 +76,7 @@ struct parameters {
   }
 
   int pop_size;
-  float frequency_hawaii_duck;
+  float frequency_hawaii_organism;
   float sd_frequency_hawaii;
   int number_of_generations;
   int K;
@@ -102,7 +101,31 @@ struct parameters {
   emp_genome empgen; // only used in molecular analysis
 };
 
-template <typename BIRD>
+template <class ANIMAL>
+std::array<double, 3> calc_freq_hawaii(std::vector< ANIMAL >& f,
+                                       std::vector< ANIMAL >& m) {
+  std::array<double, 3> avg_freq = {0.0, 0.0, 0.0};
+
+  for (auto& i : f) {
+    double freq_i = i.get_freq_hawaii();
+    avg_freq[2] += freq_i;
+    avg_freq[0] += freq_i;
+  }
+  for (auto& i : m) {
+    double freq_i = i.get_freq_hawaii();
+    avg_freq[1] += freq_i;
+    avg_freq[0] += freq_i;
+  }
+
+  avg_freq[0] *= 1.0 / (f.size() + m.size());
+  avg_freq[1] *= 1.0 / (m.size());
+  avg_freq[2] *= 1.0 / (f.size());
+
+  return avg_freq;
+}
+
+
+template <typename ANIMAL>
 class analysis {
 public:
   analysis() {
@@ -143,25 +166,25 @@ public:
   bool using_molecular_data;
   NumericMatrix base_genomes;
   std::vector< std::vector< double >> anc_info;
-  std::vector< Duck_emp > pure;
-  std::vector< BIRD > output_pop;
+  std::vector< organism_emp > pure;
+  std::vector< ANIMAL > output_pop;
 
   // member functions
   void increase_replicate() {
     replicate++;
   }
 
-  void set_pure(const std::vector<Duck_emp>& p) {
+  void set_pure(const std::vector<organism_emp>& p) {
     pure = p;
   }
 
-  Duck_emp draw_pure() {
+  organism_emp draw_pure() {
     int index = rndgen.random_number(static_cast<int>(pure.size()));
     return pure[index];
   }
 
   output_data do_analysis() {
-    std::vector< BIRD > base_pop = create_base_pop(tag<BIRD>{});
+    std::vector< ANIMAL > base_pop = create_base_pop(tag<ANIMAL>{});
 
     output_data run_result = simulate_policy(base_pop);
 
@@ -171,9 +194,9 @@ public:
 private:
   int replicate;
 
-  output_data simulate_policy(const std::vector< BIRD >& base_pop) {
-    std::vector< BIRD > males;
-    std::vector< BIRD > females;
+  output_data simulate_policy(const std::vector< ANIMAL >& base_pop) {
+    std::vector< ANIMAL > males;
+    std::vector< ANIMAL > females;
 
     int num_females = static_cast<int>((base_pop.size() / 2.0) * 1.0);
 
@@ -185,7 +208,7 @@ private:
     }
 
     output_data frequencies;
-    std::array<double, 3> f1 = calc_freq_hawaii<BIRD>(females, males);
+    std::array<double, 3> f1 = calc_freq_hawaii<ANIMAL>(females, males);
 
     frequencies.add_slice(replicate, 0, f1,
                           static_cast<int>(females.size() + males.size()),
@@ -218,7 +241,7 @@ private:
         cul_population(females, 1e6);
       }
 
-      std::array<double, 3> f2 = calc_freq_hawaii< BIRD >(males, females);
+      std::array<double, 3> f2 = calc_freq_hawaii< ANIMAL >(males, females);
 
       frequencies.add_slice(replicate, t, f2,
                             static_cast<int>( males.size() + females.size() ),
@@ -237,24 +260,24 @@ private:
     return frequencies;
   }
 
-  void additional_death(std::vector< BIRD>& birds,
+  void additional_death(std::vector< ANIMAL>& ANIMALs,
                         double death_rate,
                         int max_num) {
 
-    if (max_num > birds.size()) max_num = birds.size();
+    if (max_num > ANIMALs.size()) max_num = ANIMALs.size();
 
     int num_dead = rndgen.binomial(max_num, death_rate);
     if (num_dead <= 0) return;
     for (int i = 0; i < num_dead; ++i) {
-      int index = rndgen.random_number(birds.size());
-      birds[index] = birds.back();
-      birds.pop_back();
+      int index = rndgen.random_number(ANIMALs.size());
+      ANIMALs[index] = ANIMALs.back();
+      ANIMALs.pop_back();
     }
     return;
   }
 
-  void update_pop(std::vector< BIRD >& females,
-                  std::vector< BIRD >& males,
+  void update_pop(std::vector< ANIMAL >& females,
+                  std::vector< ANIMAL >& males,
                   int number_added,
                   int number_removed) {
 
@@ -282,8 +305,8 @@ private:
        return;
     }
 
-    std::vector< BIRD > offspring_male;
-    std::vector< BIRD > offspring_female;
+    std::vector< ANIMAL > offspring_male;
+    std::vector< ANIMAL > offspring_female;
 
     pop_size = males.size() + females.size(); // + offspring_male.size() + offspring_female.size();
     double density_dependent_offspring_rate = calculate_death_rate(pop_size);
@@ -334,10 +357,10 @@ private:
     return;
   }
 
-  void generate_offspring(std::vector< BIRD >& offspring_male,
-                          std::vector< BIRD >& offspring_female,
-                          const BIRD& mama,
-                          const BIRD& papa,
+  void generate_offspring(std::vector< ANIMAL >& offspring_male,
+                          std::vector< ANIMAL >& offspring_female,
+                          const ANIMAL& mama,
+                          const ANIMAL& papa,
                           double offspring_death_rate,
                           int clutch_size,
                           double clutch_sd,
@@ -351,7 +374,7 @@ private:
 
         if (rndgen.uniform() > offspring_death_rate) { // immediately check survival to next generation
 
-          BIRD chick(mama.gamete(params.morgan, rndgen),
+          ANIMAL chick(mama.gamete(params.morgan, rndgen),
                      papa.gamete(params.morgan, rndgen),
                      prob_male,
                      rndgen);
@@ -374,7 +397,7 @@ private:
     return  1.f - (params.smax + 1.f * (params.smin - params.smax) / (numerator));
   }
 
-  void old_age(std::vector< BIRD >& pop) {
+  void old_age(std::vector< ANIMAL >& pop) {
     for (int i = 0; i < pop.size(); ++i) {
       pop[i].age++;
       if (pop[i].age > params.max_age) {
@@ -385,7 +408,7 @@ private:
     }
   }
 
-  void update_start_season(std::vector< BIRD >& input_pop,
+  void update_start_season(std::vector< ANIMAL >& input_pop,
                            double death_rate,
                            int number_removed,
                            int number_added) {
@@ -416,17 +439,17 @@ private:
     if (number_added > 0) {
       add_to_population(input_pop,
                         number_added,
-                        tag<BIRD>{},
+                        tag<ANIMAL>{},
                         input_pop.back().get_sex()
                        );
     }
     return;
   }
 
-  void add_to_population(std::vector<Duck_simple>& population,
-                         int number_added, tag<Duck_simple>,
+  void add_to_population(std::vector<organism_simple>& population,
+                         int number_added, tag<organism_simple>,
                          const Sex& sex) {
-    Duck_simple to_add(1); // Hawaii = 1
+    organism_simple to_add(1); // Hawaii = 1
     to_add.set_sex(sex);
     for(int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
@@ -434,55 +457,55 @@ private:
     return;
   }
 
-  void add_to_population(std::vector<Duck>& population,
-                                             int number_added, tag<Duck>,
+  void add_to_population(std::vector<organism>& population,
+                                             int number_added, tag<organism>,
                                              const Sex& sex) {
-    Duck to_add(1); // Hawaii = 1
+    organism to_add(1); // Hawaii = 1
     to_add.set_sex(sex);
     for(int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
     }
   }
 
-  void add_to_population(std::vector<Duck_emp>& population,
+  void add_to_population(std::vector<organism_emp>& population,
                          int number_added,
-                         tag<Duck_emp>,
+                         tag<organism_emp>,
                          const Sex& sex) {
     for(int i = 0; i < number_added; ++i) {
-      Duck_emp to_add = draw_pure();
+      organism_emp to_add = draw_pure();
       to_add.set_sex(sex);
       population.emplace_back(to_add);
     }
   }
 
-  std::vector<Duck_emp> create_base_pop(tag<Duck_emp>) {
-    return NumericMatrix_to_emp_bird(base_genomes,
+  std::vector<organism_emp> create_base_pop(tag<organism_emp>) {
+    return NumericMatrix_to_emp_ANIMAL(base_genomes,
                                      params.empgen,
                                      rndgen);
   }
 
-  std::vector<Duck_simple> create_base_pop(tag<Duck_simple>) {
+  std::vector<organism_simple> create_base_pop(tag<organism_simple>) {
     return admix();
   }
 
-  std::vector<Duck> create_base_pop(tag<Duck>) {
-    BIRD mallard(0.0); // = Mallard;
-    BIRD hawaii(1.0); // = Hawaii;
+  std::vector<organism> create_base_pop(tag<organism>) {
+    ANIMAL mallard(0.0); // = Mallard;
+    ANIMAL hawaii(1.0); // = Hawaii;
 
-    std::vector< BIRD > population(params.pop_size);
+    std::vector< ANIMAL > population(params.pop_size);
 
     for(int i = 0; i < params.pop_size; ++i) {
-      BIRD parent1 = mallard;
-      BIRD parent2 = mallard;
+      ANIMAL parent1 = mallard;
+      ANIMAL parent2 = mallard;
 
-      float freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_duck,
+      float freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
                                                  params.sd_frequency_hawaii);
 
       if(rndgen.uniform() < freq_hawaii) {
         parent1 = hawaii;
       }
 
-      freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_duck,
+      freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
                                            params.sd_frequency_hawaii);
 
       if(rndgen.uniform() < freq_hawaii) {
@@ -491,31 +514,31 @@ private:
 
       double init_prob_female = 0.5;
 
-      population[i] = BIRD(parent1.gamete(params.morgan, rndgen),
+      population[i] = ANIMAL(parent1.gamete(params.morgan, rndgen),
                            parent2.gamete(params.morgan ,rndgen),
                            init_prob_female, rndgen);
     }
     return population;
   }
 
-  std::vector< BIRD > admix() {
-    BIRD mallard(0.0); // = Mallard;
-    BIRD hawaii(1.0); // = Hawaii;
+  std::vector< ANIMAL > admix() {
+    ANIMAL mallard(0.0); // = Mallard;
+    ANIMAL hawaii(1.0); // = Hawaii;
 
-    std::vector< BIRD > population(params.pop_size);
+    std::vector< ANIMAL > population(params.pop_size);
 
     for(int i = 0; i < params.pop_size; ++i) {
-      BIRD parent1 = mallard;
-      BIRD parent2 = mallard;
+      ANIMAL parent1 = mallard;
+      ANIMAL parent2 = mallard;
 
-      float freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_duck,
+      float freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
                                                  params.sd_frequency_hawaii);
 
       if(rndgen.uniform() < freq_hawaii) {
         parent1 = hawaii;
       }
 
-      freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_duck,
+      freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
                                            params.sd_frequency_hawaii);
 
       if(rndgen.uniform() < freq_hawaii) {
@@ -524,20 +547,20 @@ private:
 
       double init_prob_female = 0.5;
 
-      population[i] = BIRD(parent1.gamete(params.morgan, rndgen),
+      population[i] = ANIMAL(parent1.gamete(params.morgan, rndgen),
                            parent2.gamete(params.morgan ,rndgen),
                            init_prob_female, rndgen);
     }
 
     for (size_t t = 0; t < params.number_of_generations; ++t) {
 
-      std::vector< BIRD > new_population(params.pop_size);
+      std::vector< ANIMAL > new_population(params.pop_size);
       for (size_t i = 0; i < params.pop_size; ++i) {
         int index1 = rndgen.random_number(params.pop_size);
         int index2 = rndgen.random_number(params.pop_size);
         while(index2 == index1) index2 = rndgen.random_number(params.pop_size);
 
-        new_population[i] = BIRD(population[index1].gamete(params.morgan, rndgen),
+        new_population[i] = ANIMAL(population[index1].gamete(params.morgan, rndgen),
                                  population[index2].gamete(params.morgan, rndgen),
                                  0.5,
                                  rndgen);
@@ -547,11 +570,9 @@ private:
     return population;
   }
 
-  void cul_population(std::vector<BIRD>& pop, size_t target_size) {
+  void cul_population(std::vector<ANIMAL>& pop, size_t target_size) {
     if (pop.size() < target_size) return;
     pop.erase(pop.begin() + target_size, pop.end());
   }
 };
 
-
-#endif

@@ -2,18 +2,17 @@
 #include <chrono>
 
 #include <vector>
-#include "Duck.h"
+#include "organism.h"
 #include "rand_t.h"
 #include "main_functions.h"
 #include "analysis.h"
-#include "genome_tools.h"
 
 #include <Rcpp.h>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
 List simulate_complete(int pop_size,
-                       float frequency_hawaii_duck,
+                       float frequency_hawaii_organism,
                        float sd_frequency_hawaii,
                        NumericVector introductions,
                        NumericVector removal,
@@ -45,7 +44,7 @@ List simulate_complete(int pop_size,
     emp_genome dummy_genome;
 
     parameters params(pop_size,
-                      frequency_hawaii_duck,
+                      frequency_hawaii_organism,
                       sd_frequency_hawaii,
                       number_of_generations,
                       K,
@@ -72,7 +71,7 @@ List simulate_complete(int pop_size,
     NumericVector base_markers;
 
     if (use_simple) {
-      analysis<Duck_simple> main_analysis(params,
+      analysis<organism_simple> main_analysis(params,
                                           introductions,
                                           removal,
                                           base_markers,
@@ -99,7 +98,7 @@ List simulate_complete(int pop_size,
         main_analysis.increase_replicate();
       }
     } else {
-      analysis<Duck> main_analysis(params,
+      analysis<organism> main_analysis(params,
                                    introductions,
                                    removal,
                                    base_markers,

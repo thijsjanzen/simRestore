@@ -10,26 +10,14 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// calc_anc_cpp
-double calc_anc_cpp(const Rcpp::NumericMatrix& pop, const Rcpp::NumericMatrix& anc_info_R);
-RcppExport SEXP _simRestore_calc_anc_cpp(SEXP popSEXP, SEXP anc_info_RSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type pop(popSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type anc_info_R(anc_info_RSEXP);
-    rcpp_result_gen = Rcpp::wrap(calc_anc_cpp(pop, anc_info_R));
-    return rcpp_result_gen;
-END_RCPP
-}
 // simulate_complete
-List simulate_complete(int pop_size, float frequency_hawaii_duck, float sd_frequency_hawaii, NumericVector introductions, NumericVector removal, int number_of_generations, int replicates, int K, double morgan, NumericVector nesting_risk, double nest_failure_rate, int establishment_burnin, int seed, int max_age, bool use_simple, bool verbose, double clutch_size_mean, double clutch_size_sd, double smin, double smax, double p, double b, double sex_ratio_put, double sex_ratio_offspring);
-RcppExport SEXP _simRestore_simulate_complete(SEXP pop_sizeSEXP, SEXP frequency_hawaii_duckSEXP, SEXP sd_frequency_hawaiiSEXP, SEXP introductionsSEXP, SEXP removalSEXP, SEXP number_of_generationsSEXP, SEXP replicatesSEXP, SEXP KSEXP, SEXP morganSEXP, SEXP nesting_riskSEXP, SEXP nest_failure_rateSEXP, SEXP establishment_burninSEXP, SEXP seedSEXP, SEXP max_ageSEXP, SEXP use_simpleSEXP, SEXP verboseSEXP, SEXP clutch_size_meanSEXP, SEXP clutch_size_sdSEXP, SEXP sminSEXP, SEXP smaxSEXP, SEXP pSEXP, SEXP bSEXP, SEXP sex_ratio_putSEXP, SEXP sex_ratio_offspringSEXP) {
+List simulate_complete(int pop_size, float frequency_hawaii_organism, float sd_frequency_hawaii, NumericVector introductions, NumericVector removal, int number_of_generations, int replicates, int K, double morgan, NumericVector nesting_risk, double nest_failure_rate, int establishment_burnin, int seed, int max_age, bool use_simple, bool verbose, double clutch_size_mean, double clutch_size_sd, double smin, double smax, double p, double b, double sex_ratio_put, double sex_ratio_offspring);
+RcppExport SEXP _simRestore_simulate_complete(SEXP pop_sizeSEXP, SEXP frequency_hawaii_organismSEXP, SEXP sd_frequency_hawaiiSEXP, SEXP introductionsSEXP, SEXP removalSEXP, SEXP number_of_generationsSEXP, SEXP replicatesSEXP, SEXP KSEXP, SEXP morganSEXP, SEXP nesting_riskSEXP, SEXP nest_failure_rateSEXP, SEXP establishment_burninSEXP, SEXP seedSEXP, SEXP max_ageSEXP, SEXP use_simpleSEXP, SEXP verboseSEXP, SEXP clutch_size_meanSEXP, SEXP clutch_size_sdSEXP, SEXP sminSEXP, SEXP smaxSEXP, SEXP pSEXP, SEXP bSEXP, SEXP sex_ratio_putSEXP, SEXP sex_ratio_offspringSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type pop_size(pop_sizeSEXP);
-    Rcpp::traits::input_parameter< float >::type frequency_hawaii_duck(frequency_hawaii_duckSEXP);
+    Rcpp::traits::input_parameter< float >::type frequency_hawaii_organism(frequency_hawaii_organismSEXP);
     Rcpp::traits::input_parameter< float >::type sd_frequency_hawaii(sd_frequency_hawaiiSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type introductions(introductionsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type removal(removalSEXP);
@@ -52,13 +40,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type b(bSEXP);
     Rcpp::traits::input_parameter< double >::type sex_ratio_put(sex_ratio_putSEXP);
     Rcpp::traits::input_parameter< double >::type sex_ratio_offspring(sex_ratio_offspringSEXP);
-    rcpp_result_gen = Rcpp::wrap(simulate_complete(pop_size, frequency_hawaii_duck, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, nesting_risk, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring));
+    rcpp_result_gen = Rcpp::wrap(simulate_complete(pop_size, frequency_hawaii_organism, sd_frequency_hawaii, introductions, removal, number_of_generations, replicates, K, morgan, nesting_risk, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_offspring));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_simRestore_calc_anc_cpp", (DL_FUNC) &_simRestore_calc_anc_cpp, 2},
     {"_simRestore_simulate_complete", (DL_FUNC) &_simRestore_simulate_complete, 24},
     {NULL, NULL, 0}
 };

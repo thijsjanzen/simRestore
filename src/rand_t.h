@@ -1,5 +1,5 @@
-#ifndef RANDOM_THIJS
-#define RANDOM_THIJS
+#pragma once
+
 #include <random>
 
 struct rnd_t {
@@ -54,6 +54,3 @@ struct rnd_t {
     return output;
   }
 };
-
-
-#endif
