@@ -38,11 +38,13 @@ optimize_policy(
 
 \item{K}{carrying capacity}
 
-\item{optimize_put}{can be TRUE or FALSE, will be optimized to reach the
-target frequency within the chosen number of generations.}
+\item{optimize_put}{When set to 0, FALSE or a negative number, it will not
+be optimized. When negative, the absolute value will be taken as a fixed
+contribution to each generation (but will not be optimized)}
 
-\item{optimize_pull}{can be TRUE or FALSE, will be optimized to reach the
-target frequency within the chosen number of generations.}
+\item{optimize_pull}{When set to 0, FALSE or a negative number, it will not
+be optimized. When negative, the absolute value will be taken as a fixed
+contribution to each generation (but will not be optimized)}
 
 \item{num_replicates}{number of replicates}
 

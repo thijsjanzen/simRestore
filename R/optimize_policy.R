@@ -3,10 +3,12 @@
 #' @param num_generations number of generations
 #' @param target_frequency frequency to aim for
 #' @param K carrying capacity
-#' @param optimize_pull can be TRUE or FALSE, will be optimized to reach the
-#' target frequency within the chosen number of generations.
-#' @param optimize_put can be TRUE or FALSE, will be optimized to reach the
-#' target frequency within the chosen number of generations.
+#' @param optimize_pull When set to 0, FALSE or a negative number, it will not
+#' be optimized. When negative, the absolute value will be taken as a fixed
+#' contribution to each generation (but will not be optimized)
+#' @param optimize_put When set to 0, FALSE or a negative number, it will not
+#' be optimized. When negative, the absolute value will be taken as a fixed
+#' contribution to each generation (but will not be optimized)
 #' @param num_replicates Number of replicates per parameter combination to be
 #' simulated. Fit of the parameter combination is chosen as the average
 #' frequency across replicates. Please note that this does not refer to the
@@ -88,7 +90,7 @@ optimize_policy <- function(num_generations = 20,
                               nesting_risk = nesting_risk,
                               K = K,
                               num_generations = num_generations,
-                              pull = 0,
+                              pull = abs(optimize_pull),
                               put = floor(10^param[[1]]),
                               starting_freq = starting_freq,
                               morgan = morgan,
@@ -129,7 +131,7 @@ optimize_policy <- function(num_generations = 20,
                               K = K,
                               num_generations = num_generations,
                               pull = param[[1]],
-                              put = 0,
+                              put = abs(optimize_put),
                               starting_freq = starting_freq,
                               morgan = morgan,
                               establishment_burnin = establishment_burnin,
@@ -212,8 +214,8 @@ optimize_policy <- function(num_generations = 20,
 
   result <- c()
 
-  if (optimize_pull[[1]] == TRUE &&
-      optimize_put[[1]]  == TRUE) {
+  if (optimize_pull[[1]] > 0 &&
+      optimize_put[[1]]  > 0) {
 
     fit_result <- subplex::subplex(par = c(1, 1), fn = fit_both,
                                    control = list(maxiter = 200,
@@ -230,7 +232,7 @@ optimize_policy <- function(num_generations = 20,
       subset(result$results,
              result$results$t == num_generations)$freq_hawaii)
   }
-  if (optimize_put == TRUE && optimize_pull == FALSE) {
+  if (optimize_put > 0 && optimize_pull <= 0) {
     max_val <- log10(K * 2)
 
     fit_result <- stats::optimize(f = fit_adding,
@@ -243,14 +245,18 @@ optimize_policy <- function(num_generations = 20,
     }
 
     result$put <- floor(10^fit_result$minimum[[1]])
+    result$pull <- abs(optimize_pull)
     result$results <- fit_adding(fit_result$minimum, return_results = TRUE)
     result$curve   <- tibble::tibble(t = 1:num_generations,
-                                     put = rep(result$put, num_generations))
+                                     put = rep(result$put,
+                                               num_generations),
+                                     pull = rep(abs(optimize_pull),
+                                                num_generations))
     result$final_freq <- mean(
       subset(result$results,
              result$results$t == num_generations)$freq_hawaii)
   }
-  if (optimize_pull == TRUE && optimize_put == FALSE) {
+  if (optimize_pull > 0 && optimize_put <= 0) {
     fit_result <-
       stats::optimize(f = fit_killing,
                       interval = c(0, (initial_population_size)),
@@ -275,14 +281,19 @@ optimize_policy <- function(num_generations = 20,
     }
 
     result$pull <- floor(fit_result$minimum[[1]])
+    result$put  <- abs(optimize_put)
     result$results <- fit_killing(fit_result$minimum, return_results = TRUE)
 
     result$curve   <- tibble::tibble(t = 1:num_generations,
-                                     pull = rep(result$pull, num_generations))
+                                     pull = rep(result$pull,
+                                                num_generations),
+                                     put  = rep(abs(optimize_put),
+                                                num_generations))
 
     result$final_freq <- mean(
       subset(result$results,
              result$results$t == num_generations)$freq_hawaii)
   }
+
   return(result)
 }
