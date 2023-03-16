@@ -3,18 +3,18 @@ get_decay_curve <- function(total_sum, params, num_generations) {
                               shape1 = 10^params[[1]], shape2 = 10^params[[2]])
   decay_curve <- total_sum * decay_curve / sum(decay_curve)
   decay_curve <- round(decay_curve)
-  remain <- total_sum - sum(decay_curve)
-  for (i in seq_len(abs(remain))) {
-    index <- sample(1:length(decay_curve), 1)
-    if (remain > 0) decay_curve[index] <- decay_curve[index] + 1
-    if (remain < 0) {
-      decay_curve[index] <- decay_curve[index] - 1
-      decay_curve[index] <- max(decay_curve[index], 0)
-      i <- i - 1
-    }
-  }
   # shouldn't happen:
   decay_curve[decay_curve < 0] <- 0
+  while (sum(decay_curve) != total_sum) {
+    difference <- total_sum - sum(decay_curve)
+    index <- sample(1:length(decay_curve), 1)
+    if (difference > 0) decay_curve[index] <- decay_curve[index] + 1
+    if (difference < 0) {
+      decay_curve[index] <- decay_curve[index] - 1
+      decay_curve[index] <- max(decay_curve[index], 0)
+    }
+  }
+
   return(decay_curve)
 }
 
@@ -105,6 +105,8 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   optim_adding <- function(param, # function to optimize putting
                            return_results = FALSE) {
+    if (min(param) < 0) return(Inf)
+
     decay_curve <- get_decay_curve(optimize_put, param, num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
@@ -148,6 +150,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   optim_adding2 <- function(param,  # function to optimize pulling
                             return_results = FALSE) {
+    if (min(param) < 0) return(Inf)
     decay_curve <- get_decay_curve(optimize_pull, param, num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
@@ -191,7 +194,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   optim_adding3 <- function(param,  # function to optimize pulling and putting
                             return_results = FALSE) {
-
+    if (min(param) < 0) return(Inf)
     decay_curve <- get_decay_curve(optimize_put, c(param[[1]], param[[2]]),
                                    num_generations)
 
