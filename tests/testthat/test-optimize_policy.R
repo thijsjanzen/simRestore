@@ -67,7 +67,7 @@ test_that("fixed optimization", {
                                     optimize_put = TRUE,
                                     optimize_pull = -fixed_level,
                                     num_replicates = 1)
-  testthat::expect_gt(vx$final_freq, 0.98)
+  testthat::expect_gt(vx$final_freq, 0.95)
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_equal(vx$pull, fixed_level)
 

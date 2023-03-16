@@ -17,7 +17,7 @@ optimize_policy_beta_curve(
   verbose = TRUE,
   initial_population_size = 400,
   nest_success_rate = 0.387,
-  nesting_risk = 0.2,
+  nesting_risk = c(0.2, 0),
   K = 400,
   starting_freq = 0.2,
   morgan = 1,
