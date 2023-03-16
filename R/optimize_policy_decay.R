@@ -1,3 +1,25 @@
+get_decay_curve <- function(total_sum, params, num_generations) {
+  decay_curve <- stats::dbeta(x = (1:num_generations) / num_generations,
+                              shape1 = 10^params[[1]], shape2 = 10^params[[2]])
+  decay_curve <- total_sum * decay_curve / sum(decay_curve)
+  decay_curve <- round(decay_curve)
+  remain <- total_sum - sum(decay_curve)
+  for (i in seq_len(abs(remain))) {
+    index <- sample(1:length(decay_curve), 1)
+    if (remain > 0) decay_curve[index] <- decay_curve[index] + 1
+    if (remain < 0) {
+      decay_curve[index] <- decay_curve[index] - 1
+      decay_curve[index] <- max(decay_curve[index], 0)
+      i <- i - 1
+    }
+  }
+  # shouldn't happen:
+  decay_curve[decay_curve < 0] <- 0
+  return(decay_curve)
+}
+
+
+
 #' Optimize a policy assuming a fixed total sum across all generations of
 #' individuals that can be put or pulled (e.g. a fixed effort). The distribution
 #' of this effort is assumed to follow a beta distribution, and the parameters
@@ -63,7 +85,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
                                        optimize_put = 0,
                                        num_replicates = 1,
                                        use_simplified_model = TRUE,
-                                       verbose = TRUE,
+                                       verbose = FALSE,
                                        initial_population_size = 400, #K
                                        nest_success_rate = 0.387,
                                        nesting_risk = c(0.2, 0.0),
@@ -83,9 +105,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   optim_adding <- function(param, # function to optimize putting
                            return_results = FALSE) {
-    decay_curve <- stats::dbeta(x = (1:num_generations) / num_generations,
-                         shape1 = 10^param[[1]], shape2 = 10^param[[2]])
-    decay_curve <- optimize_put * decay_curve / sum(decay_curve)
+    decay_curve <- get_decay_curve(optimize_put, param, num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
                               nest_success_rate = nest_success_rate,
@@ -128,9 +148,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   optim_adding2 <- function(param,  # function to optimize pulling
                             return_results = FALSE) {
-    decay_curve <- stats::dbeta(x = (1:num_generations) / num_generations,
-                         shape1 = 10^param[[1]], shape2 = 10^param[[2]])
-    decay_curve <- optimize_pull * decay_curve / sum(decay_curve)
+    decay_curve <- get_decay_curve(optimize_pull, param, num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
                               nest_success_rate = nest_success_rate,
@@ -171,16 +189,14 @@ optimize_policy_beta_curve <- function(num_generations = 20,
     }
   }
 
-  optim_adding3 <- function(param,  # function to optimize pulling
+  optim_adding3 <- function(param,  # function to optimize pulling and putting
                             return_results = FALSE) {
-    decay_curve <- stats::dbeta(x = (1:num_generations) / num_generations,
-                                shape1 = 10^param[[1]], shape2 = 10^param[[2]])
-    decay_curve <- optimize_put * decay_curve / sum(decay_curve)
 
-    decay_curve2 <- stats::dbeta(x = (1:num_generations) / num_generations,
-                                shape1 = 10^param[[3]], shape2 = 10^param[[4]])
-    decay_curve2 <- optimize_pull * decay_curve / sum(decay_curve)
+    decay_curve <- get_decay_curve(optimize_put, c(param[[1]], param[[2]]),
+                                   num_generations)
 
+    decay_curve2 <- get_decay_curve(optimize_pull, c(param[[3]], param[[4]]),
+                                    num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
                               nest_success_rate = nest_success_rate,
@@ -226,11 +242,12 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   if (optimize_put > 0 && optimize_pull == 0) {
 
-    fit_result <- subplex::subplex(par = c(0, 0),
+    fit_result <- subplex::subplex(par = c(1, 1),
                                    fn = optim_adding,
-                               control = list(reltol = 0.01))
+                                   control = list(reltol = 0.01))
 
-    result$put <- 10^fit_result$par
+    result$put <- get_decay_curve(optimize_put, fit_result$par, num_generations)
+    result$pull <- optimize_pull
     interm_result <- optim_adding(fit_result$par, return_results = TRUE)
     result$results <- interm_result$results
     result$curve   <- tibble::tibble(t = 1:num_generations,
@@ -242,11 +259,13 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   if (optimize_put == 0 && optimize_pull > 0) {
 
-    fit_result <- subplex::subplex(par = c(0, 0),
+    fit_result <- subplex::subplex(par = c(1, 1),
                                    fn = optim_adding2,
                                    control = list(reltol = 0.01))
 
-    result$pull <- 10^fit_result$par
+    result$pull <- get_decay_curve(optimize_pull, fit_result$par,
+                                   num_generations)
+    result$put  <- optimize_put
     interm_result <- optim_adding2(fit_result$par, return_results = TRUE)
     result$results <- interm_result$results
     result$curve   <- tibble::tibble(t = 1:num_generations,
@@ -258,12 +277,17 @@ optimize_policy_beta_curve <- function(num_generations = 20,
 
   if (optimize_put > 0 && optimize_pull > 0) {
 
-    fit_result <- subplex::subplex(par = c(0, 0,
-                                           0, 0),
+    fit_result <- subplex::subplex(par = c(1, 1,
+                                           1, 1),
                                    fn = optim_adding3,
                                    control = list(reltol = 0.01))
 
-    result$pull <- 10^fit_result$par
+    result$pull <- get_decay_curve(optimize_pull,
+                                   fit_result$par[1:2],
+                                   num_generations)
+    result$put  <- get_decay_curve(optimize_put,
+                                   fit_result$par[3:4],
+                                   num_generations)
     interm_result <- optim_adding3(fit_result$par, return_results = TRUE)
     result$results <- interm_result$results
     result$curve   <- tibble::tibble(t = 1:num_generations,
