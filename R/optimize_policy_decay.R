@@ -8,7 +8,7 @@ get_decay_curve <- function(total_sum, params, num_generations) {
   decay_curve[is.na(decay_curve)] <- 0
   while (sum(decay_curve) != total_sum) {
     difference <- total_sum - sum(decay_curve)
-    index <- sample(seq_len(decay_curve), 1)
+    index <- sample(seq_along(decay_curve), 1)
     if (difference > 0) decay_curve[index] <- decay_curve[index] + 1
     if (difference < 0) {
       decay_curve[index] <- decay_curve[index] - 1
