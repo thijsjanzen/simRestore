@@ -87,49 +87,56 @@ junction& junction::operator=(const junction& other) {
     return *this;
 }
 
-organism::organism(double init_freq)    {
-    if (init_freq == 1.0) {
-      junction left(0.0, 1);
-      junction right(1,  -1);
-      chromosome1.push_back( left  );
-      chromosome1.push_back( right );
-      chromosome2.push_back( left  );
-      chromosome2.push_back( right );
+organism::organism(double init_freq, size_t num_chromosomes)    {
+  for (size_t i = 0; i < num_chromosomes; ++i) {
 
-      freq_anc = init_freq;
-      age = 0;
-    } else if (init_freq == 0.0) {
-      junction left(0.0, 0);
-      junction right(1,  -1);
-      chromosome1.push_back( left  );
-      chromosome1.push_back( right );
-      chromosome2.push_back( left  );
-      chromosome2.push_back( right );
+      chrom chrom1;
+      chrom chrom2;
 
-      freq_anc = init_freq;
-      age = 0;
-    } else {
-      // create two alternative chromosomes:
-      junction left(0.0, 0);
-      junction middle(init_freq, 1.0);
-      junction right(1,  -1);
+      if (init_freq == 1.0) {
+        junction left(0.0, 1);
+        junction right(1,  -1);
+        chrom1.push_back( left  );
+        chrom1.push_back( right );
+        chrom2.push_back( left  );
+        chrom2.push_back( right );
 
-      junction left2(0.0, 1);
-      junction middle2(1.0 - init_freq, 0.0);
-      junction right2(1,  -1);
+        freq_anc = init_freq;
+        age = 0;
+      } else if (init_freq == 0.0) {
+        junction left(0.0, 0);
+        junction right(1,  -1);
+        chrom1.push_back( left  );
+        chrom1.push_back( right );
+        chrom2.push_back( left  );
+        chrom2.push_back( right );
 
-      chromosome1 = {left, middle, right};
-      chromosome2 = {left2, middle2, right2};
+        freq_anc = init_freq;
+        age = 0;
+      } else {
+        // create two alternative chromosomes:
+        junction left(0.0, 0);
+        junction middle(init_freq, 1.0);
+        junction right(1,  -1);
 
-      freq_anc = init_freq;
-      age = 0;
+        junction left2(0.0, 1);
+        junction middle2(1.0 - init_freq, 0.0);
+        junction right2(1,  -1);
+
+        chrom1 = {left, middle, right};
+        chrom2 = {left2, middle2, right2};
+      }
+      chromosome1.push_back(chrom1);
+      chromosome2.push_back(chrom2);
     }
 
+    freq_anc = init_freq;
+    age = 0;
     return;
 }
 
-organism::organism(const std::vector<junction>& c1,
-                   const std::vector<junction>& c2,
+organism::organism(const genome& c1,
+                   const genome& c2,
                    double prob_female,
                    rnd_t& rndgen) :
     chromosome1(c1), chromosome2(c2) {
@@ -189,23 +196,28 @@ organism& organism::operator=(organism&& other) {
     return *this;
 }
 
-std::vector<junction> organism::gamete(double morgan, rnd_t& rndgen) const noexcept {
-    int num_recom = rndgen.poisson(morgan);
-    std::vector<double> recom_pos(num_recom);
-    for (int i = 0; i < num_recom; ++i) recom_pos[i] = rndgen.uniform();
-    std::sort(recom_pos.begin(), recom_pos.end());
-    recom_pos.push_back(1.0);
+genome organism::gamete(const std::vector<double>& morgan,
+                        rnd_t& rndgen) const noexcept {
 
-    std::vector<junction> offspring_chromosome;
-    if (rndgen.random_number(2) == 0) {
-        offspring_chromosome = recombine(chromosome1, chromosome2, recom_pos);
-    } else {
-        offspring_chromosome = recombine(chromosome2, chromosome1, recom_pos);
+    genome offspring_chromosome;
+    for (size_t m = 0; m < morgan.size(); ++m) {
+      int num_recom = rndgen.poisson(morgan[m]);
+      std::vector<double> recom_pos(num_recom);
+      for (int i = 0; i < num_recom; ++i) recom_pos[i] = rndgen.uniform();
+      std::sort(recom_pos.begin(), recom_pos.end());
+      recom_pos.push_back(1.0);
+
+      chrom offspring_chrom;
+      if (rndgen.random_number(2) == 0) {
+        offspring_chrom = recombine(chromosome1[m], chromosome2[m], recom_pos);
+      } else {
+        offspring_chrom = recombine(chromosome2[m], chromosome1[m], recom_pos);
+      }
+      offspring_chromosome.push_back(offspring_chrom);
     }
+
     return offspring_chromosome;
 }
-
-
 
 double calc_freq_chrom(const std::vector< junction >& chrom) {
     double freq = 0.0;
@@ -218,9 +230,19 @@ double calc_freq_chrom(const std::vector< junction >& chrom) {
     return freq;
 }
 
+double calc_freq_genome(const genome& g) {
+  double freq = 0.0;
+  for (const auto& i : g) {
+    freq += calc_freq_chrom(i);
+  }
+  freq *= 1.0 / g.size();
+  return freq;
+
+}
+
 void organism::calc_freq_anc() {
-    double freq1 = calc_freq_chrom(chromosome1);
-    double freq2 = calc_freq_chrom(chromosome2);
+    double freq1 = calc_freq_genome(chromosome1);
+    double freq2 = calc_freq_genome(chromosome2);
     freq_anc = 0.5 * (freq1 + freq2);
 }
 
@@ -229,7 +251,7 @@ organism_simple::organism_simple() {
     age = 0;
 }
 
-organism_simple::organism_simple(double initLoc) {
+organism_simple::organism_simple(double initLoc, size_t num_chromosomes) {
     freq_anc = initLoc;
     chromosome1 = initLoc;
     chromosome2 = initLoc;
@@ -257,8 +279,8 @@ organism_simple::organism_simple(const organism_simple& other)  {
 // organism TO organism_SIMPLE
 organism_simple::organism_simple(const organism& other) {
     sex = other.get_sex();
-    chromosome1 = calc_freq_chrom(other.get_chromosome1()); // conversion from std::vector<junction> to double
-    chromosome2 = calc_freq_chrom(other.get_chromosome2());
+    chromosome1 = calc_freq_genome(other.get_chromosome1()); // conversion from genome to double
+    chromosome2 = calc_freq_genome(other.get_chromosome2());
     freq_anc = other.get_freq_anc();
     age = other.age;
 }
@@ -289,7 +311,7 @@ void organism_simple::set_random_sex(rnd_t& rndgen) noexcept {
     return;
 }
 
-double organism_simple::gamete(double morgan, rnd_t& rndgen) const noexcept {
+double organism_simple::gamete(const std::vector<double>& morgan, rnd_t& rndgen) const noexcept {
     // recombine chromosomes:
     return 0.5 * (chromosome1 + chromosome2);
 }

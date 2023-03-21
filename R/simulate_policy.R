@@ -25,7 +25,7 @@
 #' @param put vector of the number of individuals added per year
 #' @param starting_freq initial frequency of target ancestry in the population.
 #' @param sd_starting_freq variation in initial frequency of target ancestry.
-#' @param morgan size of the chromosome in Morgan
+#' @param morgan vector sizes of chromosomes in Morgan
 #' @param establishment_burnin number of generations before establishment
 #' @param num_replicates number of replicates
 #' @param seed random number seed, if left open, current time is used.
@@ -77,7 +77,7 @@ simulate_policy <- function(initial_population_size = 400,
                             put = 0,
                             starting_freq = 0.5,
                             sd_starting_freq = 0.05,
-                            morgan = 1,
+                            morgan = c(1),
                             establishment_burnin = 30,
                             num_replicates = 1,
                             seed = NULL,
@@ -109,6 +109,10 @@ simulate_policy <- function(initial_population_size = 400,
 
   if (length(nesting_risk) != 2) {
     stop("nesting risk has to be specified for both sexes")
+  }
+
+  if (length(morgan) == 1) {
+    morgan <- c(morgan)
   }
 
   output <- simulate_complete(initial_population_size,

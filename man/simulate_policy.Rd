@@ -14,7 +14,7 @@ simulate_policy(
   put = 0,
   starting_freq = 0.5,
   sd_starting_freq = 0.05,
-  morgan = 1,
+  morgan = c(1),
   establishment_burnin = 30,
   num_replicates = 1,
   seed = NULL,
@@ -48,7 +48,7 @@ simulate_policy(
 
 \item{sd_starting_freq}{variation in initial frequency of target ancestry.}
 
-\item{morgan}{size of the chromosome in Morgan}
+\item{morgan}{vector sizes of chromosomes in Morgan}
 
 \item{establishment_burnin}{number of generations before establishment}
 

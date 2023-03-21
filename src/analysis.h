@@ -16,7 +16,7 @@ struct parameters {
     sd_starting_freq = 0.05;
     number_of_generations = 20;
     K = 400;
-    morgan = 1.0;
+    morgan = {1.0};
     female_death_rate = 0.2;
     male_death_rate = 0.0;
     nest_failure_rate = 0.387;
@@ -39,7 +39,7 @@ struct parameters {
              float s_f,
              int num_gen,
              int k,
-             double m,
+             std::vector<double> m,
              double f_d_r,
              double m_d_r,
              double n_f_r,
@@ -85,7 +85,7 @@ struct parameters {
   float sd_starting_freq;
   int number_of_generations;
   int K;
-  double morgan;
+  std::vector<double> morgan;
   double female_death_rate;
   double male_death_rate;
   double nest_failure_rate;
@@ -111,7 +111,7 @@ struct parameters {
 
 template <class ANIMAL>
 std::array<double, 3> calc_freq_focal(std::vector< ANIMAL >& f,
-                                       std::vector< ANIMAL >& m) {
+                                      std::vector< ANIMAL >& m) {
   std::array<double, 3> avg_freq = {0.0, 0.0, 0.0};
 
   for (auto& i : f) {
@@ -455,7 +455,7 @@ private:
   void add_to_population(std::vector<organism_simple>& population,
                          int number_added, tag<organism_simple>,
                          const Sex& sex) {
-    organism_simple to_add(params.put_ancestry);
+    organism_simple to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
     for(int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
@@ -466,7 +466,7 @@ private:
   void add_to_population(std::vector<organism>& population,
                                              int number_added, tag<organism>,
                                              const Sex& sex) {
-    organism to_add(params.put_ancestry);
+    organism to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
     for(int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
@@ -489,8 +489,8 @@ private:
   }
 
   std::vector<organism> create_base_pop(tag<organism>) {
-    ANIMAL base_indiv(0.0);
-    ANIMAL target_indiv(1.0);
+    ANIMAL base_indiv(0.0, params.morgan.size());
+    ANIMAL target_indiv(1.0, params.morgan.size());
 
     std::vector< ANIMAL > population(params.pop_size);
 
@@ -522,8 +522,8 @@ private:
   }
 
   std::vector< ANIMAL > admix() {
-    ANIMAL base_indiv(0.0);
-    ANIMAL target_indiv(1.0);
+    ANIMAL base_indiv(0.0, params.morgan.size());
+    ANIMAL target_indiv(1.0, params.morgan.size());
 
     std::vector< ANIMAL > population(params.pop_size);
 

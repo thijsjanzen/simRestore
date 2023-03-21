@@ -21,14 +21,17 @@ struct junction {
 
 enum Sex {male, female};
 
+using chrom = std::vector< junction >;
+using genome = std::vector< chrom >;
+
 struct organism {
 
     organism();
-    organism(double init_freq);
-    organism(const std::vector<junction>& c1,
-         const std::vector<junction>& c2,
-         double prob_male,
-         rnd_t& rndgen);
+    organism(double init_freq, size_t num_chromosomes);
+    organism(const genome& c1,
+             const genome& c2,
+             double prob_male,
+             rnd_t& rndgen);
 
 
     organism(const organism& other);
@@ -41,17 +44,18 @@ struct organism {
     void set_random_sex(rnd_t& rdngen) noexcept;
     void set_sex(Sex s) {sex = s;}
 
-    std::vector<junction> gamete(double morgan, rnd_t& rndgen) const noexcept;
+    genome gamete(const std::vector<double>& morgan,
+                  rnd_t& rndgen) const noexcept;
 
-    const std::vector< junction >& get_chromosome1() const noexcept {return chromosome1;}
-    const std::vector< junction >& get_chromosome2() const noexcept {return chromosome2;}
+    const genome& get_chromosome1() const noexcept {return chromosome1;}
+    const genome& get_chromosome2() const noexcept {return chromosome2;}
     const double& get_freq_anc() const noexcept {return freq_anc;}
     const Sex& get_sex() const noexcept {return sex;}
     int age;
 
 private:
-    std::vector< junction > chromosome1;
-    std::vector< junction > chromosome2;
+    genome chromosome1;
+    genome chromosome2;
     Sex sex;
     double freq_anc;
     void calc_freq_anc();
@@ -60,7 +64,7 @@ private:
 struct organism_simple {
 
     organism_simple();
-    organism_simple(double initLoc);
+    organism_simple(double initLoc, size_t num_chromosomes);
 
     organism_simple(const organism& other);
 
@@ -72,7 +76,7 @@ struct organism_simple {
     void set_random_sex(rnd_t& rndgen) noexcept;
     void set_sex(Sex s) {sex = s;}
 
-    double gamete(double morgan, rnd_t& rndgen) const noexcept;
+    double gamete(const std::vector<double>& morgan, rnd_t& rndgen) const noexcept;
 
     const double& get_chromosome1() const noexcept {return chromosome1;}
     const double& get_chromosome2() const noexcept {return chromosome2;}
