@@ -60,7 +60,7 @@ std::vector<junction> recombine(const std::vector<junction>& chromosome1,
 
 organism::organism() {
     age = 0;
-    freq_hawaii = -1;
+    freq_anc = -1;
 }
 
 junction::junction() {
@@ -87,25 +87,53 @@ junction& junction::operator=(const junction& other) {
     return *this;
 }
 
-organism::organism(int initLoc)    {
-    junction left(0.0, initLoc);
-    junction right(1,  -1);
-    chromosome1.push_back( left  );
-    chromosome1.push_back( right );
-    chromosome2.push_back( left  );
-    chromosome2.push_back( right );
+organism::organism(double init_freq)    {
+    if (init_freq == 1.0) {
+      junction left(0.0, 1);
+      junction right(1,  -1);
+      chromosome1.push_back( left  );
+      chromosome1.push_back( right );
+      chromosome2.push_back( left  );
+      chromosome2.push_back( right );
 
-    freq_hawaii = initLoc;
-    age = 0;
+      freq_anc = init_freq;
+      age = 0;
+    } else if (init_freq == 0.0) {
+      junction left(0.0, 0);
+      junction right(1,  -1);
+      chromosome1.push_back( left  );
+      chromosome1.push_back( right );
+      chromosome2.push_back( left  );
+      chromosome2.push_back( right );
+
+      freq_anc = init_freq;
+      age = 0;
+    } else {
+      // create two alternative chromosomes:
+      junction left(0.0, 0);
+      junction middle(init_freq, 1.0);
+      junction right(1,  -1);
+
+      junction left2(0.0, 1);
+      junction middle2(1.0 - init_freq, 0.0);
+      junction right2(1,  -1);
+
+      chromosome1 = {left, middle, right};
+      chromosome2 = {left2, middle2, right2};
+
+      freq_anc = init_freq;
+      age = 0;
+    }
+
     return;
 }
 
 organism::organism(const std::vector<junction>& c1,
-           const std::vector<junction>& c2,
-           double prob_female,
-           rnd_t& rndgen) :
+                   const std::vector<junction>& c2,
+                   double prob_female,
+                   rnd_t& rndgen) :
     chromosome1(c1), chromosome2(c2) {
-    calc_freq_hawaii();
+    calc_freq_anc();
     set_nonrandom_sex(prob_female, rndgen);
     age = 0;
 }
@@ -128,7 +156,7 @@ void organism::set_random_sex(rnd_t& rndgen) noexcept {
 }
 
 organism::organism(const organism& other) : age(other.age), chromosome1(other.chromosome1), chromosome2(other.chromosome2),
-sex(other.sex), freq_hawaii(other.freq_hawaii)  {
+sex(other.sex), freq_anc(other.freq_anc)  {
 }
 
 organism& organism::operator=(const organism& other) {
@@ -136,7 +164,7 @@ organism& organism::operator=(const organism& other) {
         chromosome1 = other.chromosome1;
         chromosome2 = other.chromosome2;
         sex = other.sex;
-        freq_hawaii = other.freq_hawaii;
+        freq_anc = other.freq_anc;
         age = other.age;
     }
     return *this;
@@ -146,7 +174,7 @@ organism::organism(organism&& other) {
     chromosome1 = other.chromosome1;
     chromosome2 = other.chromosome2;
     sex = other.sex;
-    freq_hawaii = other.freq_hawaii;
+    freq_anc = other.freq_anc;
     age = other.age;
 }
 
@@ -155,7 +183,7 @@ organism& organism::operator=(organism&& other) {
         chromosome1 = other.chromosome1;
         chromosome2 = other.chromosome2;
         sex = other.sex;
-        freq_hawaii = other.freq_hawaii;
+        freq_anc = other.freq_anc;
         age = other.age;
     }
     return *this;
@@ -190,19 +218,19 @@ double calc_freq_chrom(const std::vector< junction >& chrom) {
     return freq;
 }
 
-void organism::calc_freq_hawaii() {
+void organism::calc_freq_anc() {
     double freq1 = calc_freq_chrom(chromosome1);
     double freq2 = calc_freq_chrom(chromosome2);
-    freq_hawaii = 0.5 * (freq1 + freq2);
+    freq_anc = 0.5 * (freq1 + freq2);
 }
 
 organism_simple::organism_simple() {
-    freq_hawaii = -1.0;
+    freq_anc = -1.0;
     age = 0;
 }
 
 organism_simple::organism_simple(double initLoc) {
-    freq_hawaii = initLoc;
+    freq_anc = initLoc;
     chromosome1 = initLoc;
     chromosome2 = initLoc;
     age = 0;
@@ -213,13 +241,13 @@ organism_simple::organism_simple(double chrom1,
                          double prob_female,
                          rnd_t& rndgen) :
     chromosome1(chrom1), chromosome2(chrom2) {
-    freq_hawaii = 0.5 * (chromosome1 + chromosome2);
+    freq_anc = 0.5 * (chromosome1 + chromosome2);
     set_nonrandom_sex(prob_female, rndgen);
     age = 0;
 }
 
 organism_simple::organism_simple(const organism_simple& other)  {
-    freq_hawaii = other.get_freq_hawaii();
+    freq_anc = other.get_freq_anc();
     chromosome1 = other.get_chromosome1();
     chromosome2 = other.get_chromosome2();
     sex = other.sex;
@@ -231,12 +259,12 @@ organism_simple::organism_simple(const organism& other) {
     sex = other.get_sex();
     chromosome1 = calc_freq_chrom(other.get_chromosome1()); // conversion from std::vector<junction> to double
     chromosome2 = calc_freq_chrom(other.get_chromosome2());
-    freq_hawaii = other.get_freq_hawaii();
+    freq_anc = other.get_freq_anc();
     age = other.age;
 }
 
 organism_simple& organism_simple::operator=(const organism_simple& other) {
-    freq_hawaii = other.get_freq_hawaii();
+    freq_anc = other.get_freq_anc();
     chromosome1 = other.get_chromosome1();
     chromosome2 = other.get_chromosome2();
     sex = other.get_sex();

@@ -12,8 +12,8 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List simulate_complete(int pop_size,
-                       float frequency_hawaii_organism,
-                       float sd_frequency_hawaii,
+                       float starting_freq,
+                       float sd_starting_freq,
                        NumericVector introductions,
                        NumericVector removal,
                        int number_of_generations,
@@ -34,7 +34,9 @@ List simulate_complete(int pop_size,
                        double p,
                        double b,
                        double sex_ratio_put,
-                       double sex_ratio_offspring) {
+                       double sex_ratio_pull,
+                       double sex_ratio_offspring,
+                       double put_ancestry) {
 
   try {
     if (verbose) {
@@ -44,8 +46,8 @@ List simulate_complete(int pop_size,
     emp_genome dummy_genome;
 
     parameters params(pop_size,
-                      frequency_hawaii_organism,
-                      sd_frequency_hawaii,
+                      starting_freq,
+                      sd_starting_freq,
                       number_of_generations,
                       K,
                       morgan,
@@ -62,7 +64,9 @@ List simulate_complete(int pop_size,
                       p,
                       b,
                       sex_ratio_put,
-                      sex_ratio_offspring);
+                      sex_ratio_pull,
+                      sex_ratio_offspring,
+                      put_ancestry);
 
     std::vector< std::vector< double > > results;
 
@@ -131,7 +135,6 @@ List simulate_complete(int pop_size,
       }
     }
 
-  //  if (verbose) {Rcout << "done simulating, converting to R format\n"; force_output();}
     NumericMatrix output(results.size(), 8);
     for(int i = 0; i < results.size(); ++i) {
       output(i, 0) = results[i][0];

@@ -1,5 +1,4 @@
-#ifndef MAIN_HPP
-#define MAIN_HPP
+#pragma once
 
 #include "organism.h"
 #include <vector>
@@ -72,5 +71,3 @@ private:
 
 
 void force_output();
-
-#endif

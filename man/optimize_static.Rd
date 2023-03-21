@@ -72,7 +72,7 @@ protecting the nest.}
 
 \item{morgan}{size of the chromosome in Morgan}
 
-\item{max_age}{maximum age a duck can reach.}
+\item{max_age}{maximum age an individual can reach.}
 
 \item{mean_clutch_size}{mean number of eggs in a nest}
 

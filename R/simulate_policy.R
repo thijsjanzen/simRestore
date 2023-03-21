@@ -29,7 +29,7 @@
 #' @param establishment_burnin number of generations before establishment
 #' @param num_replicates number of replicates
 #' @param seed random number seed, if left open, current time is used.
-#' @param max_age maximum age a duck can reach.
+#' @param max_age maximum age an individual can reach.
 #' @param mean_number_of_offspring mean number of offspring per female
 #' @param sd_number_of_offspring standard deviation of number of offspring per
 #' female (assuming the number of offspring is always 0 or larger).
@@ -42,14 +42,24 @@
 #' in N / K (e.g., for a value of 1.0, the survival rate changes most rapidly
 #' around N = K, for a value of 0.5, the survival rate changes most rapidly
 #' around N = 0.5K, etc).
-#' @param sex_ratio_put the sex ratio of individuals that are added (if any) to
+#' @param sex_ratio_put sex ratio of individuals that are added (if any) to
 #' the population. Sex ratio is expressed as males / (males + females), such
+#' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
+#' and 0.1 indicates a female biased sex ratio.
+#' @param sex_ratio_pull sex ratio of individuals that are removed (if any) from
+#' the population. The sex ratio
+#' is expressed as males / (males + females), such
 #' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
 #' and 0.1 indicates a female biased sex ratio.
 #' @param sex_ratio_offspring sex ratio of newly born offspring. The sex ratio
 #' is expressed as males / (males + females), such
 #' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
 #' and 0.1 indicates a female biased sex ratio.
+#' @param ancestry_put Average ancestry of individuals being used for
+#' supplementation. If the target is high focal ancestry (e.g. aiming for
+#' focal ancestry of 1.0), ancestry put should reflect this and be set to 1.0 (
+#' which is the default value). When supplementing with non-pure individuals,
+#' this value can consequently be lowered.
 #' @param use_simplified_model use a simplified model of underlying genetics?
 #' This speeds up simulation considerably, and should be preferred when not
 #' interested in high detail genetic changes. Default is TRUE.
@@ -79,7 +89,9 @@ simulate_policy <- function(initial_population_size = 400,
                             b = -2,
                             p = 0.5,
                             sex_ratio_put = 0.5,
+                            sex_ratio_pull = 0.5,
                             sex_ratio_offspring = 0.5,
+                            ancestry_put = 1.0,
                             use_simplified_model = TRUE,
                             verbose = FALSE) {
 
@@ -122,7 +134,9 @@ simulate_policy <- function(initial_population_size = 400,
                               p,
                               b,
                               sex_ratio_put,
-                              sex_ratio_offspring)
+                              sex_ratio_pull,
+                              sex_ratio_offspring,
+                              ancestry_put)
 
   colnames(output$results) <- c("replicate", "t", "freq_focal_ancestry",
                                 "freq_ancestry_males", "freq_ancestry_females",

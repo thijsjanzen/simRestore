@@ -24,7 +24,7 @@ enum Sex {male, female};
 struct organism {
 
     organism();
-    organism(int initLoc);
+    organism(double init_freq);
     organism(const std::vector<junction>& c1,
          const std::vector<junction>& c2,
          double prob_male,
@@ -45,7 +45,7 @@ struct organism {
 
     const std::vector< junction >& get_chromosome1() const noexcept {return chromosome1;}
     const std::vector< junction >& get_chromosome2() const noexcept {return chromosome2;}
-    const double& get_freq_hawaii() const noexcept {return freq_hawaii;}
+    const double& get_freq_anc() const noexcept {return freq_anc;}
     const Sex& get_sex() const noexcept {return sex;}
     int age;
 
@@ -53,8 +53,8 @@ private:
     std::vector< junction > chromosome1;
     std::vector< junction > chromosome2;
     Sex sex;
-    double freq_hawaii;
-    void calc_freq_hawaii();
+    double freq_anc;
+    void calc_freq_anc();
 };
 
 struct organism_simple {
@@ -76,14 +76,14 @@ struct organism_simple {
 
     const double& get_chromosome1() const noexcept {return chromosome1;}
     const double& get_chromosome2() const noexcept {return chromosome2;}
-    const double& get_freq_hawaii() const noexcept {return freq_hawaii;}
+    const double& get_freq_anc() const noexcept {return freq_anc;}
     const Sex& get_sex() const noexcept {return sex;}
 
     int age;
 private:
     double chromosome1;
     double chromosome2;
-    double freq_hawaii;
+    double freq_anc;
     Sex sex;
 };
 

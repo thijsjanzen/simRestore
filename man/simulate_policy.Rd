@@ -26,7 +26,9 @@ simulate_policy(
   b = -2,
   p = 0.5,
   sex_ratio_put = 0.5,
+  sex_ratio_pull = 0.5,
   sex_ratio_offspring = 0.5,
+  ancestry_put = 1,
   use_simplified_model = TRUE,
   verbose = FALSE
 )
@@ -54,7 +56,7 @@ simulate_policy(
 
 \item{seed}{random number seed, if left open, current time is used.}
 
-\item{max_age}{maximum age a duck can reach.}
+\item{max_age}{maximum age an individual can reach.}
 
 \item{smin}{minimum survival rate}
 
@@ -69,8 +71,14 @@ in N / K (e.g., for a value of 1.0, the survival rate changes most rapidly
 around N = K, for a value of 0.5, the survival rate changes most rapidly
 around N = 0.5K, etc).}
 
-\item{sex_ratio_put}{the sex ratio of individuals that are added (if any) to
+\item{sex_ratio_put}{sex ratio of individuals that are added (if any) to
 the population. Sex ratio is expressed as males / (males + females), such
+that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
+and 0.1 indicates a female biased sex ratio.}
+
+\item{sex_ratio_pull}{sex ratio of individuals that are removed (if any) from
+the population. The sex ratio
+is expressed as males / (males + females), such
 that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
 and 0.1 indicates a female biased sex ratio.}
 
@@ -78,6 +86,12 @@ and 0.1 indicates a female biased sex ratio.}
 is expressed as males / (males + females), such
 that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
 and 0.1 indicates a female biased sex ratio.}
+
+\item{ancestry_put}{Average ancestry of individuals being used for
+supplementation. If the target is high focal ancestry (e.g. aiming for
+focal ancestry of 1.0), ancestry put should reflect this and be set to 1.0 (
+which is the default value). When supplementing with non-pure individuals,
+this value can consequently be lowered.}
 
 \item{use_simplified_model}{use a simplified model of underlying genetics?
 This speeds up simulation considerably, and should be preferred when not

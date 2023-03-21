@@ -53,7 +53,7 @@ get_decay_curve <- function(total_sum, params, num_generations) {
 #' @param morgan size of the chromosome in Morgan
 #' @param establishment_burnin number of generations before establishment
 #' @param num_replicates number of replicates
-#' @param max_age maximum age a duck can reach.
+#' @param max_age maximum age an individual can reach.
 #' @param mean_clutch_size mean number of eggs in a nest
 #' @param sd_clutch_size standard deviation of number of eggs in nest (assuming
 #' the number of eggs is always 0 or larger).
