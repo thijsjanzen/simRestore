@@ -63,10 +63,6 @@ organism::organism() {
     freq_anc = -1;
 }
 
-junction::junction() {
-
-}
-
 junction::junction(long double loc, int B)  {
     pos = loc;
     right = B;
@@ -75,10 +71,6 @@ junction::junction(long double loc, int B)  {
 junction::junction(const junction& other) {
     pos = other.pos;
     right = other.right;
-}
-
-bool junction::operator <(const junction& other) const noexcept {
-    return(pos < other.pos);
 }
 
 junction& junction::operator=(const junction& other) {

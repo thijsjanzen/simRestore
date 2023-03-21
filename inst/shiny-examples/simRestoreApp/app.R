@@ -291,8 +291,8 @@ server <- function(input, output, session) {
 
   simple_data <- reactive({
     simRestore::simulate_policy(initial_population_size = input$init_pop_size_1,
-                                nest_success_rate = input$nest_succes_rate,
-                                nesting_risk = c(input$f_n_r, input$m_n_r),
+                                reproduction_success_rate = input$nest_succes_rate,
+                                breeding_risk = c(input$f_n_r, input$m_n_r),
                                 num_generations = input$num_gen_simple,
                                 K = input$K,
                                 pull = input$pull,
@@ -301,8 +301,8 @@ server <- function(input, output, session) {
                                 starting_freq = input$init_frac_simple,
                                 morgan = input$morgan,
                                 max_age = input$max_age,
-                                mean_clutch_size = input$clutch_size,
-                                sd_clutch_size = input$clutch_sd,
+                                mean_number_of_offspring = input$clutch_size,
+                                sd_number_of_offspring = input$clutch_sd,
                                 smin = ifelse(input$density_model == "Manual",
                                               input$smin, 0.5),
                                 smax = ifelse(input$density_model == "Manual",
@@ -316,6 +316,7 @@ server <- function(input, output, session) {
                                         ifelse(input$density_model == "Strong",
                                                0.45, 0.5)),
                                 sex_ratio_put = input$sex_ratio_put,
+                                sex_ratio_pull = input$sex_ratio_pull,
                                 sex_ratio_offspring = input$sex_ratio_offspring,
                                 use_simplified_model = 1 - input$model_used_single)
     })
@@ -371,8 +372,8 @@ server <- function(input, output, session) {
 
   optim_data_static <-  reactive({
     get_optim_data_static(initial_population_size = input$init_pop_size_3,
-                          nest_success_rate = input$nest_succes_rate,
-                          nesting_risk = c(input$f_n_r, input$m_n_r),
+                          reproduction_success_rate = input$nest_succes_rate,
+                          breeding_risk = c(input$f_n_r, input$m_n_r),
                           num_generations = input$num_gen_optim_s,
                           K = input$K,
                           num_replicates = input$num_repl,
@@ -382,8 +383,8 @@ server <- function(input, output, session) {
                           starting_freq = input$init_frac_optim,
                           use_complex_model = input$model_used_s,
                           max_age = input$max_age,
-                          mean_clutch_size = input$clutch_size,
-                          sd_clutch_size = input$clutch_sd,
+                          mean_number_of_offspring = input$clutch_size,
+                          sd_number_of_offspring = input$clutch_sd,
                           smin = ifelse(input$density_model_2 == "Manual",
                                         input$smin, 0.5),
                           smax = ifelse(input$density_model_2 == "Manual",
@@ -397,13 +398,14 @@ server <- function(input, output, session) {
                                      ifelse(input$density_model_2 == "Strong",
                                             0.45, 0.5)),
                           sex_ratio_put = input$sex_ratio_put,
+                          sex_ratio_pull = input$sex_ratio_pull,
                           sex_ratio_offspring = input$sex_ratio_offspring)
   })
 
   optim_data_complex <-  reactive({
     get_optim_data_adaptive(initial_population_size = input$init_pop_size_4,
-                           nest_success_rate = input$nest_succes_rate,
-                           nesting_risk = c(input$f_n_r, input$m_n_r),
+                           reproduction_success_rate = input$nest_succes_rate,
+                           breeding_risk = c(input$f_n_r, input$m_n_r),
                            num_generations = input$num_gen_optim_c,
                            K = input$K,
                            num_replicates = input$num_repl,
@@ -414,8 +416,8 @@ server <- function(input, output, session) {
                            starting_freq = input$init_frac_optim_complex,
                            use_complex_model = input$model_used_c,
                            max_age = input$max_age,
-                           mean_clutch_size = input$clutch_size,
-                           sd_clutch_size = input$clutch_sd,
+                           mean_number_of_offspring = input$clutch_size,
+                           sd_number_of_offspring = input$clutch_sd,
                            smin = ifelse(input$density_model_3 == "Manual",
                                          input$smin, 0.5),
                            smax = ifelse(input$density_model_3 == "Manual",
@@ -429,6 +431,7 @@ server <- function(input, output, session) {
                                       ifelse(input$density_model_3 == "Strong",
                                              0.45, 0.5)),
                            sex_ratio_put = input$sex_ratio_put,
+                           sex_ratio_pull = input$sex_ratio_pull,
                            sex_ratio_offspring = input$sex_ratio_offspring)
   })
 
@@ -643,12 +646,11 @@ server <- function(input, output, session) {
       write.table(stored_data, file, quote = FALSE)
     }
   )
-
 }
 
 get_optim_data_static <- function(initial_population_size,
-                                  nest_success_rate,
-                                  nesting_risk,
+                                  reproduction_success_rate,
+                                  breeding_risk,
                                   num_generations,
                                   K,
                                   num_replicates,
@@ -658,13 +660,14 @@ get_optim_data_static <- function(initial_population_size,
                                   starting_freq,
                                   use_complex_model,
                                   max_age,
-                                  mean_clutch_size,
-                                  sd_clutch_size,
+                                  mean_number_of_offspring,
+                                  sd_number_of_offspring,
                                   smin,
                                   smax,
                                   b,
                                   p,
                                   sex_ratio_put,
+                                  sex_ratio_pull,
                                   sex_ratio_offspring) {
 
   opt_pull <- FALSE
@@ -691,8 +694,8 @@ get_optim_data_static <- function(initial_population_size,
 
   return(simRestore::optimize_static(initial_population_size =
                                        initial_population_size,
-                                     nest_success_rate = nest_success_rate,
-                                     nesting_risk = nesting_risk,
+                                     reproduction_success_rate = reproduction_success_rate,
+                                     breeding_risk = breeding_risk,
                                      num_generations = num_generations,
                                      K = K,
                                      num_replicates = num_replicates,
@@ -703,20 +706,21 @@ get_optim_data_static <- function(initial_population_size,
                                      morgan = morgan,
                                      starting_freq = starting_freq,
                                      max_age = max_age,
-                                     mean_clutch_size = mean_clutch_size,
-                                     sd_clutch_size = sd_clutch_size,
+                                     mean_number_of_offspring = mean_number_of_offspring,
+                                     sd_number_of_offspring = sd_number_of_offspring,
                                      smin = smin,
                                      smax = smax,
                                      b = b,
                                      p = p,
                                      sex_ratio_put = sex_ratio_put,
+                                     sex_ratio_pull = sex_ratio_pull,
                                      sex_ratio_offspring = sex_ratio_offspring,
                                      verbose = FALSE))
 }
 
 get_optim_data_adaptive <- function(initial_population_size,
-                                   nest_success_rate,
-                                   nesting_risk,
+                                   reproduction_success_rate,
+                                   breeding_risk,
                                    num_generations,
                                    K,
                                    num_replicates,
@@ -727,13 +731,14 @@ get_optim_data_adaptive <- function(initial_population_size,
                                    starting_freq,
                                    use_complex_model,
                                    max_age,
-                                   mean_clutch_size,
-                                   sd_clutch_size,
+                                   mean_number_of_offspring,
+                                   sd_number_of_offspring,
                                    smin,
                                    smax,
                                    b,
                                    p,
                                    sex_ratio_put,
+                                   sex_ratio_pull,
                                    sex_ratio_offspring) {
 
   use_simple_model <- TRUE
@@ -741,8 +746,8 @@ get_optim_data_adaptive <- function(initial_population_size,
 
   return(simRestore::optimize_adaptive(
     initial_population_size = initial_population_size,
-    nest_success_rate = nest_success_rate,
-    nesting_risk = nesting_risk,
+    reproduction_success_rate = reproduction_success_rate,
+    breeding_risk = breeding_risk,
     num_generations = num_generations,
     K = K,
     num_replicates = num_replicates,
@@ -753,19 +758,16 @@ get_optim_data_adaptive <- function(initial_population_size,
     morgan = morgan,
     starting_freq = starting_freq,
     max_age = max_age,
-    mean_clutch_size = mean_clutch_size,
-    sd_clutch_size = sd_clutch_size,
+    mean_number_of_offspring = mean_number_of_offspring,
+    sd_number_of_offspring = sd_number_of_offspring,
     smin = smin,
     smax = smax,
     b = b,
     p = p,
     sex_ratio_put = sex_ratio_put,
+    sex_ratio_pull = sex_ratio_pull,
     sex_ratio_offspring = sex_ratio_offspring,
     verbose = FALSE))
 }
-
-
-
-
 
 shinyApp(ui = ui, server = server)

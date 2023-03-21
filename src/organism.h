@@ -12,10 +12,9 @@ struct junction {
     long double pos;
     int right;
 
-    junction();
+    junction() {};
     junction(long double loc, int B) ;
     junction(const junction& other);
-    bool operator <(const junction& other) const noexcept;
     junction& operator=(const junction& other);
 };
 
