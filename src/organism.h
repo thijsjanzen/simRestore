@@ -41,7 +41,6 @@ struct organism {
     organism& operator=(organism&& other);
 
     void set_nonrandom_sex(double prob_male, rnd_t& rndgen);
-    void set_random_sex(rnd_t& rdngen) noexcept;
     void set_sex(Sex s) {sex = s;}
 
     genome gamete(const std::vector<double>& morgan,
@@ -66,14 +65,11 @@ struct organism_simple {
     organism_simple();
     organism_simple(double initLoc, size_t num_chromosomes);
 
-    organism_simple(const organism& other);
-
     organism_simple(double chrom1, double chrom2, double prob_male, rnd_t& rndgen);
     organism_simple(const organism_simple& other);
     organism_simple& operator=(const organism_simple& other);
 
     void set_nonrandom_sex(double prob_male, rnd_t& rndgen);
-    void set_random_sex(rnd_t& rndgen) noexcept;
     void set_sex(Sex s) {sex = s;}
 
     double gamete(const std::vector<double>& morgan, rnd_t& rndgen) const noexcept;

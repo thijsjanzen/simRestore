@@ -464,8 +464,8 @@ private:
   }
 
   void add_to_population(std::vector<organism>& population,
-                                             int number_added, tag<organism>,
-                                             const Sex& sex) {
+                         int number_added, tag<organism>,
+                         const Sex& sex) {
     organism to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
     for(int i = 0; i < number_added; ++i) {

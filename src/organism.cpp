@@ -146,20 +146,12 @@ organism::organism(const genome& c1,
 }
 
 void organism::set_nonrandom_sex(double prob_male,
-                             rnd_t& rndgen) {
+                                 rnd_t& rndgen) {
   sex = female;
   if (rndgen.uniform() < prob_male) {
     sex = male;
   }
   return;
-}
-
-void organism::set_random_sex(rnd_t& rndgen) noexcept {
-    sex = female;
-    if (rndgen.uniform() < 0.5) {
-        sex = male;
-    }
-    return;
 }
 
 organism::organism(const organism& other) : age(other.age), chromosome1(other.chromosome1), chromosome2(other.chromosome2),
@@ -276,15 +268,6 @@ organism_simple::organism_simple(const organism_simple& other)  {
     age = other.age;
 }
 
-// organism TO organism_SIMPLE
-organism_simple::organism_simple(const organism& other) {
-    sex = other.get_sex();
-    chromosome1 = calc_freq_genome(other.get_chromosome1()); // conversion from genome to double
-    chromosome2 = calc_freq_genome(other.get_chromosome2());
-    freq_anc = other.get_freq_anc();
-    age = other.age;
-}
-
 organism_simple& organism_simple::operator=(const organism_simple& other) {
     freq_anc = other.get_freq_anc();
     chromosome1 = other.get_chromosome1();
@@ -301,14 +284,6 @@ void organism_simple::set_nonrandom_sex(double prob_male,
     sex = male;
   }
   return;
-}
-
-void organism_simple::set_random_sex(rnd_t& rndgen) noexcept {
-    sex = female;
-    if (rndgen.uniform() < 0.5) {
-        sex = male;
-    }
-    return;
 }
 
 double organism_simple::gamete(const std::vector<double>& morgan, rnd_t& rndgen) const noexcept {

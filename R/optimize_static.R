@@ -43,7 +43,6 @@ optimize_static <- function(target_frequency = 0.99,
 
   fit_adding <- function(param,
                          return_results = FALSE) {
-    if (param[[1]] < 0) return(Inf)
     result <- simulate_policy(initial_population_size = initial_population_size,
                               reproduction_success_rate = reproduction_success_rate,
                               breeding_risk = breeding_risk,
@@ -82,7 +81,6 @@ optimize_static <- function(target_frequency = 0.99,
 
   fit_killing <- function(param,
                           return_results = FALSE) {
-    if (param[[1]] < 0) return(100)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
                               reproduction_success_rate = reproduction_success_rate,
@@ -173,8 +171,8 @@ optimize_static <- function(target_frequency = 0.99,
 
   result <- c()
 
-  if (optimize_pull[[1]] > 0 &&
-      optimize_put[[1]]  > 0) {
+  if (optimize_pull > 0 &&
+      optimize_put  > 0) {
 
     fit_result <- subplex::subplex(par = c(1, 1), fn = fit_both,
                                    control = list(maxiter = 200,
@@ -216,27 +214,24 @@ optimize_static <- function(target_frequency = 0.99,
              result$results$t == num_generations)$freq_focal_ancestry)
   }
   if (optimize_pull > 0 && optimize_put <= 0) {
-    fit_result <-
-      stats::optimize(f = fit_killing,
-                      interval = c(0, (initial_population_size)),
-                      maximum = FALSE)
+    fit_result <- stats::optimize(f = fit_killing,
+                                  interval = c(0, (initial_population_size)),
+                                  maximum = FALSE)
     start_val <- initial_population_size
-    while (fit_result$objective > 1 ||
-           fit_result$minimum / start_val > 0.9) {
+    while (fit_result$objective > 1) {
       # maximum is normally 1, larger indicates failure to converge
-      start_val <- start_val * 0.1
+      start_val <- start_val * 0.95
+      fit_result <- stats::optimize(f = fit_killing,
+                                    interval = c(0, start_val),
+                                    maximum = FALSE)
       if (start_val < 1) {
-        warning("No optimum found, most likely the population is extinct")
+        warning("No optimum found, most likely pulling has no effect")
         result$pull <- NA
         result$results <- NA
         result$curve <- NA
         result$final_freq <- NA
         return(result)
       }
-      fit_result <-
-        stats::optimize(f = fit_killing,
-                        interval = c(0, start_val),
-                        maximum = FALSE)
     }
 
     result$pull <- floor(fit_result$minimum[[1]])

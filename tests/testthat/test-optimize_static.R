@@ -12,11 +12,11 @@ test_that("simple optimization", {
   testthat::expect_true(is.na(sd(vx$put)))
 
   vx <- simRestore::optimize_static(num_generations = 20,
-                                    initial_population_size = 1000,
                                     target_frequency = 0.99,
                                     optimize_put = FALSE,
                                     optimize_pull = TRUE,
                                     num_replicates = 1)
+
   testthat::expect_lt(vx$final_freq, 0.98)
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_true(is.na(sd(vx$pull)))
