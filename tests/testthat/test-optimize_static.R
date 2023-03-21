@@ -2,7 +2,7 @@ context("optimize policy")
 
 test_that("simple optimization", {
 
-  vx <- simRestore::optimize_policy(num_generations = 20,
+  vx <- simRestore::optimize_static(num_generations = 20,
                                     target_frequency = 0.99,
                                     optimize_put = TRUE,
                                     optimize_pull = FALSE,
@@ -11,7 +11,7 @@ test_that("simple optimization", {
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_true(is.na(sd(vx$put)))
 
-  vx <- simRestore::optimize_policy(num_generations = 20,
+  vx <- simRestore::optimize_static(num_generations = 20,
                                     initial_population_size = 1000,
                                     target_frequency = 0.99,
                                     optimize_put = FALSE,
@@ -21,7 +21,7 @@ test_that("simple optimization", {
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_true(is.na(sd(vx$pull)))
 
-  vx <- simRestore::optimize_policy(num_generations = 20,
+  vx <- simRestore::optimize_static(num_generations = 20,
                                     target_frequency = 0.99,
                                     optimize_put = TRUE,
                                     optimize_pull = TRUE,
@@ -33,7 +33,7 @@ test_that("simple optimization", {
 
   # check verbose output:
   testthat::expect_output(
-    vx <- simRestore::optimize_policy(num_generations = 5,
+    vx <- simRestore::optimize_static(num_generations = 5,
                                       target_frequency = 0.99,
                                       optimize_put = TRUE,
                                       optimize_pull = FALSE,
@@ -42,7 +42,7 @@ test_that("simple optimization", {
   )
 
   testthat::expect_output(
-    vx <- simRestore::optimize_policy(num_generations = 5,
+    vx <- simRestore::optimize_static(num_generations = 5,
                                       target_frequency = 0.99,
                                       optimize_put = FALSE,
                                       optimize_pull = TRUE,
@@ -51,7 +51,7 @@ test_that("simple optimization", {
   )
 
   testthat::expect_output(
-    vx <- simRestore::optimize_policy(num_generations = 5,
+    vx <- simRestore::optimize_static(num_generations = 5,
                                       target_frequency = 0.99,
                                       optimize_put = TRUE,
                                       optimize_pull = TRUE,
@@ -63,7 +63,7 @@ test_that("simple optimization", {
 test_that("fixed optimization", {
 
   fixed_level <- 10
-  vx <- simRestore::optimize_policy(num_generations = 20,
+  vx <- simRestore::optimize_static(num_generations = 20,
                                     target_frequency = 0.99,
                                     optimize_put = TRUE,
                                     optimize_pull = -fixed_level,
@@ -72,7 +72,7 @@ test_that("fixed optimization", {
   testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_equal(vx$pull, fixed_level)
 
-  vx <- simRestore::optimize_policy(num_generations = 20,
+  vx <- simRestore::optimize_static(num_generations = 20,
                                     target_frequency = 0.99,
                                     optimize_put = -fixed_level,
                                     optimize_pull = TRUE,
@@ -84,7 +84,7 @@ test_that("fixed optimization", {
 
 test_that("error", {
   testthat::expect_warning(
-    vx <- simRestore::optimize_policy(num_generations = 200,
+    vx <- simRestore::optimize_static(num_generations = 200,
                                     initial_population_size = 3,
                                     nesting_risk = c(1, 1), # force death
                                     target_frequency = 0.99,

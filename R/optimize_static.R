@@ -26,7 +26,7 @@
 #' @param nesting_risk Additional death rate of females as a result of
 #' protecting the nest.
 #' @param num_generations number of generations
-#' @param starting_freq initial hawaii frequency in the population.
+#' @param starting_freq initial focal frequency in the population.
 #' @param morgan size of the chromosome in Morgan
 #' @param establishment_burnin number of generations before establishment
 #' @param num_replicates number of replicates
@@ -58,7 +58,7 @@
 #' use_simplified_model should be set to FALSE. Default is TRUE.
 #' @return tibble
 #' @export
-optimize_policy <- function(num_generations = 20,
+optimize_static <- function(num_generations = 20,
                             target_frequency = 0.99,
                             K = 400, # nolint
                             optimize_put = TRUE,
@@ -109,7 +109,7 @@ optimize_policy <- function(num_generations = 20,
                               verbose = verbose)
 
     b <- subset(result$results, result$results$t == num_generations)
-    freq <- mean(b$freq_hawaii)
+    freq <- mean(b$freq_focal_ancestry)
     fit <- abs(freq - target_frequency) + param[[1]] / 1e6
     if (verbose)  {
       cat(floor(10^param[[1]]), freq, fit, "\n")
@@ -154,7 +154,7 @@ optimize_policy <- function(num_generations = 20,
       return(100)
     }
 
-    freq <- mean(b$freq_hawaii)
+    freq <- mean(b$freq_focal_ancestry)
     fit <- abs(freq - target_frequency) + param[[1]] / 1e6
     if (verbose)  {
       cat(param[[1]], freq, fit, "\n")
@@ -200,7 +200,7 @@ optimize_policy <- function(num_generations = 20,
       return(Inf)
     }
 
-    freq <- mean(b$freq_hawaii)
+    freq <- mean(b$freq_focal_ancestry)
     fit <- abs(freq - target_frequency) + param[[1]] / 1e6 + param[[2]] / 1e6
     if (verbose)  {
       cat((10^param[[1]]), (10^param[[2]]), freq, fit, "\n")
@@ -230,7 +230,7 @@ optimize_policy <- function(num_generations = 20,
 
     result$final_freq <- mean(
       subset(result$results,
-             result$results$t == num_generations)$freq_hawaii)
+             result$results$t == num_generations)$freq_focal_ancestry)
   }
   if (optimize_put > 0 && optimize_pull <= 0) {
     max_val <- log10(K * 2)
@@ -254,7 +254,7 @@ optimize_policy <- function(num_generations = 20,
                                                 num_generations))
     result$final_freq <- mean(
       subset(result$results,
-             result$results$t == num_generations)$freq_hawaii)
+             result$results$t == num_generations)$freq_focal_ancestry)
   }
   if (optimize_pull > 0 && optimize_put <= 0) {
     fit_result <-
@@ -300,7 +300,7 @@ optimize_policy <- function(num_generations = 20,
 
     result$final_freq <- mean(
       subset(result$results,
-             result$results$t == num_generations)$freq_hawaii)
+             result$results$t == num_generations)$freq_focal_ancestry)
   }
 
   return(result)

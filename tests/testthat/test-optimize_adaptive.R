@@ -2,7 +2,7 @@ context("optimize policy decay")
 
 test_that("simple optimization", {
   total_put <- 100
-  vx <- simRestore::optimize_policy_beta_curve(num_generations = 20,
+  vx <- simRestore::optimize_adaptive(num_generations = 20,
                                               target_frequency = 0.99,
                                               optimize_put = total_put,
                                               optimize_pull = 0,
@@ -13,7 +13,7 @@ test_that("simple optimization", {
 
 
  total_pull <- 100
- vx <- simRestore::optimize_policy_beta_curve(num_generations = 20,
+ vx <- simRestore::optimize_adaptive(num_generations = 20,
                                               target_frequency = 0.99,
                                               optimize_put = 0,
                                               optimize_pull = total_pull,
@@ -21,7 +21,7 @@ test_that("simple optimization", {
  testthat::expect_equal(sum(vx$pull), total_pull)
  testthat::expect_equal(sum(vx$put), 0)
 
- vx <- simRestore::optimize_policy_beta_curve(num_generations = 20,
+ vx <- simRestore::optimize_adaptive(num_generations = 20,
                                               target_frequency = 0.99,
                                               optimize_put = total_put,
                                               optimize_pull = total_pull,
@@ -32,7 +32,7 @@ test_that("simple optimization", {
 
  # test with verbose output:
 testthat::expect_output(
-  vx <- simRestore::optimize_policy_beta_curve(num_generations = 3,
+  vx <- simRestore::optimize_adaptive(num_generations = 3,
                                               target_frequency = 0.99,
                                               optimize_put = total_put,
                                               optimize_pull = 0,
@@ -42,7 +42,7 @@ testthat::expect_output(
 
 
 testthat::expect_output(
- vx <- simRestore::optimize_policy_beta_curve(num_generations = 3,
+ vx <- simRestore::optimize_adaptive(num_generations = 3,
                                               target_frequency = 0.99,
                                               optimize_put = 0,
                                               optimize_pull = total_pull,
@@ -51,7 +51,7 @@ testthat::expect_output(
 )
 
 testthat::expect_output(
- vx <- simRestore::optimize_policy_beta_curve(num_generations = 3,
+ vx <- simRestore::optimize_adaptive(num_generations = 3,
                                               target_frequency = 0.99,
                                               optimize_put = total_put,
                                               optimize_pull = total_pull,

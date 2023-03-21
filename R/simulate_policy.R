@@ -1,29 +1,38 @@
-#' Simulate the effect of a policy over time.
+#' Simulate the effect of a restoration policy over time.
+#' @description Using this function, the user can simulate the effect of an
+#' intended management policy on the genetic composition of a focal population.
+#' The population is assumed to have overlapping generations, and the user can
+#' specify two genetic models, either using a simplified average ancestry
+#' representation (use_simplified_model = TRUE), or a more detailed model
+#' tracking explicit recombination among chromosomes, setting
+#' use_simplified_model = FALSE.
 #' @param initial_population_size population size at the start
-#' @param nest_success_rate frequency of nests that yield offspring at the end
-#' of the breeding season (e.g. a fraction of 1 - nest_success_rate of nests
-#' fail). This is a joint effect of breeding females getting killed
+#' @param reproduction_success_rate frequency of females that yield offspring
+#' at the end of the breeding season (e.g. a fraction of
+#' 1 - reproduction_success_rate of females. This is a joint effect of
+#' breeding females getting killed
 #' (see \code{female_death_rate}) and other sources of failure to complete a
-#' nest. Other sources of failure are calculated from nest_success_rate and
-#' female_death_rate, such that nest failure rate = 1 - nest_success_rate / (1 -
-#' female_death_rate);
-#' @param nesting_risk Additional death rate of males and females as a result of
-#' protecting the nest. Provide as a vector where the first index indicates
-#' the risk for females, the second the risk for males.
+#' clutch. Other sources of failure are calculated from nest_success_rate and
+#' female_death_rate, such that reproduction failure rate =
+#' 1 - reproduction_success_rate / (1 - female breeding risk);
+#' @param breeding_risk Additional death rate of males and females as a result
+#' of breeding (e.g. as a result of protecting the offspring against predators).
+#' Provide as a vector where the first index indicates the risk for females,
+#' the second the risk for males.
 #' @param K carrying capacity
 #' @param num_generations number of generations
 #' @param pull vector of the number of individuals pulled per year
 #' @param put vector of the number of individuals added per year
-#' @param starting_freq initial hawaii frequency in the population.
-#' @param sd_starting_freq variation in initial hawaii frequency.
+#' @param starting_freq initial frequency of target ancestry in the population.
+#' @param sd_starting_freq variation in initial frequency of target ancestry.
 #' @param morgan size of the chromosome in Morgan
 #' @param establishment_burnin number of generations before establishment
 #' @param num_replicates number of replicates
 #' @param seed random number seed, if left open, current time is used.
 #' @param max_age maximum age a duck can reach.
-#' @param mean_clutch_size mean number of eggs in a nest
-#' @param sd_clutch_size standard deviation of number of eggs in nest (assuming
-#' the number of eggs is always 0 or larger).
+#' @param mean_number_of_offspring mean number of offspring per female
+#' @param sd_number_of_offspring standard deviation of number of offspring per
+#' female (assuming the number of offspring is always 0 or larger).
 #' @param smin minimum survival rate
 #' @param smax maximum survival rate
 #' @param b steepness of the survival rate. Negative values indicate a declining
@@ -43,8 +52,7 @@
 #' and 0.1 indicates a female biased sex ratio.
 #' @param use_simplified_model use a simplified model of underlying genetics?
 #' This speeds up simulation considerably, and should be preferred when not
-#' interested in high detail genetic changes. For subsequent ADMIXTURE analysis,
-#' use_simplified_model should be set to FALSE. Default is TRUE.
+#' interested in high detail genetic changes. Default is TRUE.
 #' @param verbose provides verbose output if TRUE.
 #' @rawNamespace useDynLib(simRestore)
 #' @rawNamespace import(Rcpp)
@@ -116,8 +124,8 @@ simulate_policy <- function(initial_population_size = 400,
                               sex_ratio_put,
                               sex_ratio_offspring)
 
-  colnames(output$results) <- c("replicate", "t", "freq_hawaii",
-                                "freq_hawaii_males", "freq_hawaii_females",
+  colnames(output$results) <- c("replicate", "t", "freq_focal_ancestry",
+                                "freq_ancestry_males", "freq_ancestry_females",
                                 "Num_individuals",
                                 "Num_males", "Num_females")
   output$results <- tibble::as_tibble(output$results)

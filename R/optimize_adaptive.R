@@ -23,9 +23,9 @@ get_decay_curve <- function(total_sum, params, num_generations) {
 
 
 #' Optimize a policy assuming a fixed total sum across all generations of
-#' individuals that can be put or pulled (e.g. a fixed effort). The distribution
-#' of this effort is assumed to follow a beta distribution, and the parameters
-#' of this beta distribution are fitted.
+#' individuals that can be put or pulled (e.g. a fixed effort). This fixed total
+#' sum is distributed across the generations following a beta distribution, and
+#' the parameters of this beta distribution are fitted.
 #' @param num_generations number of generations
 #' @param target_frequency frequency to aim for
 #' @param optimize_pull Optimization proceeds such that the sum of all
@@ -49,7 +49,7 @@ get_decay_curve <- function(total_sum, params, num_generations) {
 #' protecting the nest.
 #' @param K carrying capacity
 #' @param num_generations number of generations
-#' @param starting_freq initial hawaii frequency in the population.
+#' @param starting_freq initial focal ancestry frequency in the population.
 #' @param morgan size of the chromosome in Morgan
 #' @param establishment_burnin number of generations before establishment
 #' @param num_replicates number of replicates
@@ -81,7 +81,7 @@ get_decay_curve <- function(total_sum, params, num_generations) {
 #' use_simplified_model should be set to FALSE. Default is TRUE.
 #' @return tibble
 #' @export
-optimize_policy_beta_curve <- function(num_generations = 20,
+optimize_adaptive <- function(num_generations = 20,
                                        target_frequency = 0.99,
                                        optimize_pull = 0,
                                        optimize_put = 0,
@@ -135,7 +135,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
                               verbose = FALSE)
 
     b <- subset(result$results, result$results$t == num_generations)
-    freq <- mean(b$freq_hawaii)
+    freq <- mean(b$freq_focal_ancestry)
     fit <- abs(freq - target_frequency)
     if (verbose)  {
       cat(10^param[[1]], 10^param[[2]], freq, fit, "\n")
@@ -179,7 +179,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
                               verbose = FALSE)
 
     b <- subset(result$results, result$results$t == num_generations)
-    freq <- mean(b$freq_hawaii)
+    freq <- mean(b$freq_focal_ancestry)
     fit <- abs(freq - target_frequency)
     if (verbose)  {
       cat(10^param[[1]], 10^param[[2]], freq, fit, "\n")
@@ -227,7 +227,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
                               verbose = FALSE)
 
     b <- subset(result$results, result$results$t == num_generations)
-    freq <- mean(b$freq_hawaii)
+    freq <- mean(b$freq_focal_ancestry)
     fit <- abs(freq - target_frequency)
     if (verbose)  {
       cat(10^param[[1]], 10^param[[2]], 10^param[[3]], 10^param[[4]],
@@ -259,7 +259,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
                                      put = interm_result$curve)
     result$final_freq <- mean(
       subset(result$results,
-             result$results$t == num_generations)$freq_hawaii)
+             result$results$t == num_generations)$freq_focal_ancestry)
   }
 
   if (optimize_put == 0 && optimize_pull > 0) {
@@ -277,7 +277,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
                                      pull = interm_result$curve)
     result$final_freq <- mean(
       subset(result$results,
-             result$results$t == num_generations)$freq_hawaii)
+             result$results$t == num_generations)$freq_focal_ancestry)
   }
 
   if (optimize_put > 0 && optimize_pull > 0) {
@@ -300,7 +300,7 @@ optimize_policy_beta_curve <- function(num_generations = 20,
                                      pull = interm_result$curve[, 2])
     result$final_freq <- mean(
       subset(result$results,
-             result$results$t == num_generations)$freq_hawaii)
+             result$results$t == num_generations)$freq_focal_ancestry)
   }
 
   return(result)

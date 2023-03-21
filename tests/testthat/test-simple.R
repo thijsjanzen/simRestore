@@ -21,7 +21,7 @@ test_that("simple use", {
                         num_replicates = 1,
                         seed = 42)
 
-  testthat::expect_true(tail(vx$results$freq_hawaii, 1) > 0.99)
+  testthat::expect_true(tail(vx$results$freq_focal_ancestry, 1) > 0.99)
 
   # seed NULL test
   # and shooting / addition vector wrong length test
@@ -34,7 +34,7 @@ test_that("simple use", {
                         num_replicates = 1,
                         seed = NULL)
 
-  testthat::expect_true(tail(vx$results$freq_hawaii, 1) > 0.99)
+  testthat::expect_true(tail(vx$results$freq_focal_ancestry, 1) > 0.99)
 
   # overshooting test
   vx <- simulate_policy(initial_population_size = 200,

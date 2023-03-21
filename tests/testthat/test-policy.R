@@ -31,7 +31,7 @@ test_that("compare use", {
       a <- subset(vx$results, vx$results$t == tt)
       b <- subset(vy$results, vy$results$t == tt)
       vv <- t.test(a$Num_individuals, b$Num_individuals)
-      vv2 <- t.test(a$freq_hawaii, b$freq_hawaii)
+      vv2 <- t.test(a$freq_focal_ancestry, b$freq_focal_ancestry)
       testthat::expect_true(vv2$p.value > 0.001)
       testthat::expect_true(vv$p.value > 0.001)
     }

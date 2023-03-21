@@ -63,7 +63,7 @@ ui <- fluidPage(
                                                                    label = "Number of Generations",
                                                                    value = 20, min = 2, max = 100),
                                                        sliderInput(inputId = 'init_frac_optim',
-                                                                   label = 'Starting fraction of Hawaiian Ancestry',
+                                                                   label = 'Starting frequency of focal Ancestry',
                                                                    value = 0.8, min = 0, max = 1),
                                                        selectInput("density_model_2", "Density dependence:",
                                                                    c("Weak", "Strong", "Manual")),
@@ -210,21 +210,21 @@ server <- function(input, output) {
     to_plot <- simple_data()
 
     p1 <- to_plot$results %>%
-      ggplot(aes(x = t, y = freq_hawaii, group = replicate)) +
+      ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
       geom_line() +
       xlab("Number of generations") +
       ylab("Average focal ancestry") +
       ylim(0, 1) +
       theme(legend.position = "top")
 
-    focal_y <- 1.03 * tail(to_plot$results$freq_hawaii, 1)
-    if (round(tail(to_plot$results$freq_hawaii, 1), 2) >= 0.99) {
-      focal_y <- 0.95 * tail(to_plot$results$freq_hawaii, 1)
+    focal_y <- 1.03 * tail(to_plot$results$freq_focal_ancestry, 1)
+    if (round(tail(to_plot$results$freq_focal_ancestry, 1), 2) >= 0.99) {
+      focal_y <- 0.95 * tail(to_plot$results$freq_focal_ancestry, 1)
     }
 
     p1 <- p1 +
       annotate("text", x = max(to_plot$results$t), y = focal_y,
-               label = round(tail(to_plot$results$freq_hawaii, 1), 2),
+               label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
                hjust = 1)
 
     p2 <- ggplot(to_plot$results, aes(x = t,
@@ -368,21 +368,21 @@ server <- function(input, output) {
     output$selected_var <- renderText({ for_render_text })
 
     p1 <- to_plot$results %>%
-      ggplot(aes(x = t, y = freq_hawaii, group = replicate)) +
+      ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
       geom_line() +
       xlab("Number of generations") +
       ylab("Average focal ancestry") +
       ylim(0, 1) +
       theme(legend.position = "top")
 
-    focal_y <- 1.03 * tail(to_plot$results$freq_hawaii, 1)
-    if (round(tail(to_plot$results$freq_hawaii, 1), 2) >= 0.99) {
-      focal_y <- 0.95 * tail(to_plot$results$freq_hawaii, 1)
+    focal_y <- 1.03 * tail(to_plot$results$freq_focal_ancestry, 1)
+    if (round(tail(to_plot$results$freq_focal_ancestry, 1), 2) >= 0.99) {
+      focal_y <- 0.95 * tail(to_plot$results$freq_focal_ancestry, 1)
     }
 
     p1 <- p1 +
       annotate("text", x = max(to_plot$results$t), y = focal_y,
-               label = round(tail(to_plot$results$freq_hawaii, 1), 2),
+               label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
                hjust = 1)
 
     p2 <- ggplot(to_plot$results,
@@ -472,21 +472,21 @@ server <- function(input, output) {
 
 
     p1 <- to_plot$results %>%
-      ggplot(aes(x = t, y = freq_hawaii, group = replicate)) +
+      ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
       geom_line() +
       xlab("Number of generations") +
       ylab("Average focal ancestry") +
       ylim(0, 1) +
       theme(legend.position = "top")
 
-    focal_y <- 1.03 * tail(to_plot$results$freq_hawaii, 1)
-    if (round(tail(to_plot$results$freq_hawaii, 1), 2) >= 0.99) {
-      focal_y <- 0.95 * tail(to_plot$results$freq_hawaii, 1)
+    focal_y <- 1.03 * tail(to_plot$results$freq_focal_ancestry, 1)
+    if (round(tail(to_plot$results$freq_focal_ancestry, 1), 2) >= 0.99) {
+      focal_y <- 0.95 * tail(to_plot$results$freq_focal_ancestry, 1)
     }
 
     p1 <- p1 +
       annotate("text", x = max(to_plot$results$t), y = focal_y,
-               label = round(tail(to_plot$results$freq_hawaii, 1), 2),
+               label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
                hjust = 1)
 
     p2 <- ggplot(to_plot$results, aes(x = t, y = Num_individuals, group = replicate)) +

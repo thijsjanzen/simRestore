@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_policy.R
 \name{simulate_policy}
 \alias{simulate_policy}
-\title{Simulate the effect of a policy over time.}
+\title{Simulate the effect of a restoration policy over time.}
 \usage{
 simulate_policy(
   initial_population_size = 400,
@@ -34,18 +34,6 @@ simulate_policy(
 \arguments{
 \item{initial_population_size}{population size at the start}
 
-\item{nest_success_rate}{frequency of nests that yield offspring at the end
-of the breeding season (e.g. a fraction of 1 - nest_success_rate of nests
-fail). This is a joint effect of breeding females getting killed
-(see \code{female_death_rate}) and other sources of failure to complete a
-nest. Other sources of failure are calculated from nest_success_rate and
-female_death_rate, such that nest failure rate = 1 - nest_success_rate / (1 -
-female_death_rate);}
-
-\item{nesting_risk}{Additional death rate of males and females as a result of
-protecting the nest. Provide as a vector where the first index indicates
-the risk for females, the second the risk for males.}
-
 \item{K}{carrying capacity}
 
 \item{num_generations}{number of generations}
@@ -54,9 +42,9 @@ the risk for females, the second the risk for males.}
 
 \item{put}{vector of the number of individuals added per year}
 
-\item{starting_freq}{initial hawaii frequency in the population.}
+\item{starting_freq}{initial frequency of target ancestry in the population.}
 
-\item{sd_starting_freq}{variation in initial hawaii frequency.}
+\item{sd_starting_freq}{variation in initial frequency of target ancestry.}
 
 \item{morgan}{size of the chromosome in Morgan}
 
@@ -67,11 +55,6 @@ the risk for females, the second the risk for males.}
 \item{seed}{random number seed, if left open, current time is used.}
 
 \item{max_age}{maximum age a duck can reach.}
-
-\item{mean_clutch_size}{mean number of eggs in a nest}
-
-\item{sd_clutch_size}{standard deviation of number of eggs in nest (assuming
-the number of eggs is always 0 or larger).}
 
 \item{smin}{minimum survival rate}
 
@@ -98,14 +81,38 @@ and 0.1 indicates a female biased sex ratio.}
 
 \item{use_simplified_model}{use a simplified model of underlying genetics?
 This speeds up simulation considerably, and should be preferred when not
-interested in high detail genetic changes. For subsequent ADMIXTURE analysis,
-use_simplified_model should be set to FALSE. Default is TRUE.}
+interested in high detail genetic changes. Default is TRUE.}
 
 \item{verbose}{provides verbose output if TRUE.}
+
+\item{reproduction_success_rate}{frequency of females that yield offspring
+at the end of the breeding season (e.g. a fraction of
+1 - reproduction_success_rate of females. This is a joint effect of
+breeding females getting killed
+(see \code{female_death_rate}) and other sources of failure to complete a
+clutch. Other sources of failure are calculated from nest_success_rate and
+female_death_rate, such that reproduction failure rate =
+1 - reproduction_success_rate / (1 - female breeding risk);}
+
+\item{breeding_risk}{Additional death rate of males and females as a result
+of breeding (e.g. as a result of protecting the offspring against predators).
+Provide as a vector where the first index indicates the risk for females,
+the second the risk for males.}
+
+\item{mean_number_of_offspring}{mean number of offspring per female}
+
+\item{sd_number_of_offspring}{standard deviation of number of offspring per
+female (assuming the number of offspring is always 0 or larger).}
 }
 \value{
 tibble
 }
 \description{
-Simulate the effect of a policy over time.
+Using this function, the user can simulate the effect of an
+intended management policy on the genetic composition of a focal population.
+The population is assumed to have overlapping generations, and the user can
+specify two genetic models, either using a simplified average ancestry
+representation (use_simplified_model = TRUE), or a more detailed model
+tracking explicit recombination among chromosomes, setting
+use_simplified_model = FALSE.
 }
