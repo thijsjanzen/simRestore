@@ -6,19 +6,19 @@
 is applied per generation.}
 \usage{
 optimize_static(
-  num_generations = 20,
   target_frequency = 0.99,
-  K = 400,
-  optimize_put = TRUE,
-  optimize_pull = FALSE,
-  num_replicates = 1,
-  use_simplified_model = TRUE,
-  verbose = FALSE,
   initial_population_size = 400,
   reproduction_success_rate = 0.387,
   breeding_risk = c(0.2, 0),
+  K = 400,
+  num_generations = 20,
+  optimize_put = TRUE,
+  optimize_pull = FALSE,
   starting_freq = 0.2,
-  morgan = 1,
+  sd_starting_freq = 0.05,
+  morgan = c(1),
+  establishment_burnin = 30,
+  num_replicates = 1,
   max_age = 6,
   mean_number_of_offspring = 6,
   sd_number_of_offspring = 1,
@@ -27,32 +27,15 @@ optimize_static(
   b = -2,
   p = 0.5,
   sex_ratio_put = 0.5,
+  sex_ratio_pull = 0.5,
   sex_ratio_offspring = 0.5,
-  establishment_burnin = 30
+  ancestry_put = 1,
+  use_simplified_model = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
-\item{num_generations}{number of generations}
-
 \item{target_frequency}{frequency to aim for}
-
-\item{K}{carrying capacity}
-
-\item{optimize_put}{When set to 0, FALSE or a negative number, it will not
-be optimized. When negative, the absolute value will be taken as a fixed
-contribution to each generation (but will not be optimized)}
-
-\item{optimize_pull}{When set to 0, FALSE or a negative number, it will not
-be optimized. When negative, the absolute value will be taken as a fixed
-contribution to each generation (but will not be optimized)}
-
-\item{num_replicates}{number of replicates}
-
-\item{use_simplified_model}{use a simplified model of underlying genetics?
-This speeds up simulation considerably, and should be preferred when not
-interested in high detail genetic changes. Default is TRUE.}
-
-\item{verbose}{provides verbose output if TRUE.}
 
 \item{initial_population_size}{population size at the start}
 
@@ -70,9 +53,27 @@ of breeding (e.g. as a result of protecting the offspring against predators).
 Provide as a vector where the first index indicates the risk for females,
 the second the risk for males.}
 
+\item{K}{carrying capacity}
+
+\item{num_generations}{number of generations}
+
+\item{optimize_put}{When set to 0, FALSE or a negative number, it will not
+be optimized. When negative, the absolute value will be taken as a fixed
+contribution to each generation (but will not be optimized)}
+
+\item{optimize_pull}{When set to 0, FALSE or a negative number, it will not
+be optimized. When negative, the absolute value will be taken as a fixed
+contribution to each generation (but will not be optimized)}
+
 \item{starting_freq}{initial frequency of target ancestry in the population.}
 
+\item{sd_starting_freq}{variation in initial frequency of target ancestry.}
+
 \item{morgan}{vector sizes of chromosomes in Morgan}
+
+\item{establishment_burnin}{number of generations before establishment}
+
+\item{num_replicates}{number of replicates}
 
 \item{max_age}{maximum age an individual can reach.}
 
@@ -99,12 +100,28 @@ the population. Sex ratio is expressed as males / (males + females), such
 that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
 and 0.1 indicates a female biased sex ratio.}
 
+\item{sex_ratio_pull}{sex ratio of individuals that are removed (if any) from
+the population. The sex ratio
+is expressed as males / (males + females), such
+that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
+and 0.1 indicates a female biased sex ratio.}
+
 \item{sex_ratio_offspring}{sex ratio of newly born offspring. The sex ratio
 is expressed as males / (males + females), such
 that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
 and 0.1 indicates a female biased sex ratio.}
 
-\item{establishment_burnin}{number of generations before establishment}
+\item{ancestry_put}{Average ancestry of individuals being used for
+supplementation. If the target is high focal ancestry (e.g. aiming for
+focal ancestry of 1.0), ancestry put should reflect this and be set to 1.0 (
+which is the default value). When supplementing with non-pure individuals,
+this value can consequently be lowered.}
+
+\item{use_simplified_model}{use a simplified model of underlying genetics?
+This speeds up simulation considerably, and should be preferred when not
+interested in high detail genetic changes. Default is TRUE.}
+
+\item{verbose}{provides verbose output if TRUE.}
 }
 \value{
 tibble

@@ -14,19 +14,19 @@
 #'
 #' @return tibble
 #' @export
-optimize_static <- function(num_generations = 20,
-                            target_frequency = 0.99,
-                            K = 400, # nolint
-                            optimize_put = TRUE,
-                            optimize_pull = FALSE,
-                            num_replicates = 1,
-                            use_simplified_model = TRUE,
-                            verbose = FALSE,
+optimize_static <- function(target_frequency = 0.99,
                             initial_population_size = 400,
                             reproduction_success_rate = 0.387,
                             breeding_risk = c(0.2, 0.0),
+                            K = 400, # nolint
+                            num_generations = 20,
+                            optimize_put = TRUE,
+                            optimize_pull = FALSE,
                             starting_freq = 0.2,
-                            morgan = 1,
+                            sd_starting_freq = 0.05,
+                            morgan = c(1),
+                            establishment_burnin = 30,
+                            num_replicates = 1,
                             max_age = 6,
                             mean_number_of_offspring = 6,
                             sd_number_of_offspring = 1,
@@ -35,8 +35,11 @@ optimize_static <- function(num_generations = 20,
                             b = -2,
                             p = 0.5,
                             sex_ratio_put = 0.5,
+                            sex_ratio_pull = 0.5,
                             sex_ratio_offspring = 0.5,
-                            establishment_burnin = 30) {
+                            ancestry_put = 1.0,
+                            use_simplified_model = TRUE,
+                            verbose = FALSE) {
 
   fit_adding <- function(param,
                          return_results = FALSE) {
