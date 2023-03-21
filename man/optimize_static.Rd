@@ -15,13 +15,13 @@ optimize_static(
   use_simplified_model = TRUE,
   verbose = FALSE,
   initial_population_size = 400,
-  nest_success_rate = 0.387,
-  nesting_risk = c(0.2, 0),
+  reproduction_success_rate = 0.387,
+  breeding_risk = c(0.2, 0),
   starting_freq = 0.2,
   morgan = 1,
   max_age = 6,
-  mean_clutch_size = 6,
-  sd_clutch_size = 1,
+  mean_number_of_offspring = 6,
+  sd_number_of_offspring = 1,
   smin = 0.5,
   smax = 0.9,
   b = -2,
@@ -50,34 +50,36 @@ contribution to each generation (but will not be optimized)}
 
 \item{use_simplified_model}{use a simplified model of underlying genetics?
 This speeds up simulation considerably, and should be preferred when not
-interested in high detail genetic changes. For subsequent ADMIXTURE analysis,
-use_simplified_model should be set to FALSE. Default is TRUE.}
+interested in high detail genetic changes. Default is TRUE.}
 
-\item{verbose}{provide verbose output}
+\item{verbose}{provides verbose output if TRUE.}
 
 \item{initial_population_size}{population size at the start}
 
-\item{nest_success_rate}{frequency of nests that yield offspring at the end
-of the breeding season (e.g. a fraction of 1 - nest_success_rate of nests
-fail). This is a joint effect of breeding females getting killed
-(see \code{nesting_risk}) and other sources of failure to complete a
-nest. Other sources of failure are calculated from nest_success_rate and
-nesting_risk, such that nest failure rate = 1 - nest_success_rate / (1 -
-nesting_risk);}
+\item{reproduction_success_rate}{frequency of females that yield offspring
+at the end of the breeding season (e.g. a fraction of
+1 - reproduction_success_rate of females. This is a joint effect of
+breeding females getting killed
+(see \code{female_death_rate}) and other sources of failure to complete a
+clutch. Other sources of failure are calculated from nest_success_rate and
+female_death_rate, such that reproduction failure rate =
+1 - reproduction_success_rate / (1 - female breeding risk);}
 
-\item{nesting_risk}{Additional death rate of females as a result of
-protecting the nest.}
+\item{breeding_risk}{Additional death rate of males and females as a result
+of breeding (e.g. as a result of protecting the offspring against predators).
+Provide as a vector where the first index indicates the risk for females,
+the second the risk for males.}
 
-\item{starting_freq}{initial focal frequency in the population.}
+\item{starting_freq}{initial frequency of target ancestry in the population.}
 
-\item{morgan}{size of the chromosome in Morgan}
+\item{morgan}{vector sizes of chromosomes in Morgan}
 
 \item{max_age}{maximum age an individual can reach.}
 
-\item{mean_clutch_size}{mean number of eggs in a nest}
+\item{mean_number_of_offspring}{mean number of offspring per female}
 
-\item{sd_clutch_size}{standard deviation of number of eggs in nest (assuming
-the number of eggs is always 0 or larger).}
+\item{sd_number_of_offspring}{standard deviation of number of offspring per
+female (assuming the number of offspring is always 0 or larger).}
 
 \item{smin}{minimum survival rate}
 
@@ -92,7 +94,7 @@ in N / K (e.g., for a value of 1.0, the survival rate changes most rapidly
 around N = K, for a value of 0.5, the survival rate changes most rapidly
 around N = 0.5K, etc).}
 
-\item{sex_ratio_put}{the sex ratio of individuals that are added (if any) to
+\item{sex_ratio_put}{sex ratio of individuals that are added (if any) to
 the population. Sex ratio is expressed as males / (males + females), such
 that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
 and 0.1 indicates a female biased sex ratio.}

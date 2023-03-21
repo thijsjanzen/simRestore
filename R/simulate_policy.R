@@ -6,71 +6,16 @@
 #' representation (use_simplified_model = TRUE), or a more detailed model
 #' tracking explicit recombination among chromosomes, setting
 #' use_simplified_model = FALSE.
-#' @param initial_population_size population size at the start
-#' @param reproduction_success_rate frequency of females that yield offspring
-#' at the end of the breeding season (e.g. a fraction of
-#' 1 - reproduction_success_rate of females. This is a joint effect of
-#' breeding females getting killed
-#' (see \code{female_death_rate}) and other sources of failure to complete a
-#' clutch. Other sources of failure are calculated from nest_success_rate and
-#' female_death_rate, such that reproduction failure rate =
-#' 1 - reproduction_success_rate / (1 - female breeding risk);
-#' @param breeding_risk Additional death rate of males and females as a result
-#' of breeding (e.g. as a result of protecting the offspring against predators).
-#' Provide as a vector where the first index indicates the risk for females,
-#' the second the risk for males.
-#' @param K carrying capacity
-#' @param num_generations number of generations
-#' @param pull vector of the number of individuals pulled per year
-#' @param put vector of the number of individuals added per year
-#' @param starting_freq initial frequency of target ancestry in the population.
-#' @param sd_starting_freq variation in initial frequency of target ancestry.
-#' @param morgan vector sizes of chromosomes in Morgan
-#' @param establishment_burnin number of generations before establishment
-#' @param num_replicates number of replicates
-#' @param seed random number seed, if left open, current time is used.
-#' @param max_age maximum age an individual can reach.
-#' @param mean_number_of_offspring mean number of offspring per female
-#' @param sd_number_of_offspring standard deviation of number of offspring per
-#' female (assuming the number of offspring is always 0 or larger).
-#' @param smin minimum survival rate
-#' @param smax maximum survival rate
-#' @param b steepness of the survival rate. Negative values indicate a declining
-#' survival rate with increasing population size, positive values indicate an
-#' increasing survival rate with increasing population size.
-#' @param p Density at which the survival rate changes most relative. Expressed
-#' in N / K (e.g., for a value of 1.0, the survival rate changes most rapidly
-#' around N = K, for a value of 0.5, the survival rate changes most rapidly
-#' around N = 0.5K, etc).
-#' @param sex_ratio_put sex ratio of individuals that are added (if any) to
-#' the population. Sex ratio is expressed as males / (males + females), such
-#' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
-#' and 0.1 indicates a female biased sex ratio.
-#' @param sex_ratio_pull sex ratio of individuals that are removed (if any) from
-#' the population. The sex ratio
-#' is expressed as males / (males + females), such
-#' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
-#' and 0.1 indicates a female biased sex ratio.
-#' @param sex_ratio_offspring sex ratio of newly born offspring. The sex ratio
-#' is expressed as males / (males + females), such
-#' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
-#' and 0.1 indicates a female biased sex ratio.
-#' @param ancestry_put Average ancestry of individuals being used for
-#' supplementation. If the target is high focal ancestry (e.g. aiming for
-#' focal ancestry of 1.0), ancestry put should reflect this and be set to 1.0 (
-#' which is the default value). When supplementing with non-pure individuals,
-#' this value can consequently be lowered.
-#' @param use_simplified_model use a simplified model of underlying genetics?
-#' This speeds up simulation considerably, and should be preferred when not
-#' interested in high detail genetic changes. Default is TRUE.
+#' @inheritParams default_params_doc
+#'
 #' @param verbose provides verbose output if TRUE.
 #' @rawNamespace useDynLib(simRestore)
 #' @rawNamespace import(Rcpp)
 #' @return tibble
 #' @export
 simulate_policy <- function(initial_population_size = 400,
-                            nest_success_rate = 0.387,
-                            nesting_risk = c(0.2, 0.0),
+                            reproduction_success_rate = 0.387,
+                            breeding_risk = c(0.2, 0.0),
                             K = 400, # nolint
                             num_generations = 20,
                             pull = 0,
@@ -82,8 +27,8 @@ simulate_policy <- function(initial_population_size = 400,
                             num_replicates = 1,
                             seed = NULL,
                             max_age = 6,
-                            mean_clutch_size = 6,
-                            sd_clutch_size = 1,
+                            mean_number_of_offspring = 6,
+                            sd_number_of_offspring = 1,
                             smin = 0.5,
                             smax = 0.9,
                             b = -2,
@@ -98,7 +43,7 @@ simulate_policy <- function(initial_population_size = 400,
   shooting <- update_vector(pull, num_generations)
   addition <- update_vector(put, num_generations)
 
-  nest_failure_rate <- 1 - nest_success_rate / (1 - nesting_risk)
+  nest_failure_rate <- 1 - reproduction_success_rate / (1 - breeding_risk)
   nest_failure_rate <- max(nest_failure_rate)
 
   seed <- set_seed(seed)
@@ -107,8 +52,8 @@ simulate_policy <- function(initial_population_size = 400,
     stop("smin has to be smaller than smax")
   }
 
-  if (length(nesting_risk) != 2) {
-    stop("nesting risk has to be specified for both sexes")
+  if (length(breeding_risk) != 2) {
+    stop("breeding risk has to be specified for both sexes")
   }
 
   if (length(morgan) == 1) {
@@ -124,15 +69,15 @@ simulate_policy <- function(initial_population_size = 400,
                               num_replicates,
                               K,
                               morgan,
-                              nesting_risk,
+                              breeding_risk,
                               nest_failure_rate,
                               establishment_burnin,
                               seed,
                               max_age,
                               use_simplified_model,
                               verbose,
-                              mean_clutch_size,
-                              sd_clutch_size,
+                              mean_number_of_offspring,
+                              sd_number_of_offspring,
                               smin,
                               smax,
                               p,
@@ -144,8 +89,8 @@ simulate_policy <- function(initial_population_size = 400,
 
   colnames(output$results) <- c("replicate", "t", "freq_focal_ancestry",
                                 "freq_ancestry_males", "freq_ancestry_females",
-                                "Num_individuals",
-                                "Num_males", "Num_females")
+                                "num_individuals",
+                                "num_males", "num_females")
   output$results <- tibble::as_tibble(output$results)
   return(output)
 }
