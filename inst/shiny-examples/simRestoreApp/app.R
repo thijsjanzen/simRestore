@@ -1,5 +1,6 @@
 require(magrittr)
 require(ggplot2)
+require(shinyBS)
 
 
 ui <- fluidPage(
@@ -34,122 +35,236 @@ ui <- fluidPage(
                  tabsetPanel(type = "tabs", id = "tabs_settings",
                              tabPanel("Main", value = 1,
                                       conditionalPanel(condition = "input.tabs1==1",
+
                                                        sliderInput(inputId = 'init_pop_size_1',
                                                                    label = "Initial Population Size",
                                                                    value = 100, min = 2, max = 1000),
+                                                       shinyBS::bsTooltip('init_pop_size_1',
+                                                                 "Population size at the start of the simulation"),
+
                                                        sliderInput(inputId = 'num_gen_simple',
                                                                    label = "Number of Generations",
                                                                    value = 20, min = 2, max = 100),
+                                                       shinyBS::bsTooltip('num_gen_simple',
+                                                                          "Total number of generations simulated"),
+
                                                        sliderInput(inputId = 'put',
                                                                    label = 'Putting individuals',
                                                                    value = 0, min = 0, max = 100),
+                                                       shinyBS::bsTooltip('put',
+                                                                          "Number of individuals added per generation"),
+
                                                        sliderInput(inputId = 'pull',
                                                                    label = 'Pulling individuals',
                                                                    value = 0, min = 0, max = 100),
+                                                       shinyBS::bsTooltip('pull',
+                                                                          "Number of individuals removed per generation"),
+
                                                        sliderInput(inputId = 'init_frac_simple',
                                                                    label = 'Starting fraction of focal ancestry',
                                                                    value = 0.5, min = 0, max = 1),
-                                                       selectInput("density_model", "Density dependence:",
-                                                                   c("Weak", "Strong", "Manual")),
-                                                       checkboxInput("model_used_single",
-                                                                     "Use explicit recombination",
-                                                                     value = FALSE)
+                                                       shinyBS::bsTooltip('init_frac_simple',
+                                                                          "Initial frequency of focal ancestry"),
+
+                                                       selectInput(inputId = "density_model",
+                                                                   label = "Density dependence: ",
+                                                                   choices = c("Weak", "Strong", "Manual")),
+                                                       shinyBS::bsTooltip("density_model",
+                                                                          "The user can pick between two pre-defined parameter sets that implement weak or strong density dependence. Alternatively the user can modify parameters manually in the corresponding tab."),
+
+                                                       checkboxInput(inputId = "model_used_single",
+                                                                     label = "Use explicit recombination",
+                                                                     value = FALSE),
+                                                       shinyBS::bsTooltip("model_used_single",
+                                                                          "When unchecked, a simplified genetic model is used. When checked, explicit recombination is modeled"),
                                       ),
                                       conditionalPanel(condition = "input.tabs1==3",
                                                        sliderInput(inputId = 'init_pop_size_3',
                                                                    label = "Initial Population Size",
                                                                    value = 100, min = 2, max = 1000),
+                                                       shinyBS::bsTooltip("init_pop_size_3",
+                                                                          "Population size at the start of the simulation"),
+
                                                        sliderInput(inputId = 'num_gen_optim_s',
                                                                    label = "Number of Generations",
                                                                    value = 20, min = 2, max = 100),
+                                                       shinyBS::bsTooltip("num_gen_optim_s",
+                                                                          "Total number of generations simulated"),
+
                                                        sliderInput(inputId = 'init_frac_optim',
                                                                    label = 'Starting frequency of focal Ancestry',
                                                                    value = 0.8, min = 0, max = 1),
+                                                       shinyBS::bsTooltip('init_frac_optim',
+                                                                          "Initial frequency of focal ancestry"),
+
                                                        selectInput("density_model_2", "Density dependence:",
                                                                    c("Weak", "Strong", "Manual")),
+                                                       shinyBS::bsTooltip("density_model_2",
+                                                                          "The user can pick between two pre-defined parameter sets that implement weak or strong density dependence. Alternatively the user can modify parameters manually in the corresponding tab."),
+
                                                        checkboxGroupInput("optim_choice",
                                                                           label = "Optimize",
                                                                           choices = list("Put",
                                                                                          "Pull"),
                                                                           selected = "Put"),
+                                                       shinyBS::bsTooltip("optim_choice",
+                                                                          "Should only putting be optimized, only pulling, or both?"),
+
                                                        checkboxInput("model_used_s",
                                                                      "Use explicit recombination",
-                                                                     value = FALSE)
+                                                                     value = FALSE),
+                                                       shinyBS::bsTooltip("model_used_s",
+                                                                          "When unchecked, a simplified genetic model is used. When checked, explicit recombination is modeled"),
                                       ),
                                       conditionalPanel(condition = "input.tabs1==4",
                                                        sliderInput(inputId = 'init_pop_size_4',
                                                                    label = "Initial Population Size",
                                                                    value = 100, min = 2, max = 1000),
+                                                       shinyBS::bsTooltip('init_pop_size_4',
+                                                                          "Population size at the start of the simulation"),
+
                                                        sliderInput(inputId = 'num_gen_optim_c',
                                                                    label = "Number of Generations",
                                                                    value = 20, min = 2, max = 100),
+                                                       shinyBS::bsTooltip("num_gen_optim_c",
+                                                                          "Total number of generations simulated"),
+
                                                        sliderInput(inputId = 'total_put',
                                                                    label = 'Put: Total number of individuals',
                                                                    value = 100, min = 0, max = 1000),
+                                                       shinyBS::bsTooltip('total_put',
+                                                                          "Total number of individuals added, summed over all generations"),
+
                                                        sliderInput(inputId = 'total_pull',
                                                                    label = 'Pull: Total number of individuals',
                                                                    value = 100, min = 0, max = 1000),
+                                                       shinyBS::bsTooltip('total_pull',
+                                                                          "Total number of individuals removed, summed over all generations"),
+
                                                        sliderInput(inputId = 'init_frac_optim_complex',
                                                                    label = 'Starting fraction of focal Ancestry',
                                                                    value = 0.8, min = 0, max = 1),
-                                                       selectInput("density_model_3", "Density dependence:",
+                                                       shinyBS::bsTooltip('init_frac_optim_complex',
+                                                                          "Initial frequency of focal ancestry"),
+
+                                                       selectInput("density_model_3",
+                                                                   "Density dependence:",
                                                                    c("Weak", "Strong", "Manual")),
+                                                       shinyBS::bsTooltip("density_model_3",
+                                                                          "The user can pick between two pre-defined parameter sets that implement weak or strong density dependence. Alternatively the user can modify parameters manually in the corresponding tab."),
+
                                                        checkboxInput("model_used_c",
                                                                      "Use explicit recombination",
-                                                                     value = FALSE)
+                                                                     value = FALSE),
+                                                       shinyBS::bsTooltip("model_used_c",
+                                                                          "When unchecked, a simplified genetic model is used. When checked, explicit recombination is modeled"),
                                       )
                              ),
                              tabPanel("Advanced", value = 2,
                                       numericInput(inputId = 'K',
                                                    label = "Carrying Capacity of ecosystem",
                                                    value = 400, min = 2, max = 1000, step = 50),
+                                      shinyBS::bsTooltip("K",
+                                                         "Carrying Capacity of the ecosystem, e.g. the maximum number of individuals that can be sustained by the ecosystem"),
+
                                       numericInput(inputId = 'f_n_r',
-                                                   label = "Nesting Risk Female",
+                                                   label = "Breeding Risk Female",
                                                    value = 0.2, min = 0, max = 1, step = 0.01),
+                                      shinyBS::bsTooltip("f_n_r",
+                                                         "Breeding risk for females, caused by for instance increased predation in defending offspring"),
+
                                       numericInput(inputId = 'm_n_r',
-                                                   label = "Nesting Risk Male",
+                                                   label = "Breeding Risk Male",
                                                    value = 0.0, min = 0, max = 1, step = 0.01),
+                                      shinyBS::bsTooltip("m_n_r",
+                                                         "Breeding risk for males, caused by for instance increased predation in defending offspring"),
+
                                       numericInput(inputId = 'nest_succes_rate',
-                                                   label = "Nest Succes Rate",
+                                                   label = "Mating Succes Rate",
                                                    value = 0.387, min = 0, max = 1, step = 0.01),
+                                      shinyBS::bsTooltip("nest_succes_rate",
+                                                         "Rate of successfully producing offspring per mating"),
+
                                       numericInput(inputId = 'morgan',
                                                    label = "Size of Genome (in Morgan)",
                                                    value = 1.0, min = 0, max = 3, step = 0.1),
+                                      shinyBS::bsTooltip("morgan",
+                                                         "Size of the modeled chromosome in Morgan, this influences the expected number of crossover events per meiosis."),
+
                                       numericInput(inputId = 'num_repl',
                                                    label = "Number of replicates",
                                                    value = 1, min = 1, max = 10, step = 1),
+                                      shinyBS::bsTooltip("num_repl",
+                                                         "Multiple replicates using different random seeds are shown"),
+
                                       numericInput(inputId = 'max_age',
                                                    label = "Maximum Age",
                                                    value = 6, min = 1, max = 20, step = 1),
+                                      shinyBS::bsTooltip("max_age",
+                                                         "Maximum age an individual can obtain. This is modeled as a hard upper limit that individuals can not exceed. This is mainly usefull to avoid individuals with extreme old-age."),
+
                                       numericInput(inputId = 'clutch_size',
-                                                   label = "Clutch Size",
+                                                   label = "Number of offspring",
                                                    value = 6, min = 1, max = 20, step = 1),
+                                      shinyBS::bsTooltip("clutch_size",
+                                                         "Total number of offspring generated per mated female"),
+
                                       numericInput(inputId = 'clutch_sd',
-                                                   label = "SD Clutch Size",
+                                                   label = "SD Number of Offspring",
                                                    value = 1, min = 0, max = 2, step = 0.1),
+                                      shinyBS::bsTooltip("clutch_sd",
+                                                         "Standard deviation of number of offspring generated per mated female"),
+
                                       numericInput(inputId = 'sex_ratio_put',
                                                    label = "Sex Ratio of Put individuals (males / females)",
                                                    value = 0.5, min = 0, max = 1, step = 0.05),
+                                      shinyBS::bsTooltip("sex_ratio_put",
+                                                         "Sex ratio of individuals added, where values > 0.5 indicate a male biased sex ratio, and values < 0.5 indicate a female biased sex ratio"),
+
+                                      numericInput(inputId = 'sex_ratio_pull',
+                                                   label = "Sex Ratio of Pulled individuals (males / females)",
+                                                   value = 0.5, min = 0, max = 1, step = 0.05),
+                                      shinyBS::bsTooltip("sex_ratio_pull",
+                                                         "Sex ratio of individuals removed, where values > 0.5 indicate a male biased sex ratio, and values < 0.5 indicate a female biased sex ratio"),
+
                                       numericInput(inputId = 'sex_ratio_offspring',
                                                    label = "Sex Ratio of offspring (males / females)",
                                                    value = 0.5, min = 0, max = 1, step = 0.05),
+                                      shinyBS::bsTooltip("sex_ratio_offspring",
+                                                         "Sex ratio of born offspring, where values > 0.5 indicate a male biased sex ratio, and values < 0.5 indicate a female biased sex ratio"),
+
                                       numericInput(inputId = 'target_frequency',
                                                    label = "Target Frequency (used in optimization)",
-                                                   value = 0.999, min = 0, max = 1, step = 0.01)
+                                                   value = 0.999, min = 0, max = 1, step = 0.01),
+                                      shinyBS::bsTooltip("target_frequency",
+                                                         "The optimizer tries to optimize pull and or put to reach this frequency after the set number of generations."),
                              ),
                              tabPanel("Density Dependence", value = 3,
                                       numericInput(inputId = 'smin',
                                                    label = "Minimum Survival Rate",
                                                    value = 0.5, min = 0, max = 1, step = 0.05),
+                                      shinyBS::bsTooltip("smin",
+                                                         "Minimum survival rate, e.g. the survival rate even at extremely high densities does not drop below this value"),
+
                                       numericInput(inputId = 'smax',
                                                    label = "Maximum Survival Rate",
                                                    value = 0.9, min = 0, max = 1, step = 0.05),
+                                      shinyBS::bsTooltip("smax",
+                                                         "Maximum survival rate, e.g. the survival rate even at extremely low densities does not exceed this value"),
+
                                       numericInput(inputId = 'b',
                                                    label = "Steepness Survival curve",
                                                    value = -2, min = -3, max = 0, step = 0.05),
+                                      shinyBS::bsTooltip("b",
+                                                         "Steepness of the survival curve, where negative values indicate decreasing survival with increasing density, and positive values indicate increasing survival with density (this typically causes the simulation to grind to a halt, because it drives population explosion, and should be avoided)."),
+
+
                                       numericInput(inputId = 'p',
                                                    label = "Density of maximum steepness Survival curve",
-                                                   value = 0.5, min = 0, max = 2, step = 0.05)
+                                                   value = 0.5, min = 0, max = 2, step = 0.05),
+                                      shinyBS::bsTooltip("p",
+                                                         "Density at which the survival curve shows maximum steepness, or in other words, density at which survival is exactly (smax + smin) / 2"),
+
                              )
                  )
     ),
@@ -157,12 +272,12 @@ ui <- fluidPage(
               tabsetPanel(type = "tabs", id = "tabs1",
                           tabPanel("Simulation", value = 1,
                                    plotOutput("simple_plots")),
-                          tabPanel("Simple Optimization", value = 3,
+                          tabPanel("Static Optimization", value = 3,
                                    plotOutput('Optim_simple_plots'),
                                    div(class = "myclass",
                                        verbatimTextOutput("selected_var"))
                           ),
-                          tabPanel("Complex Optimization", value = 4,
+                          tabPanel("Adaptive Optimization", value = 4,
                                    plotOutput('Optim_complex_plots'),
                                    div(class = "myclass",
                                        verbatimTextOutput("complex_text_output")
@@ -172,8 +287,7 @@ ui <- fluidPage(
   )
 )
 
-server <- function(input, output) {
-
+server <- function(input, output, session) {
 
   simple_data <- reactive({
     simRestore::simulate_policy(initial_population_size = input$init_pop_size_1,
@@ -228,15 +342,15 @@ server <- function(input, output) {
                hjust = 1)
 
     p2 <- ggplot(to_plot$results, aes(x = t,
-                                      y = Num_individuals,
+                                      y = num_individuals,
                                       group = replicate)) +
       geom_line() +
       xlab("Number of generations") +
       ylab("Total number of individuals")
 
     p3 <- to_plot$results %>%
-      dplyr::mutate("Males" = Num_males) %>%
-      dplyr::mutate("Females" = Num_females) %>%
+      dplyr::mutate("Males" = num_males) %>%
+      dplyr::mutate("Females" = num_females) %>%
       ggplot(aes(x = t, group = replicate)) +
       geom_line(aes(y = Males, color = "Males")) +
       geom_line(aes(y = Females, group = replicate, color = "Females")) +
@@ -255,8 +369,8 @@ server <- function(input, output) {
 
   ########  OPTIMIZATION #####################################################
 
-  optim_data_simple <-  reactive({
-    get_optim_data_simple(initial_population_size = input$init_pop_size_3,
+  optim_data_static <-  reactive({
+    get_optim_data_static(initial_population_size = input$init_pop_size_3,
                           nest_success_rate = input$nest_succes_rate,
                           nesting_risk = c(input$f_n_r, input$m_n_r),
                           num_generations = input$num_gen_optim_s,
@@ -287,7 +401,7 @@ server <- function(input, output) {
   })
 
   optim_data_complex <-  reactive({
-    get_optim_data_complex(initial_population_size = input$init_pop_size_4,
+    get_optim_data_adaptive(initial_population_size = input$init_pop_size_4,
                            nest_success_rate = input$nest_succes_rate,
                            nesting_risk = c(input$f_n_r, input$m_n_r),
                            num_generations = input$num_gen_optim_c,
@@ -320,7 +434,7 @@ server <- function(input, output) {
 
 
   output$Optim_simple_plots <- renderPlot({
-    to_plot <- optim_data_simple()
+    to_plot <- optim_data_static()
 
 
     final_freq <- round(to_plot$final_freq, digits = 3)
@@ -386,14 +500,14 @@ server <- function(input, output) {
                hjust = 1)
 
     p2 <- ggplot(to_plot$results,
-                 aes(x = t, y = Num_individuals, group = replicate)) +
+                 aes(x = t, y = num_individuals, group = replicate)) +
       geom_line() +
       xlab("Number of generations") +
       ylab("Total number of individuals")
 
     p3 <- to_plot$results %>%
-      dplyr::mutate("Males" = Num_males) %>%
-      dplyr::mutate("Females" = Num_females) %>%
+      dplyr::mutate("Males" = num_males) %>%
+      dplyr::mutate("Females" = num_females) %>%
       ggplot(aes(x = t, group = replicate)) +
       geom_line(aes(y = Males, color = "Males")) +
       geom_line(aes(y = Females, group = replicate, color = "Females")) +
@@ -489,14 +603,16 @@ server <- function(input, output) {
                label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
                hjust = 1)
 
-    p2 <- ggplot(to_plot$results, aes(x = t, y = Num_individuals, group = replicate)) +
+    p2 <- ggplot(to_plot$results, aes(x = t,
+                                      y = num_individuals,
+                                      group = replicate)) +
       geom_line() +
       xlab("Number of generations") +
       ylab("Total number of individuals")
 
     p3 <- to_plot$results %>%
-      dplyr::mutate("Males" = Num_males) %>%
-      dplyr::mutate("Females" = Num_females) %>%
+      dplyr::mutate("Males" = num_males) %>%
+      dplyr::mutate("Females" = num_females) %>%
       ggplot(aes(x = t, group = replicate)) +
       geom_line(aes(y = Males, color = "Males")) +
       geom_line(aes(y = Females, group = replicate, color = "Females")) +
@@ -530,7 +646,7 @@ server <- function(input, output) {
 
 }
 
-get_optim_data_simple <- function(initial_population_size,
+get_optim_data_static <- function(initial_population_size,
                                   nest_success_rate,
                                   nesting_risk,
                                   num_generations,
@@ -573,7 +689,8 @@ get_optim_data_simple <- function(initial_population_size,
   use_simple_model <- TRUE
   if (use_complex_model == TRUE) use_simple_model <- FALSE
 
-  return(simRestore::optimize_policy(initial_population_size = initial_population_size,
+  return(simRestore::optimize_static(initial_population_size =
+                                       initial_population_size,
                                      nest_success_rate = nest_success_rate,
                                      nesting_risk = nesting_risk,
                                      num_generations = num_generations,
@@ -597,7 +714,7 @@ get_optim_data_simple <- function(initial_population_size,
                                      verbose = FALSE))
 }
 
-get_optim_data_complex <- function(initial_population_size,
+get_optim_data_adaptive <- function(initial_population_size,
                                    nest_success_rate,
                                    nesting_risk,
                                    num_generations,
@@ -622,7 +739,7 @@ get_optim_data_complex <- function(initial_population_size,
   use_simple_model <- TRUE
   if (use_complex_model == TRUE) use_simple_model <- FALSE
 
-  return(simRestore::optimize_policy_beta_curve(
+  return(simRestore::optimize_adaptive(
     initial_population_size = initial_population_size,
     nest_success_rate = nest_success_rate,
     nesting_risk = nesting_risk,
@@ -646,5 +763,9 @@ get_optim_data_complex <- function(initial_population_size,
     sex_ratio_offspring = sex_ratio_offspring,
     verbose = FALSE))
 }
+
+
+
+
 
 shinyApp(ui = ui, server = server)
