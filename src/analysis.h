@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <vector>
 #include <algorithm>
 
@@ -13,11 +12,11 @@ struct parameters {
 
   parameters() {
     pop_size = 100;
-    frequency_hawaii_organism = 0.2;
-    sd_frequency_hawaii = 0.05;
+    starting_freq = 0.2;
+    sd_starting_freq = 0.05;
     number_of_generations = 20;
     K = 400;
-    morgan = 1.0;
+    morgan = {1.0};
     female_death_rate = 0.2;
     male_death_rate = 0.0;
     nest_failure_rate = 0.387;
@@ -30,7 +29,9 @@ struct parameters {
     p = 1.0;
     b = -2.0;
     sex_ratio_put = 0.5;
+    sex_ratio_pull = 0.5;
     sex_ratio_offspring = 0.5;
+    put_ancestry = 1.0;
   }
 
   parameters(int p,
@@ -38,7 +39,7 @@ struct parameters {
              float s_f,
              int num_gen,
              int k,
-             double m,
+             std::vector<double> m,
              double f_d_r,
              double m_d_r,
              double n_f_r,
@@ -51,11 +52,13 @@ struct parameters {
              double smax_in,
              double p_in,
              double b_in,
-             double sex_ratio,
-             double sex_ratio_o) :
+             double sex_ratio_add,
+             double sex_ratio_remove,
+             double sex_ratio_o,
+             double put_anc) :
   pop_size(p),
-  frequency_hawaii_organism(f),
-  sd_frequency_hawaii(s_f),
+  starting_freq(f),
+  sd_starting_freq(s_f),
   number_of_generations(num_gen),
   K(k),
   morgan(m),
@@ -70,17 +73,19 @@ struct parameters {
   smax(smax_in),
   p(p_in),
   b(b_in),
-  sex_ratio_put(sex_ratio),
+  sex_ratio_put(sex_ratio_add),
+  sex_ratio_pull(sex_ratio_remove),
   sex_ratio_offspring(sex_ratio_o),
+  put_ancestry(put_anc),
   empgen(emp_gen_in){
   }
 
   int pop_size;
-  float frequency_hawaii_organism;
-  float sd_frequency_hawaii;
+  float starting_freq;
+  float sd_starting_freq;
   int number_of_generations;
   int K;
-  double morgan;
+  std::vector<double> morgan;
   double female_death_rate;
   double male_death_rate;
   double nest_failure_rate;
@@ -96,23 +101,26 @@ struct parameters {
   double b;
 
   double sex_ratio_put;
+  double sex_ratio_pull;
   double sex_ratio_offspring;
+
+  double put_ancestry; // ancestry used when putting
 
   emp_genome empgen; // only used in molecular analysis
 };
 
 template <class ANIMAL>
-std::array<double, 3> calc_freq_hawaii(std::vector< ANIMAL >& f,
-                                       std::vector< ANIMAL >& m) {
+std::array<double, 3> calc_freq_focal(std::vector< ANIMAL >& f,
+                                      std::vector< ANIMAL >& m) {
   std::array<double, 3> avg_freq = {0.0, 0.0, 0.0};
 
   for (auto& i : f) {
-    double freq_i = i.get_freq_hawaii();
+    double freq_i = i.get_freq_anc();
     avg_freq[2] += freq_i;
     avg_freq[0] += freq_i;
   }
   for (auto& i : m) {
-    double freq_i = i.get_freq_hawaii();
+    double freq_i = i.get_freq_anc();
     avg_freq[1] += freq_i;
     avg_freq[0] += freq_i;
   }
@@ -208,7 +216,7 @@ private:
     }
 
     output_data frequencies;
-    std::array<double, 3> f1 = calc_freq_hawaii<ANIMAL>(females, males);
+    std::array<double, 3> f1 = calc_freq_focal<ANIMAL>(females, males);
 
     frequencies.add_slice(replicate, 0, f1,
                           static_cast<int>(females.size() + males.size()),
@@ -241,7 +249,7 @@ private:
         cul_population(females, 1e6);
       }
 
-      std::array<double, 3> f2 = calc_freq_hawaii< ANIMAL >(males, females);
+      std::array<double, 3> f2 = calc_freq_focal< ANIMAL >(males, females);
 
       frequencies.add_slice(replicate, t, f2,
                             static_cast<int>( males.size() + females.size() ),
@@ -283,8 +291,6 @@ private:
 
     size_t pop_size = females.size() + males.size();
 
-    float frac = females.size() * 1.0 / (pop_size);
-
     double density_dependent_death_rate = calculate_death_rate(pop_size);
 
     int males_added = number_added * params.sex_ratio_put;
@@ -293,12 +299,12 @@ private:
 
     update_start_season(females,
                         density_dependent_death_rate,
-                        number_removed * frac,
+                        number_removed * (1.0 - params.sex_ratio_pull),
                         females_added);
 
     update_start_season(males,
                         density_dependent_death_rate,
-                        number_removed * (1 - frac),
+                        number_removed * params.sex_ratio_pull,
                         males_added);
 
     if(females.empty() && males.empty()) {
@@ -308,7 +314,7 @@ private:
     std::vector< ANIMAL > offspring_male;
     std::vector< ANIMAL > offspring_female;
 
-    pop_size = males.size() + females.size(); // + offspring_male.size() + offspring_female.size();
+    pop_size = males.size() + females.size();
     double density_dependent_offspring_rate = calculate_death_rate(pop_size);
 
 
@@ -435,7 +441,7 @@ private:
       }
     }
 
-    // then we add hawaii individuals
+    // then we add pure individuals
     if (number_added > 0) {
       add_to_population(input_pop,
                         number_added,
@@ -449,7 +455,7 @@ private:
   void add_to_population(std::vector<organism_simple>& population,
                          int number_added, tag<organism_simple>,
                          const Sex& sex) {
-    organism_simple to_add(1); // Hawaii = 1
+    organism_simple to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
     for(int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
@@ -460,7 +466,7 @@ private:
   void add_to_population(std::vector<organism>& population,
                                              int number_added, tag<organism>,
                                              const Sex& sex) {
-    organism to_add(1); // Hawaii = 1
+    organism to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
     for(int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
@@ -483,27 +489,27 @@ private:
   }
 
   std::vector<organism> create_base_pop(tag<organism>) {
-    ANIMAL mallard(0.0); // = Mallard;
-    ANIMAL hawaii(1.0); // = Hawaii;
+    ANIMAL base_indiv(0.0, params.morgan.size());
+    ANIMAL target_indiv(1.0, params.morgan.size());
 
     std::vector< ANIMAL > population(params.pop_size);
 
     for(int i = 0; i < params.pop_size; ++i) {
-      ANIMAL parent1 = mallard;
-      ANIMAL parent2 = mallard;
+      ANIMAL parent1 = base_indiv;
+      ANIMAL parent2 = base_indiv;
 
-      float freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
-                                                 params.sd_frequency_hawaii);
+      float freq_focal = rndgen.normal_positive(params.starting_freq,
+                                                 params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_hawaii) {
-        parent1 = hawaii;
+      if(rndgen.uniform() < freq_focal) {
+        parent1 = target_indiv;
       }
 
-      freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
-                                           params.sd_frequency_hawaii);
+      freq_focal = rndgen.normal_positive(params.starting_freq,
+                                           params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_hawaii) {
-        parent2 = hawaii;
+      if(rndgen.uniform() < freq_focal) {
+        parent2 = target_indiv;
       }
 
       double init_prob_female = 0.5;
@@ -516,27 +522,27 @@ private:
   }
 
   std::vector< ANIMAL > admix() {
-    ANIMAL mallard(0.0); // = Mallard;
-    ANIMAL hawaii(1.0); // = Hawaii;
+    ANIMAL base_indiv(0.0, params.morgan.size());
+    ANIMAL target_indiv(1.0, params.morgan.size());
 
     std::vector< ANIMAL > population(params.pop_size);
 
     for(int i = 0; i < params.pop_size; ++i) {
-      ANIMAL parent1 = mallard;
-      ANIMAL parent2 = mallard;
+      ANIMAL parent1 = base_indiv;
+      ANIMAL parent2 = base_indiv;
 
-      float freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
-                                                 params.sd_frequency_hawaii);
+      float freq_focal = rndgen.normal_positive(params.starting_freq,
+                                                 params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_hawaii) {
-        parent1 = hawaii;
+      if(rndgen.uniform() < freq_focal) {
+        parent1 = target_indiv;
       }
 
-      freq_hawaii = rndgen.normal_positive(params.frequency_hawaii_organism,
-                                           params.sd_frequency_hawaii);
+      freq_focal = rndgen.normal_positive(params.starting_freq,
+                                           params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_hawaii) {
-        parent2 = hawaii;
+      if(rndgen.uniform() < freq_focal) {
+        parent2 = target_indiv;
       }
 
       double init_prob_female = 0.5;

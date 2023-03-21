@@ -1,3 +1,4 @@
+#' @keywords internal
 get_decay_curve <- function(total_sum, params, num_generations) {
   decay_curve <- stats::dbeta(x = (1:num_generations) / num_generations,
                               shape1 = 10^params[[1]], shape2 = 10^params[[2]])
@@ -26,7 +27,6 @@ get_decay_curve <- function(total_sum, params, num_generations) {
 #' individuals that can be put or pulled (e.g. a fixed effort). This fixed total
 #' sum is distributed across the generations following a beta distribution, and
 #' the parameters of this beta distribution are fitted.
-#' @param num_generations number of generations
 #' @param target_frequency frequency to aim for
 #' @param optimize_pull Optimization proceeds such that the sum of all
 #' removal is equal to this number. Switch off by setting to zero.
@@ -37,73 +37,37 @@ get_decay_curve <- function(total_sum, params, num_generations) {
 #' @param num_replicates number of replicates per parameter combination to be
 #' simulated. Fit of the parameter combination is chosen as the average
 #' frequency across replicates.
-#' @param initial_population_size population size at the start
-#' @param nest_success_rate frequency of nests that yield offspring at the end
-#' of the breeding season (e.g. a fraction of 1 - nest_success_rate of nests
-#' fail). This is a joint effect of breeding females getting killed
-#' (see \code{nesting_risk}) and other sources of failure to complete a
-#' nest. Other sources of failure are calculated from nest_success_rate and
-#' nesting_risk, such that nest failure rate = 1 - nest_success_rate / (1 -
-#' nesting_risk);
-#' @param nesting_risk Additional death rate of females as a result of
-#' protecting the nest.
-#' @param K carrying capacity
-#' @param num_generations number of generations
-#' @param starting_freq initial focal ancestry frequency in the population.
-#' @param morgan size of the chromosome in Morgan
-#' @param establishment_burnin number of generations before establishment
-#' @param num_replicates number of replicates
-#' @param max_age maximum age a duck can reach.
-#' @param mean_clutch_size mean number of eggs in a nest
-#' @param sd_clutch_size standard deviation of number of eggs in nest (assuming
-#' the number of eggs is always 0 or larger).
-#' @param smin minimum survival rate
-#' @param smax maximum survival rate
-#' @param b steepness of the survival rate. Negative values indicate a declining
-#' survival rate with increasing population size, positive values indicate an
-#' increasing survival rate with increasing population size.
-#' @param p Density at which the survival rate changes most relative. Expressed
-#' in N / K (e.g., for a value of 1.0, the survival rate changes most rapidly
-#' around N = K, for a value of 0.5, the survival rate changes most rapidly
-#' around N = 0.5K, etc).
-#' @param sex_ratio_put the sex ratio of individuals that are added (if any) to
-#' the population. Sex ratio is expressed as males / (males + females), such
-#' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
-#' and 0.1 indicates a female biased sex ratio.
-#' @param sex_ratio_offspring sex ratio of newly born offspring. The sex ratio
-#' is expressed as males / (males + females), such
-#' that 0.5 indicates an even sex ratio, 0.9 indicates a male biased sex ratio
-#' and 0.1 indicates a female biased sex ratio.
-#' @param verbose provide verbose output
-#' @param use_simplified_model use a simplified model of underlying genetics?
-#' This speeds up simulation considerably, and should be preferred when not
-#' interested in high detail genetic changes. For subsequent ADMIXTURE analysis,
-#' use_simplified_model should be set to FALSE. Default is TRUE.
+#'
+#' @inheritParams default_params_doc
+#'
 #' @return tibble
 #' @export
-optimize_adaptive <- function(num_generations = 20,
-                                       target_frequency = 0.99,
-                                       optimize_pull = 0,
-                                       optimize_put = 0,
-                                       num_replicates = 1,
-                                       use_simplified_model = TRUE,
-                                       verbose = FALSE,
-                                       initial_population_size = 400, #K
-                                       nest_success_rate = 0.387,
-                                       nesting_risk = c(0.2, 0.0),
-                                       K = 400, # nolint
-                                       starting_freq = 0.2,
-                                       morgan = 1,
-                                       max_age = 6,
-                                       mean_clutch_size = 6,
-                                       sd_clutch_size = 1,
-                                       smin = 0.5,
-                                       smax = 0.9,
-                                       b = -2,
-                                       p = 0.5,
-                                       sex_ratio_put = 0.5,
-                                       sex_ratio_offspring = 0.5,
-                                       establishment_burnin = 30) {
+optimize_adaptive <- function(target_frequency = 0.99,
+                              initial_population_size = 400,
+                              reproduction_success_rate = 0.387,
+                              breeding_risk = c(0.2, 0.0),
+                              K = 400, # nolint
+                              num_generations = 20,
+                              optimize_put = 100,
+                              optimize_pull = 0,
+                              starting_freq = 0.2,
+                              sd_starting_freq = 0.05,
+                              morgan = c(1),
+                              establishment_burnin = 30,
+                              num_replicates = 1,
+                              max_age = 6,
+                              mean_number_of_offspring = 6,
+                              sd_number_of_offspring = 1,
+                              smin = 0.5,
+                              smax = 0.9,
+                              b = -2,
+                              p = 0.5,
+                              sex_ratio_put = 0.5,
+                              sex_ratio_pull = 0.5,
+                              sex_ratio_offspring = 0.5,
+                              ancestry_put = 1.0,
+                              use_simplified_model = TRUE,
+                              verbose = FALSE) {
 
   optim_adding <- function(param, # function to optimize putting
                            return_results = FALSE) {
@@ -112,8 +76,8 @@ optimize_adaptive <- function(num_generations = 20,
     decay_curve <- get_decay_curve(optimize_put, param, num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
-                              nest_success_rate = nest_success_rate,
-                              nesting_risk = nesting_risk,
+                              reproduction_success_rate = reproduction_success_rate,
+                              breeding_risk = breeding_risk,
                               K = K,
                               num_generations = num_generations,
                               pull = optimize_pull,
@@ -123,13 +87,14 @@ optimize_adaptive <- function(num_generations = 20,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_clutch_size = mean_clutch_size,
-                              sd_clutch_size = sd_clutch_size,
+                              mean_number_of_offspring = mean_number_of_offspring,
+                              sd_number_of_offspring = sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
                               b = b,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
+                              sex_ratio_pull = sex_ratio_pull,
                               sex_ratio_offspring = sex_ratio_offspring,
                               use_simplified_model = use_simplified_model,
                               verbose = FALSE)
@@ -156,8 +121,8 @@ optimize_adaptive <- function(num_generations = 20,
     decay_curve <- get_decay_curve(optimize_pull, param, num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
-                              nest_success_rate = nest_success_rate,
-                              nesting_risk = nesting_risk,
+                              reproduction_success_rate = reproduction_success_rate,
+                              breeding_risk = breeding_risk,
                               K = K,
                               num_generations = num_generations,
                               pull = decay_curve,
@@ -167,8 +132,8 @@ optimize_adaptive <- function(num_generations = 20,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_clutch_size = mean_clutch_size,
-                              sd_clutch_size = sd_clutch_size,
+                              mean_number_of_offspring = mean_number_of_offspring,
+                              sd_number_of_offspring = sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
                               b = b,
@@ -204,8 +169,8 @@ optimize_adaptive <- function(num_generations = 20,
                                     num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
-                              nest_success_rate = nest_success_rate,
-                              nesting_risk = nesting_risk,
+                              reproduction_success_rate = reproduction_success_rate,
+                              breeding_risk = breeding_risk,
                               K = K,
                               num_generations = num_generations,
                               pull = decay_curve,
@@ -215,8 +180,8 @@ optimize_adaptive <- function(num_generations = 20,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_clutch_size = mean_clutch_size,
-                              sd_clutch_size = sd_clutch_size,
+                              mean_number_of_offspring = mean_number_of_offspring,
+                              sd_number_of_offspring = sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
                               b = b,
