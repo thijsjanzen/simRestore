@@ -177,6 +177,8 @@ public:
   std::vector< organism_emp > pure;
   std::vector< ANIMAL > output_pop;
 
+  std::vector<int> recorded_death_ages;
+
   // member functions
   void increase_replicate() {
     replicate++;
@@ -278,6 +280,7 @@ private:
     if (num_dead <= 0) return;
     for (int i = 0; i < num_dead; ++i) {
       int index = rndgen.random_number(ANIMALs.size());
+      recorded_death_ages.push_back(ANIMALs[index].age);
       ANIMALs[index] = ANIMALs.back();
       ANIMALs.pop_back();
     }
@@ -329,6 +332,7 @@ private:
     for (int i = 0, j = 0; i < females.size() && j < males.size(); ++i, ++j) {
       // now, mated females and females experience additional death
       if (rndgen.bernouilli(params.female_death_rate)) {
+        recorded_death_ages.push_back(females[i].age);
         females[i] = females.back();
         females.pop_back();
         --i;
@@ -341,7 +345,9 @@ private:
                            params.clutch_size_mean,
                            params.clutch_size_sd,
                            params.sex_ratio_offspring);
+
         if (rndgen.bernouilli(params.male_death_rate)) {
+          recorded_death_ages.push_back(males[j].age);
           males[j] = males.back();
           males.pop_back();
           --j;
@@ -407,6 +413,7 @@ private:
     for (int i = 0; i < pop.size(); ++i) {
       pop[i].age++;
       if (pop[i].age > params.max_age) {
+        recorded_death_ages.push_back(pop[i].age);
         pop[i] = pop.back();
         pop.pop_back();
         i--;

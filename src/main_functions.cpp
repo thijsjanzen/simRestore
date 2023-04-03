@@ -74,6 +74,8 @@ List simulate_complete(int pop_size,
     std::vector< std::vector< double >> anc_inf_dummy;
     NumericVector base_markers;
 
+    NumericVector age_at_death;
+
     if (use_simple) {
       analysis<organism_simple> main_analysis(params,
                                           introductions,
@@ -100,6 +102,8 @@ List simulate_complete(int pop_size,
           results.emplace_back(temp);
         }
         main_analysis.increase_replicate();
+        age_at_death = NumericVector(main_analysis.recorded_death_ages.begin(),
+                                     main_analysis.recorded_death_ages.end());
       }
     } else {
       analysis<organism> main_analysis(params,
@@ -132,6 +136,8 @@ List simulate_complete(int pop_size,
         }
 
         main_analysis.increase_replicate();
+        age_at_death = NumericVector(main_analysis.recorded_death_ages.begin(),
+                                     main_analysis.recorded_death_ages.end());
       }
     }
 
@@ -147,7 +153,8 @@ List simulate_complete(int pop_size,
       output(i, 7) = results[i][7];
     }
 
-    Rcpp::List output_list = List::create( Named("results") = output);
+    Rcpp::List output_list = List::create( Named("results") = output,
+                                           Named("age_at_death") = age_at_death);
     return(output_list);
 
   } catch(std::exception &ex) {
