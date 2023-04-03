@@ -15,7 +15,7 @@
 #' @export
 simulate_policy <- function(initial_population_size = 400,
                             reproduction_success_rate = 0.387,
-                            breeding_risk = c(0.2, 0.0),
+                            reproductive_risk = c(0.2, 0.0),
                             K = 400, # nolint
                             num_generations = 20,
                             pull = 0,
@@ -43,7 +43,7 @@ simulate_policy <- function(initial_population_size = 400,
   shooting <- update_vector(pull, num_generations)
   addition <- update_vector(put, num_generations)
 
-  nest_failure_rate <- 1 - reproduction_success_rate / (1 - breeding_risk)
+  nest_failure_rate <- 1 - reproduction_success_rate / (1 - reproductive_risk)
   nest_failure_rate <- max(nest_failure_rate)
 
   seed <- set_seed(seed)
@@ -52,7 +52,7 @@ simulate_policy <- function(initial_population_size = 400,
     stop("smin has to be smaller than smax")
   }
 
-  if (length(breeding_risk) != 2) {
+  if (length(reproductive_risk) != 2) {
     stop("breeding risk has to be specified for both sexes")
   }
 
@@ -69,7 +69,7 @@ simulate_policy <- function(initial_population_size = 400,
                               num_replicates,
                               K,
                               morgan,
-                              breeding_risk,
+                              reproductive_risk,
                               nest_failure_rate,
                               establishment_burnin,
                               seed,

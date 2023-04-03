@@ -10,7 +10,7 @@
 #' clutch. Other sources of failure are calculated from nest_success_rate and
 #' female_death_rate, such that reproduction failure rate =
 #' 1 - reproduction_success_rate / (1 - female breeding risk);
-#' @param breeding_risk Additional death rate of males and females as a result
+#' @param reproductive_risk Additional death rate of males and females as a result
 #' of breeding (e.g. as a result of protecting the offspring against predators).
 #' Provide as a vector where the first index indicates the risk for females,
 #' the second the risk for males.
