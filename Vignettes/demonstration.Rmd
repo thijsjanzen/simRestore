@@ -1,0 +1,256 @@
+---
+title: "using_simrestore"
+author: "Thijs Janzen"
+date: "`r Sys.Date()`"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(simRestore)
+library(ggplot2)
+```
+
+# Using simRestore
+
+simRestore is an R package designed to aid in making management
+decisions to restore a population back to a target genetic ancestry. For
+this, several tools are available within the package. Let's first
+explore our imaginary focal system of interest
+
+## Simulating
+
+simRestore simulates a population forward in time, subject to management
+intervention. Without intervention, simRestore assumes overlapping
+generations, density dependent survival and random mating. We can
+simulate such a population as follows:
+
+```{r simulate}
+sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
+                                       num_generations = 20,
+                                       starting_freq = 0.2,
+                                       K = 400)
+```
+
+This returns a large tibble, and we can use that to plot several
+characteristics:
+
+```{r simulate_plot}
+ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+
+ggplot(sim_pop$results, aes(x = t, y = num_individuals)) +
+  geom_line()
+
+sim_pop$results %>%
+  gather(key = "sex", value = "num_indiv", c(num_males, num_females)) %>%
+  ggplot(aes(x = t, y = num_indiv, col = sex)) +
+    geom_line()
+```
+
+We observe that the population grows over time, but at the same time,
+the target frequency does not change. We can modify this by making
+interventions: putting and pulling. In putting, we add individuals with
+100% focal ancestry to the population, in pulling, we remove individuals
+randomly from the population. We'll first simulate pulling:
+
+```{r simulate_pull}
+sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
+                                       num_generations = 20,
+                                       pull = 20,
+                                       starting_freq = 0.2,
+                                       K = 400)
+ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+```
+
+Because pulling happens at random, the average frequency does not
+change. When we add individuals however, we do see a genetic response:
+
+```{r simulate_put}
+sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
+                                       num_generations = 20,
+                                       put = 20,
+                                       starting_freq = 0.2,
+                                       K = 400)
+ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+```
+
+Clearly, putting does move the needle, and in this case in a positive
+way! We can even modify the ancestry of individuals we are adding, in
+case we do not have access to individuals with high focal ancestry, or
+if we are targeting another ancestry level:
+
+```{r simulate_put}
+sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
+                                       num_generations = 20,
+                                       put = 20,
+                                       K = 400,
+                                       starting_freq = 0.2,
+                                       ancestry_put = 0.0)
+ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+```
+
+# Optimization
+To explore potential remedies, simRestore includes two optimization procedures
+to find the ideal management strategy, depending on the target required. In 
+doing so, simRestore tries to find the minimal effort required to obtain the 
+required target.
+
+## Static optimization
+In static optimization, simRestore tries to find a fixed number of individuals 
+to be put or pulled per generation in order to reach the obtained target 
+frequency. For instance, if we want to reach 0.99 ancestry within 20 
+generations:
+
+```{r static_optimization}
+opt_res <- simRestore::optimize_static(target_frequency = 0.99,
+                                       optimize_put = TRUE,
+                                       num_generations = 20,
+                                       starting_freq = 0.2,
+                                       initial_population_size = 100)
+opt_res$put
+```
+We find that approximately 50 individuals need to be supplanted per generation. 
+Alongside the optimization, simRestore also returns a sample simulation:
+
+```{r static_optimization_plot}
+ggplot(opt_res$results,
+       aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+```
+
+## Adaptive optimization
+Adding individuals perhaps works better in the first few generations, compared 
+to the last few. Instead, therefore, the user can opt to estimate the 
+distribution of individuals over time, given a fixed total of individuals to 
+be put / pulled. The distribution is fit using a beta distribution, hence 
+only two parameters need to be optimized. We can do so like this:
+
+```{r adaptive_optimization}
+opt_res <- simRestore::optimize_adaptive(target_frequency = 0.99,
+                                       optimize_put = 1000,
+                                       num_generations = 20,
+                                       starting_freq = 0.2,
+                                       initial_population_size = 100)
+```
+
+Again, we can plot a sample simulation, but this time we can also plot the 
+distribution of added individuals over time:
+
+```{r adaptive_optimization_plot}
+ggplot(opt_res$results,
+       aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+
+ggplot(opt_res$curve,
+       aes(x = t, y = put)) +
+  geom_step()
+```
+
+We can do a similar analysis for pulling as well:
+
+```{r adaptive_pull}
+opt_res <- simRestore::optimize_adaptive(target_frequency = 0.99,
+                                       optimize_pull = 1000,
+                                       optimize_put = 0,
+                                       num_generations = 20,
+                                       starting_freq = 0.2,
+                                       initial_population_size = 100)
+ggplot(opt_res$results,
+       aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+
+ggplot(opt_res$curve,
+       aes(x = t, y = pull)) +
+  geom_step()
+```
+
+As before, pulling does not move the needle. But if we also add a little bit
+of putting, we find a much better solution:
+
+```{r adaptive_both}
+opt_res <- simRestore::optimize_adaptive(target_frequency = 0.99,
+                                       optimize_pull = 1000,
+                                       optimize_put = 100,
+                                       num_generations = 20,
+                                       starting_freq = 0.2,
+                                       initial_population_size = 100)
+ggplot(opt_res$results,
+       aes(x = t, y = freq_focal_ancestry)) +
+  geom_line() +
+  ylim(0, 1)
+
+opt_res$curve %>%
+  gather(key = "type", value = "amount", -t) %>%
+  ggplot(aes(x = t, y = amount, col = type)) +
+    geom_step()
+
+```
+
+# Underlying genetic model
+
+By default, simRestore uses a very fast, but also very simplistic, 
+representation of the underlying genetics, where a mating event simply results
+in an averaging of the ancestries of the two parents, without considering 
+recombination. For the typical short timescales over which management strategies
+unfold, this is a safe approximation to make. However, for those that require
+additional genetic insight, simRestore includes an underlying genetics model
+that explicitly models recombination, which is based on simulations of the 
+packages GenomeAdmixR and junctions. A local transition in ancestry along a 
+chromosome was coined 'junction' by Fisher in 1954, and this more complex
+genetic model keeps track of new junctions that are formed. This introduces a
+larger degree of variation in outcomes, but on average results are highly 
+similar:
+
+```{r compare models}
+sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
+                                       num_generations = 50,
+                                       put = 10,
+                                       starting_freq = 0.2,
+                                       use_simplified_model = TRUE,
+                                       num_replicates = 100,
+                                       K = 400)
+
+sim_pop2 <- simRestore::simulate_policy(initial_population_size = 100,
+                                       num_generations = 50,
+                                       put = 10,
+                                       starting_freq = 0.2,
+                                       use_simplified_model = FALSE,
+                                       num_replicates = 100,
+                                       K = 400)
+# prepare data frame for plotting:
+to_plot1 <- sim_pop$results
+to_plot1$model <- "simplified"
+to_plot2 <- sim_pop2$results
+to_plot2$model <- "junctions"
+to_plot2$replicate <- to_plot2$replicate + 100
+to_plot <- rbind(to_plot1, to_plot2)
+
+# plot all replicates:
+ggplot(to_plot,
+       aes(x = t, y = freq_focal_ancestry, col = model, group = replicate)) +
+  geom_line() +
+  scale_color_brewer(type = "qual") +
+  theme_classic()
+
+
+# summarise across replicates:
+to_plot %>%
+  group_by(t, model) %>%
+  summarise("mean_ancestry" = mean(freq_focal_ancestry)) %>%
+  ggplot(aes(x = t, y = mean_ancestry, col = model)) +
+    geom_line()
+```
