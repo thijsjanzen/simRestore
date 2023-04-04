@@ -16,7 +16,11 @@ Suggests:
     testthat,
     tibble,
     knitr,
-    rmarkdown
+    rmarkdown,
+    ggplot2,
+    dplyr,
+    magrittr,
+    tidyr
 LinkingTo: Rcpp
 RoxygenNote: 7.2.3
 SystemRequirements: C++14

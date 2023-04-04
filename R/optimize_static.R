@@ -44,7 +44,8 @@ optimize_static <- function(target_frequency = 0.99,
   fit_adding <- function(param,
                          return_results = FALSE) {
     result <- simulate_policy(initial_population_size = initial_population_size,
-                              reproduction_success_rate = reproduction_success_rate,
+                              reproduction_success_rate =
+                                reproduction_success_rate,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
@@ -55,7 +56,8 @@ optimize_static <- function(target_frequency = 0.99,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_number_of_offspring = mean_number_of_offspring,
+                              mean_number_of_offspring =
+                                mean_number_of_offspring,
                               sd_number_of_offspring = sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
@@ -83,7 +85,8 @@ optimize_static <- function(target_frequency = 0.99,
                           return_results = FALSE) {
 
     result <- simulate_policy(initial_population_size = initial_population_size,
-                              reproduction_success_rate = reproduction_success_rate,
+                              reproduction_success_rate =
+                                reproduction_success_rate,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
@@ -94,7 +97,8 @@ optimize_static <- function(target_frequency = 0.99,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_number_of_offspring = mean_number_of_offspring,
+                              mean_number_of_offspring =
+                                mean_number_of_offspring,
                               sd_number_of_offspring = sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
@@ -129,8 +133,10 @@ optimize_static <- function(target_frequency = 0.99,
     if (param[[1]] < 0) return(Inf)
     if (param[[2]] < 0) return(Inf)
 
-    result <- simulate_policy(initial_population_size = initial_population_size,
-                              reproduction_success_rate = reproduction_success_rate,
+    result <- simulate_policy(initial_population_size =
+                                initial_population_size,
+                              reproduction_success_rate =
+                                reproduction_success_rate,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
@@ -141,8 +147,10 @@ optimize_static <- function(target_frequency = 0.99,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_number_of_offspring = mean_number_of_offspring,
-                              sd_number_of_offspring = sd_number_of_offspring,
+                              mean_number_of_offspring =
+                                mean_number_of_offspring,
+                              sd_number_of_offspring =
+                                sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
                               b = b,

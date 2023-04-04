@@ -234,7 +234,7 @@ ggplot(opt_res$results,
   ylim(0, 1)
 
 opt_res$curve %>%
-  gather(key = "type", value = "amount", -t) %>%
+  tidyr::pivot_longer(names_to = "type", values_to = "amount", -t) %>%
   ggplot(aes(x = t, y = amount, col = type)) +
     geom_step()
 
@@ -283,7 +283,7 @@ to_plot <- rbind(to_plot1, to_plot2)
 ggplot(to_plot,
        aes(x = t, y = freq_focal_ancestry, col = model, group = replicate)) +
   geom_line() +
-  scale_color_brewer(type = "qual") +
+  # scale_color_brewer(type = "qual") +
   theme_classic()
 
 
