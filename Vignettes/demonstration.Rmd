@@ -1,11 +1,12 @@
 ---
-title: "using_simrestore"
+title: "demonstration"
 author: "Thijs Janzen"
 date: "`r Sys.Date()`"
-output: pdf_document
-editor_options: 
-  markdown: 
-    wrap: 72
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{demonstration}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include=FALSE}

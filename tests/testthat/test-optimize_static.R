@@ -86,7 +86,7 @@ test_that("error", {
   testthat::expect_warning(
     vx <- simRestore::optimize_static(num_generations = 200,
                                     initial_population_size = 3,
-                                    breeding_risk = c(1, 1), # force death
+                                    reproductive_risk = c(1, 1), # force death
                                     target_frequency = 0.99,
                                     optimize_put = FALSE,
                                     optimize_pull = TRUE,
