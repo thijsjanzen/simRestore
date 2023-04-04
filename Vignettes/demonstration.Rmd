@@ -10,9 +10,12 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(simRestore)
-library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE, fig.width = 6)
+require(simRestore)
+require(ggplot2)
+require(magrittr)
+require(tidyr)
+require(dplyr)
 ```
 
 # Using simRestore
@@ -42,15 +45,24 @@ characteristics:
 ```{r simulate_plot}
 ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
-  ylim(0, 1)
+  ylim(0, 1) +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry")
 
 ggplot(sim_pop$results, aes(x = t, y = num_individuals)) +
-  geom_line()
+  geom_line() +
+  ggtitle("Number of individuals") +
+  xlab("Generations") +
+  ylab("Number of individuals")
 
 sim_pop$results %>%
   gather(key = "sex", value = "num_indiv", c(num_males, num_females)) %>%
   ggplot(aes(x = t, y = num_indiv, col = sex)) +
-    geom_line()
+    geom_line() +
+    ggtitle("Number of individuals per sex") +
+    xlab("Generations") +
+    ylab("Number of individuals")
 ```
 
 We observe that the population grows over time, but at the same time,
@@ -67,13 +79,16 @@ sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
                                        K = 400)
 ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
-  ylim(0, 1)
+  ylim(0, 1) +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry")
 ```
 
 Because pulling happens at random, the average frequency does not
 change. When we add individuals however, we do see a genetic response:
 
-```{r simulate_put}
+```{r simulate_put1}
 sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
                                        num_generations = 20,
                                        put = 20,
@@ -81,7 +96,10 @@ sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
                                        K = 400)
 ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
-  ylim(0, 1)
+  ylim(0, 1) +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry")
 ```
 
 Clearly, putting does move the needle, and in this case in a positive
@@ -89,7 +107,7 @@ way! We can even modify the ancestry of individuals we are adding, in
 case we do not have access to individuals with high focal ancestry, or
 if we are targeting another ancestry level:
 
-```{r simulate_put}
+```{r simulate_put2}
 sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
                                        num_generations = 20,
                                        put = 20,
@@ -98,7 +116,10 @@ sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
                                        ancestry_put = 0.0)
 ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
-  ylim(0, 1)
+  ylim(0, 1) +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry")
 ```
 
 # Optimization
@@ -128,7 +149,10 @@ Alongside the optimization, simRestore also returns a sample simulation:
 ggplot(opt_res$results,
        aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
-  ylim(0, 1)
+  ylim(0, 1) +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry")
 ```
 
 ## Adaptive optimization
@@ -153,11 +177,20 @@ distribution of added individuals over time:
 ggplot(opt_res$results,
        aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
-  ylim(0, 1)
+  ylim(0, 1) +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry") +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry")
 
 ggplot(opt_res$curve,
        aes(x = t, y = put)) +
-  geom_step()
+  geom_step() +
+  ggtitle("Number of individuals required to add") +
+  xlab("Generation") +
+  ylab("Number of individuals")
 ```
 
 We can do a similar analysis for pulling as well:
@@ -172,11 +205,17 @@ opt_res <- simRestore::optimize_adaptive(target_frequency = 0.99,
 ggplot(opt_res$results,
        aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
-  ylim(0, 1)
+  ylim(0, 1) +
+  ggtitle("Frequency change over time") +
+  xlab("Generations") +
+  ylab("Focal ancestry")
 
 ggplot(opt_res$curve,
        aes(x = t, y = pull)) +
-  geom_step()
+  geom_step() +
+    ggtitle("Number of individuals required to change") +
+  xlab("Generation") +
+  ylab("Number of individuals")
 ```
 
 As before, pulling does not move the needle. But if we also add a little bit
