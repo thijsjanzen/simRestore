@@ -82,7 +82,8 @@ junction& junction::operator=(const junction& other) {
     return *this;
 }
 
-organism::organism(double init_freq, size_t num_chromosomes)    {
+organism::organism(double init_freq,
+                   size_t num_chromosomes)    {
   for (size_t i = 0; i < num_chromosomes; ++i) {
       chrom chrom1;
       chrom chrom2;
@@ -132,7 +133,7 @@ organism::organism(double init_freq, size_t num_chromosomes)    {
 organism::organism(const genome& c1,
                    const genome& c2,
                    double prob_female,
-                   rnd_t& rndgen) :
+                   rnd_t* rndgen) :
     chromosome1(c1), chromosome2(c2) {
     calc_freq_anc();
     set_nonrandom_sex(prob_female, rndgen);
@@ -140,9 +141,9 @@ organism::organism(const genome& c1,
 }
 
 void organism::set_nonrandom_sex(double prob_male,
-                                 rnd_t& rndgen) {
+                                 rnd_t* rndgen) {
   sex = female;
-  if (rndgen.uniform() < prob_male) {
+  if ((*rndgen).uniform() < prob_male) {
     sex = male;
   }
   return;
@@ -187,17 +188,17 @@ organism& organism::operator=(organism&& other) {
 }
 
 genome organism::gamete(const std::vector<double>& morgan,
-                        rnd_t& rndgen) const noexcept {
+                        rnd_t* rndgen) const noexcept {
     genome offspring_chromosome;
     for (size_t m = 0; m < morgan.size(); ++m) {
-      int num_recom = rndgen.poisson(morgan[m]);
+      int num_recom = (*rndgen).poisson(morgan[m]);
       std::vector<double> recom_pos(num_recom);
-      for (int i = 0; i < num_recom; ++i) recom_pos[i] = rndgen.uniform();
+      for (int i = 0; i < num_recom; ++i) recom_pos[i] = (*rndgen).uniform();
       std::sort(recom_pos.begin(), recom_pos.end());
       recom_pos.push_back(1.0);
 
       chrom offspring_chrom;
-      if (rndgen.random_number(2) == 0) {
+      if ((*rndgen).random_number(2) == 0) {
         offspring_chrom = recombine(chromosome1[m], chromosome2[m], recom_pos);
       } else {
         offspring_chrom = recombine(chromosome2[m], chromosome1[m], recom_pos);
@@ -249,7 +250,7 @@ organism_simple::organism_simple(double initLoc, size_t num_chromosomes) {
 organism_simple::organism_simple(double chrom1,
                          double chrom2,
                          double prob_female,
-                         rnd_t& rndgen) :
+                         rnd_t* rndgen) :
     chromosome1(chrom1), chromosome2(chrom2) {
     freq_anc = 0.5 * (chromosome1 + chromosome2);
     set_nonrandom_sex(prob_female, rndgen);
@@ -274,15 +275,16 @@ organism_simple& organism_simple::operator=(const organism_simple& other) {
 }
 
 void organism_simple::set_nonrandom_sex(double prob_male,
-                                    rnd_t& rndgen) {
+                                    rnd_t* rndgen) {
   sex = female;
-  if (rndgen.uniform() < prob_male) {
+  if ((*rndgen).uniform() < prob_male) {
     sex = male;
   }
   return;
 }
 
-double organism_simple::gamete(const std::vector<double>& morgan, rnd_t& rndgen)
+double organism_simple::gamete(const std::vector<double>& morgan,
+                               rnd_t* rndgen)
   const noexcept {
     // recombine chromosomes:
     return 0.5 * (chromosome1 + chromosome2);

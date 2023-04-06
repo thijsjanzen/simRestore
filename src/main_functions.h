@@ -11,9 +11,10 @@
 
 #pragma once
 
-#include "organism.h" // NOLINT [build/include_subdir]
-#include <vector>
+
 #include <array>
+#include <vector>
+#include "organism.h" // NOLINT [build/include_subdir]
 
 struct output_entry {
   int replicate;

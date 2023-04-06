@@ -259,12 +259,12 @@ class analysis {
         if (verbose) {
           Rcpp::warning("encountered massive population, culling to 1M indiv");
         }
-        cul_population(males, 1e6);
+        cul_population(&males, 1e6);
       }
       if (females.size() > 1e6) {
         Rcpp::warning("encountered massive population, culling to 1M indiv");
 
-        cul_population(females, 1e6);
+        cul_population(&females, 1e6);
       }
 
       std::array<double, 3> f2 = calc_freq_focal< ANIMAL >(&males, &females);
@@ -339,7 +339,9 @@ class analysis {
       std::shuffle((*males).begin(), (*males).end(), rndgen.rndgen);
     }
 
-    for (int i = 0, j = 0; i < (*females).size() && j < (*males).size(); ++i, ++j) {
+    for (int i = 0, j = 0;
+         i < (*females).size() && j < (*males).size();
+         ++i, ++j) {
       // now, mated females and females experience additional death
       if (rndgen.bernouilli(params.female_death_rate)) {
         (*females)[i] = (*females).back();
@@ -392,10 +394,10 @@ class analysis {
       for (int j = 0; j < num_offspring; ++j) {
         // immediately check survival to next generation
         if (rndgen.uniform() > offspring_death_rate) {
-          ANIMAL chick(mama.gamete(params.morgan, rndgen),
-                     papa.gamete(params.morgan, rndgen),
+          ANIMAL chick(mama.gamete(params.morgan, &rndgen),
+                     papa.gamete(params.morgan, &rndgen),
                      prob_male,
-                     rndgen);
+                     &rndgen);
 
           if (chick.get_sex() == female) {
             (*offspring_female).push_back(std::move(chick));
@@ -416,12 +418,12 @@ class analysis {
                    1.f * (params.smin - params.smax) / (numerator));
   }
 
-  void old_age(std::vector< ANIMAL >& pop) {
-    for (int i = 0; i < pop.size(); ++i) {
-      pop[i].age++;
-      if (pop[i].age > params.max_age) {
-        pop[i] = pop.back();
-        pop.pop_back();
+  void old_age(std::vector< ANIMAL >* pop) {
+    for (int i = 0; i < (*pop).size(); ++i) {
+      (*pop)[i].age++;
+      if ((*pop)[i].age > params.max_age) {
+        (*pop)[i] = (*pop).back();
+        (*pop).pop_back();
         i--;
       }
     }
@@ -432,7 +434,7 @@ class analysis {
                            int number_removed,
                            int number_added) {
     // first, regular death due to old age
-    old_age(*input_pop);
+    old_age(input_pop);
 
     // then, death due to survival:
     additional_death(input_pop,
@@ -525,9 +527,9 @@ class analysis {
 
       double init_prob_female = 0.5;
 
-      population[i] = ANIMAL(parent1.gamete(params.morgan, rndgen),
-                           parent2.gamete(params.morgan, rndgen),
-                           init_prob_female, rndgen);
+      population[i] = ANIMAL(parent1.gamete(params.morgan, &rndgen),
+                           parent2.gamete(params.morgan, &rndgen),
+                           init_prob_female, &rndgen);
     }
     return population;
   }
@@ -558,9 +560,9 @@ class analysis {
 
       double init_prob_female = 0.5;
 
-      population[i] = ANIMAL(parent1.gamete(params.morgan, rndgen),
-                           parent2.gamete(params.morgan, rndgen),
-                           init_prob_female, rndgen);
+      population[i] = ANIMAL(parent1.gamete(params.morgan, &rndgen),
+                           parent2.gamete(params.morgan, &rndgen),
+                           init_prob_female, &rndgen);
     }
 
     for (size_t t = 0; t < params.number_of_generations; ++t) {
@@ -571,19 +573,20 @@ class analysis {
         while (index2 == index1) index2 = rndgen.random_number(params.pop_size);
 
         new_population[i] =
-          ANIMAL(population[index1].gamete(params.morgan, rndgen),
-                 population[index2].gamete(params.morgan, rndgen),
+          ANIMAL(population[index1].gamete(params.morgan, &rndgen),
+                 population[index2].gamete(params.morgan, &rndgen),
                  0.5,
-                 rndgen);
+                 &rndgen);
       }
       population.swap(new_population);
     }
     return population;
   }
 
-  void cul_population(std::vector<ANIMAL>& pop, size_t target_size) {
-    if (pop.size() < target_size) return;
-    pop.erase(pop.begin() + target_size, pop.end());
+  void cul_population(std::vector<ANIMAL>* pop,
+                      size_t target_size) {
+    if ((*pop).size() < target_size) return;
+    (*pop).erase((*pop).begin() + target_size, (*pop).end());
   }
 };
 

@@ -11,12 +11,13 @@
 
 #pragma once
 
-#include "rand_t.h" // NOLINT [build/include_subdir]
+
 #include <utility>
 #include <stdio.h>
 #include <algorithm>
 #include <tuple>
 #include <vector>
+#include "rand_t.h" // NOLINT [build/include_subdir]
 
 struct junction {
     long double pos;
@@ -39,7 +40,7 @@ struct organism {
     organism(const genome& c1,
              const genome& c2,
              double prob_male,
-             rnd_t& rndgen);
+             rnd_t* rndgen);
 
 
     organism(const organism& other);
@@ -48,11 +49,11 @@ struct organism {
     organism(organism&& other);
     organism& operator=(organism&& other);
 
-    void set_nonrandom_sex(double prob_male, rnd_t& rndgen);
+    void set_nonrandom_sex(double prob_male, rnd_t* rndgen);
     void set_sex(Sex s) {sex = s;}
 
     genome gamete(const std::vector<double>& morgan,
-                  rnd_t& rndgen) const noexcept;
+                  rnd_t* rndgen) const noexcept;
 
     const genome& get_chromosome1() const noexcept {return chromosome1;}
     const genome& get_chromosome2() const noexcept {return chromosome2;}
@@ -73,15 +74,15 @@ struct organism_simple {
     organism_simple(double initLoc, size_t num_chromosomes);
 
     organism_simple(double chrom1, double chrom2,
-                    double prob_male, rnd_t& rndgen);
+                    double prob_male, rnd_t* rndgen);
     organism_simple(const organism_simple& other);
     organism_simple& operator=(const organism_simple& other);
 
-    void set_nonrandom_sex(double prob_male, rnd_t& rndgen);
+    void set_nonrandom_sex(double prob_male, rnd_t* rndgen);
     void set_sex(Sex s) {sex = s;}
 
     double gamete(const std::vector<double>& morgan,
-                  rnd_t& rndgen) const noexcept;
+                  rnd_t* rndgen) const noexcept;
 
     const double& get_chromosome1() const noexcept {return chromosome1;}
     const double& get_chromosome2() const noexcept {return chromosome2;}
