@@ -113,10 +113,10 @@ interested in high detail genetic changes. Default is TRUE.}
 
 \item{verbose}{provides verbose output if TRUE.}
 
-\item{reproductive_risk}{Additional death rate of males and females as a result
-of breeding (e.g. as a result of protecting the offspring against predators).
-Provide as a vector where the first index indicates the risk for females,
-the second the risk for males.}
+\item{reproductive_risk}{Additional death rate of males and females as a
+result of breeding (e.g. as a result of protecting the offspring against
+predators). Provide as a vector where the first index indicates the risk for
+females, the second the risk for males.}
 }
 \value{
 Nothing

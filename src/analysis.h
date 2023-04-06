@@ -138,6 +138,15 @@ class analysis {
 public:
   analysis() {
     params = parameters();
+    introductions = {0};
+    removal = {0};
+    markers = {0};
+    verbose = false;
+    using_molecular_data = false;
+    base_genomes = {0};
+    anc_info = {0};
+    rndgen = rnd_t();
+    replicate = 0;
   }
 
   analysis(const parameters& param_in,

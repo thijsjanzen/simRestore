@@ -76,7 +76,8 @@ optimize_adaptive <- function(target_frequency = 0.99,
     decay_curve <- get_decay_curve(optimize_put, param, num_generations)
 
     result <- simulate_policy(initial_population_size = initial_population_size,
-                              reproduction_success_rate = reproduction_success_rate,
+                              reproduction_success_rate =
+                                reproduction_success_rate,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
@@ -87,8 +88,10 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_number_of_offspring = mean_number_of_offspring,
-                              sd_number_of_offspring = sd_number_of_offspring,
+                              mean_number_of_offspring =
+                                mean_number_of_offspring,
+                              sd_number_of_offspring =
+                                sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
                               b = b,
@@ -120,8 +123,10 @@ optimize_adaptive <- function(target_frequency = 0.99,
     if (min(param) < 0) return(Inf)
     decay_curve <- get_decay_curve(optimize_pull, param, num_generations)
 
-    result <- simulate_policy(initial_population_size = initial_population_size,
-                              reproduction_success_rate = reproduction_success_rate,
+    result <- simulate_policy(initial_population_size =
+                                initial_population_size,
+                              reproduction_success_rate =
+                                reproduction_success_rate,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
@@ -132,8 +137,10 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_number_of_offspring = mean_number_of_offspring,
-                              sd_number_of_offspring = sd_number_of_offspring,
+                              mean_number_of_offspring =
+                                mean_number_of_offspring,
+                              sd_number_of_offspring =
+                                sd_number_of_offspring,
                               smin = smin,
                               smax = smax,
                               b = b,
@@ -168,8 +175,10 @@ optimize_adaptive <- function(target_frequency = 0.99,
     decay_curve2 <- get_decay_curve(optimize_pull, c(param[[3]], param[[4]]),
                                     num_generations)
 
-    result <- simulate_policy(initial_population_size = initial_population_size,
-                              reproduction_success_rate = reproduction_success_rate,
+    result <- simulate_policy(initial_population_size =
+                                initial_population_size,
+                              reproduction_success_rate =
+                                reproduction_success_rate,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
@@ -180,7 +189,8 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
                               max_age = max_age,
-                              mean_number_of_offspring = mean_number_of_offspring,
+                              mean_number_of_offspring =
+                                mean_number_of_offspring,
                               sd_number_of_offspring = sd_number_of_offspring,
                               smin = smin,
                               smax = smax,

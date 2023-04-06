@@ -6,16 +6,15 @@
 //
 //
 
-#include "organism.h"
+#include "./organism.h"
 #include <algorithm>
 #include <cassert>
 
-#include "Rcpp.h"
+#include <Rcpp.h>
 
 std::vector<junction> recombine(const std::vector<junction>& chromosome1,
                                 const std::vector<junction>& chromosome2,
                                 const std::vector<double>& recom_positions) {
-
     static auto tl_go = decltype(chromosome1){};
     assert(!chromosome1.empty());    // not strictly enforced by code
     assert(!chromosome2.empty());    // not strictly enforced bu code
@@ -30,8 +29,10 @@ std::vector<junction> recombine(const std::vector<junction>& chromosome1,
     auto less = [](const auto& j, double p) { return j.pos < p; };
 
     // helper lambda to get the value just *before* it.
-    // we store the value to the right of a recombination-point but we need the value to the left:
-    auto value_at = [](auto begin, auto it) { return (begin != it) ? (it - 1)->right : -1; };
+    // we store the value to the right of a recombination-point but we
+    // need the value to the left:
+    auto value_at = [](auto begin, auto it)
+      { return (begin != it) ? (it - 1)->right : -1; };
 
     double left_pos = 0.0;
     auto go_val = -1;
@@ -39,13 +40,13 @@ std::vector<junction> recombine(const std::vector<junction>& chromosome1,
         auto it = std::lower_bound(g1->cbegin(), g1->cend(), left_pos, less);
         auto last = std::lower_bound(it, g1->cend(), right_pos, less);
         // [g1.first, it) : part of the genome *before* left_pos.
-        // [it, last) : part of the genome *after or equal to* left_pos but *before* right_pos.
+        // [it, last) : part of the genome *after or equal to* left_pos
+        //              but *before* right_pos.
         auto g1_val = value_at(g1->cbegin(), it);
         if (g1_val != go_val) {
             if (it == last || it->pos != left_pos) {
                 go.emplace_back(left_pos, g1_val);   // insert change to match
-            }
-            else {
+            } else {
                 ++it;    // corner case: skip spurious double-change
             }
         }
@@ -81,17 +82,16 @@ junction& junction::operator=(const junction& other) {
 
 organism::organism(double init_freq, size_t num_chromosomes)    {
   for (size_t i = 0; i < num_chromosomes; ++i) {
-
       chrom chrom1;
       chrom chrom2;
 
       if (init_freq == 1.0) {
         junction left(0.0, 1);
         junction right(1,  -1);
-        chrom1.push_back( left  );
-        chrom1.push_back( right );
-        chrom2.push_back( left  );
-        chrom2.push_back( right );
+        chrom1.push_back(left);
+        chrom1.push_back(right);
+        chrom2.push_back(left);
+        chrom2.push_back(right);
 
         freq_anc = init_freq;
         age = 0;
@@ -146,8 +146,12 @@ void organism::set_nonrandom_sex(double prob_male,
   return;
 }
 
-organism::organism(const organism& other) : age(other.age), chromosome1(other.chromosome1), chromosome2(other.chromosome2),
-sex(other.sex), freq_anc(other.freq_anc)  {
+organism::organism(const organism& other) :
+  age(other.age),
+  chromosome1(other.chromosome1),
+  chromosome2(other.chromosome2),
+  sex(other.sex),
+  freq_anc(other.freq_anc)  {
 }
 
 organism& organism::operator=(const organism& other) {
@@ -182,7 +186,6 @@ organism& organism::operator=(organism&& other) {
 
 genome organism::gamete(const std::vector<double>& morgan,
                         rnd_t& rndgen) const noexcept {
-
     genome offspring_chromosome;
     for (size_t m = 0; m < morgan.size(); ++m) {
       int num_recom = rndgen.poisson(morgan[m]);
@@ -221,7 +224,6 @@ double calc_freq_genome(const genome& g) {
   }
   freq *= 1.0 / g.size();
   return freq;
-
 }
 
 void organism::calc_freq_anc() {
@@ -278,9 +280,8 @@ void organism_simple::set_nonrandom_sex(double prob_male,
   return;
 }
 
-double organism_simple::gamete(const std::vector<double>& morgan, rnd_t& rndgen) const noexcept {
+double organism_simple::gamete(const std::vector<double>& morgan, rnd_t& rndgen)
+  const noexcept {
     // recombine chromosomes:
     return 0.5 * (chromosome1 + chromosome2);
 }
-
-
