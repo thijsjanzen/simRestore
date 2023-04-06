@@ -2,6 +2,7 @@ require(magrittr)
 require(ggplot2)
 require(shinyBS)
 
+data_storage <- c()
 
 ui <- fluidPage(
   theme = shinythemes::shinytheme("slate"),
@@ -77,6 +78,12 @@ ui <- fluidPage(
                                                                      value = FALSE),
                                                        shinyBS::bsTooltip("model_used_single",
                                                                           "When unchecked, a simplified genetic model is used. When checked, explicit recombination is modeled"),
+                                                       downloadButton("download_gen1", label = "Download Genetics"),
+                                                       shinyBS::bsTooltip("download_gen1",
+                                                                          "Download local ancestry information of the last generation as a tibble"),
+                                                       downloadButton("download_res1", label = "Download results"),
+                                                       shinyBS::bsTooltip("download_res1",
+                                                                          "Download results as text file")
                                       ),
                                       conditionalPanel(condition = "input.tabs1==3",
                                                        sliderInput(inputId = 'init_pop_size_3',
@@ -115,6 +122,13 @@ ui <- fluidPage(
                                                                      value = FALSE),
                                                        shinyBS::bsTooltip("model_used_s",
                                                                           "When unchecked, a simplified genetic model is used. When checked, explicit recombination is modeled"),
+                                                       downloadButton("download_gen2", label = "Download Genetics"),
+                                                       shinyBS::bsTooltip("download_gen2",
+                                                                          "Download local ancestry information of the last generation as a tibble"),
+                                                       downloadButton("download_res2", label = "Download results"),
+                                                       shinyBS::bsTooltip("download_res2",
+                                                                          "Download results as text file")
+
                                       ),
                                       conditionalPanel(condition = "input.tabs1==4",
                                                        sliderInput(inputId = 'init_pop_size_4',
@@ -158,6 +172,13 @@ ui <- fluidPage(
                                                                      value = FALSE),
                                                        shinyBS::bsTooltip("model_used_c",
                                                                           "When unchecked, a simplified genetic model is used. When checked, explicit recombination is modeled"),
+                                                       downloadButton("download_gen3", label = "Download Genetics"),
+                                                       shinyBS::bsTooltip("download_gen3",
+                                                                          "Download local ancestry information of the last generation as a tibble"),
+                                                       downloadButton("download_res3", label = "Download results"),
+                                                       shinyBS::bsTooltip("download_res3",
+                                                                          "Download results as text file")
+
                                       )
                              ),
                              tabPanel("Advanced", value = 2,
@@ -292,7 +313,7 @@ server <- function(input, output, session) {
   simple_data <- reactive({
     simRestore::simulate_policy(initial_population_size = input$init_pop_size_1,
                                 reproduction_success_rate = input$nest_succes_rate,
-                                breeding_risk = c(input$f_n_r, input$m_n_r),
+                                reproductive_risk = c(input$f_n_r, input$m_n_r),
                                 num_generations = input$num_gen_simple,
                                 K = input$K,
                                 pull = input$pull,
@@ -318,11 +339,13 @@ server <- function(input, output, session) {
                                 sex_ratio_put = input$sex_ratio_put,
                                 sex_ratio_pull = input$sex_ratio_pull,
                                 sex_ratio_offspring = input$sex_ratio_offspring,
-                                use_simplified_model = 1 - input$model_used_single)
+                                use_simplified_model = 1 - input$model_used_single,
+                             return_genetics = TRUE)
     })
 
   output$simple_plots <- renderPlot({
     to_plot <- simple_data()
+    data_storage <<- to_plot
 
     p1 <- to_plot$results %>%
       ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
@@ -373,7 +396,7 @@ server <- function(input, output, session) {
   optim_data_static <-  reactive({
     get_optim_data_static(initial_population_size = input$init_pop_size_3,
                           reproduction_success_rate = input$nest_succes_rate,
-                          breeding_risk = c(input$f_n_r, input$m_n_r),
+                          reproductive_risk = c(input$f_n_r, input$m_n_r),
                           num_generations = input$num_gen_optim_s,
                           K = input$K,
                           num_replicates = input$num_repl,
@@ -405,7 +428,7 @@ server <- function(input, output, session) {
   optim_data_complex <-  reactive({
     get_optim_data_adaptive(initial_population_size = input$init_pop_size_4,
                            reproduction_success_rate = input$nest_succes_rate,
-                           breeding_risk = c(input$f_n_r, input$m_n_r),
+                           reproductive_risk = c(input$f_n_r, input$m_n_r),
                            num_generations = input$num_gen_optim_c,
                            K = input$K,
                            num_replicates = input$num_repl,
@@ -438,7 +461,7 @@ server <- function(input, output, session) {
 
   output$Optim_simple_plots <- renderPlot({
     to_plot <- optim_data_static()
-
+    data_storage <<- to_plot
 
     final_freq <- round(to_plot$final_freq, digits = 3)
 
@@ -534,6 +557,7 @@ server <- function(input, output, session) {
 
   output$Optim_complex_plots <- renderPlot({
     to_plot <- optim_data_complex()
+    data_storage <<- to_plot
     for_text <- to_plot$curve
     # tibble with t, pull, put
     final_freq <- round(to_plot$final_freq, 3)
@@ -637,20 +661,66 @@ server <- function(input, output, session) {
 
   }, bg = "transparent")
 
-  output$downloadData_s <- downloadHandler(
+  output$download_res1 <- downloadHandler(
     filename = function() {
       paste0("dataset_", Sys.Date(), ".txt")
     },
     content = function(file) {
-      stored_data <- read.table(input$data_for_download)
-      write.table(stored_data, file, quote = FALSE)
+      # stored_data <- read.table(input$data_for_download)
+      write.table(data_storage$results, file, quote = FALSE)
+    }
+  )
+
+  output$download_gen1 <- downloadHandler(
+    filename = function() {
+      paste0("genetics_", Sys.Date(), ".txt")
+    },
+    content = function(file) {
+      write.table(data_storage$genetics, file, quote = FALSE)
+    }
+  )
+
+  output$download_res2 <- downloadHandler(
+    filename = function() {
+      paste0("dataset_", Sys.Date(), ".txt")
+    },
+    content = function(file) {
+      # stored_data <- read.table(input$data_for_download)
+      write.table(data_storage$results, file, quote = FALSE)
+    }
+  )
+
+  output$download_gen2 <- downloadHandler(
+    filename = function() {
+      paste0("genetics_", Sys.Date(), ".txt")
+    },
+    content = function(file) {
+      write.table(data_storage$genetics, file, quote = FALSE)
+    }
+  )
+
+  output$download_res3 <- downloadHandler(
+    filename = function() {
+      paste0("dataset_", Sys.Date(), ".txt")
+    },
+    content = function(file) {
+      write.table(data_storage$results, file, quote = FALSE)
+    }
+  )
+
+  output$download_gen3 <- downloadHandler(
+    filename = function() {
+      paste0("genetics_", Sys.Date(), ".txt")
+    },
+    content = function(file) {
+      write.table(data_storage$genetics, file, quote = FALSE)
     }
   )
 }
 
 get_optim_data_static <- function(initial_population_size,
                                   reproduction_success_rate,
-                                  breeding_risk,
+                                  reproductive_risk,
                                   num_generations,
                                   K,
                                   num_replicates,
@@ -695,7 +765,7 @@ get_optim_data_static <- function(initial_population_size,
   return(simRestore::optimize_static(initial_population_size =
                                        initial_population_size,
                                      reproduction_success_rate = reproduction_success_rate,
-                                     breeding_risk = breeding_risk,
+                                     reproductive_risk = reproductive_risk,
                                      num_generations = num_generations,
                                      K = K,
                                      num_replicates = num_replicates,
@@ -715,12 +785,13 @@ get_optim_data_static <- function(initial_population_size,
                                      sex_ratio_put = sex_ratio_put,
                                      sex_ratio_pull = sex_ratio_pull,
                                      sex_ratio_offspring = sex_ratio_offspring,
-                                     verbose = FALSE))
+                                     verbose = FALSE,
+                                     return_genetics = TRUE))
 }
 
 get_optim_data_adaptive <- function(initial_population_size,
                                    reproduction_success_rate,
-                                   breeding_risk,
+                                   reproductive_risk,
                                    num_generations,
                                    K,
                                    num_replicates,
@@ -747,7 +818,7 @@ get_optim_data_adaptive <- function(initial_population_size,
   return(simRestore::optimize_adaptive(
     initial_population_size = initial_population_size,
     reproduction_success_rate = reproduction_success_rate,
-    breeding_risk = breeding_risk,
+    reproductive_risk = reproductive_risk,
     num_generations = num_generations,
     K = K,
     num_replicates = num_replicates,
@@ -767,7 +838,8 @@ get_optim_data_adaptive <- function(initial_population_size,
     sex_ratio_put = sex_ratio_put,
     sex_ratio_pull = sex_ratio_pull,
     sex_ratio_offspring = sex_ratio_offspring,
-    verbose = FALSE))
+    verbose = FALSE,
+    return_genetics = TRUE))
 }
 
 shinyApp(ui = ui, server = server)
