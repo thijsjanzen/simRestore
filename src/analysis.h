@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <algorithm>
+#include <utility>
+#include <Rcpp.h>
 
 #include "rand_t.h"
 #include "main_functions.h"
@@ -9,7 +11,6 @@
 template <typename> struct tag { };
 
 struct parameters {
-
   parameters() {
     pop_size = 100;
     starting_freq = 0.2;
@@ -45,7 +46,7 @@ struct parameters {
              double n_f_r,
              int burnin,
              int m_a,
-             emp_genome& emp_gen_in,
+             const emp_genome& emp_gen_in,
              double cs_m,
              double cs_sd,
              double smin_in,
@@ -77,7 +78,7 @@ struct parameters {
   sex_ratio_pull(sex_ratio_remove),
   sex_ratio_offspring(sex_ratio_o),
   put_ancestry(put_anc),
-  empgen(emp_gen_in){
+  empgen(emp_gen_in) {
   }
 
   int pop_size;
@@ -104,9 +105,9 @@ struct parameters {
   double sex_ratio_pull;
   double sex_ratio_offspring;
 
-  double put_ancestry; // ancestry used when putting
+  double put_ancestry;  // ancestry used when putting
 
-  emp_genome empgen; // only used in molecular analysis
+  emp_genome empgen;  // only used in molecular analysis
 };
 
 template <class ANIMAL>
@@ -135,7 +136,7 @@ std::array<double, 3> calc_freq_focal(std::vector< ANIMAL >& f,
 
 template <typename ANIMAL>
 class analysis {
-public:
+ public:
   analysis() {
     params = parameters();
     introductions = {0};
@@ -150,12 +151,12 @@ public:
   }
 
   analysis(const parameters& param_in,
-           const NumericVector& put,
-           const NumericVector& take,
-           const NumericVector& mark,
+           const Rcpp::NumericVector& put,
+           const Rcpp::NumericVector& take,
+           const Rcpp::NumericVector& mark,
            bool verbose_output,
            bool molecular_data_flag,
-           const NumericMatrix& base_gen,
+           const Rcpp::NumericMatrix& base_gen,
            const std::vector< std::vector< double >>& anc_inf,
            int seed) :
   params(param_in),
@@ -172,16 +173,14 @@ public:
 
   parameters params;
 
-  int r;
-
-  NumericVector introductions;
-  NumericVector removal;
-  NumericVector markers;
+  Rcpp::NumericVector introductions;
+  Rcpp::NumericVector removal;
+  Rcpp::NumericVector markers;
 
   bool verbose;
   rnd_t rndgen;
   bool using_molecular_data;
-  NumericMatrix base_genomes;
+  Rcpp::NumericMatrix base_genomes;
   std::vector< std::vector< double >> anc_info;
   std::vector< organism_emp > pure;
   std::vector< ANIMAL > output_pop;
@@ -208,7 +207,7 @@ public:
     return run_result;
   }
 
-private:
+ private:
   int replicate;
 
   output_data simulate_policy(const std::vector< ANIMAL >& base_pop) {
@@ -217,10 +216,10 @@ private:
 
     int num_females = static_cast<int>((base_pop.size() / 2.0) * 1.0);
 
-    for(int i = 0; i < num_females; ++i) {
+    for (int i = 0; i < num_females; ++i) {
       females.push_back(base_pop[i]);
     }
-    for(int i = num_females; i < base_pop.size(); ++i) {
+    for (int i = num_females; i < base_pop.size(); ++i) {
       males.push_back(base_pop[i]);
     }
 
@@ -233,13 +232,12 @@ private:
                           females.size());
 
     for (int t = 1; t < params.number_of_generations; ++t) {
-
       update_pop(females,
                  males,
                  introductions[t],
                  removal[t]);
 
-      if(males.empty() && females.empty()) {
+      if (males.empty() && females.empty()) {
         if (verbose) {
            Rcpp::Rcout << "population went extinct\n"; force_output();
         }
@@ -261,15 +259,14 @@ private:
       std::array<double, 3> f2 = calc_freq_focal< ANIMAL >(males, females);
 
       frequencies.add_slice(replicate, t, f2,
-                            static_cast<int>( males.size() + females.size() ),
+                            static_cast<int>(males.size() + females.size() ),
                             males.size(),
                             females.size());
         if (verbose) {
-            Rcpp::Rcout << t << " " << f2[0] << "\t" << males.size()  << "\t" <<  females.size() << "\n"; force_output();
+            Rcpp::Rcout << t << " " << f2[0] << "\t" <<
+              males.size()  << "\t" <<  females.size() << "\n"; force_output();
         }
-
     }
-
     output_pop = males;
     for (const auto& i : females) {
       output_pop.push_back(i);
@@ -282,7 +279,6 @@ private:
                         int max_num) {
 
     if (max_num > ANIMALs.size()) max_num = ANIMALs.size();
-
     int num_dead = rndgen.binomial(max_num, death_rate);
     if (num_dead <= 0) return;
     for (int i = 0; i < num_dead; ++i) {
@@ -316,7 +312,7 @@ private:
                         number_removed * params.sex_ratio_pull,
                         males_added);
 
-    if(females.empty() && males.empty()) {
+    if (females.empty() && males.empty()) {
        return;
     }
 
@@ -325,7 +321,6 @@ private:
 
     pop_size = males.size() + females.size();
     double density_dependent_offspring_rate = calculate_death_rate(pop_size);
-
 
     if (males.size() < females.size()) {
       // not all females are mated, females should be shuffled
@@ -380,15 +375,14 @@ private:
                           int clutch_size,
                           double clutch_sd,
                           double prob_male) {
-
       if (rndgen.bernouilli(1.0 - params.nest_failure_rate)) {
       // nest is not predated
-      int num_offspring = static_cast<int>(rndgen.normal_positive(clutch_size, clutch_sd));
+      int num_offspring = static_cast<int>(rndgen.normal_positive(clutch_size,
+                                                                  clutch_sd));
 
       for (int j = 0; j < num_offspring; ++j) {
-
-        if (rndgen.uniform() > offspring_death_rate) { // immediately check survival to next generation
-
+        // immediately check survival to next generation
+        if (rndgen.uniform() > offspring_death_rate) {
           ANIMAL chick(mama.gamete(params.morgan, rndgen),
                      papa.gamete(params.morgan, rndgen),
                      prob_male,
@@ -409,7 +403,8 @@ private:
     float d = 1.f * N  / params.K;
     float numerator = 1 + powf(1.f * d / params.p, params.b);
 
-    return  1.f - (params.smax + 1.f * (params.smin - params.smax) / (numerator));
+    return  1.f - (params.smax +
+                   1.f * (params.smin - params.smax) / (numerator));
   }
 
   void old_age(std::vector< ANIMAL >& pop) {
@@ -455,8 +450,7 @@ private:
       add_to_population(input_pop,
                         number_added,
                         tag<ANIMAL>{},
-                        input_pop.back().get_sex()
-                       );
+                        input_pop.back().get_sex());
     }
     return;
   }
@@ -466,7 +460,7 @@ private:
                          const Sex& sex) {
     organism_simple to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
-    for(int i = 0; i < number_added; ++i) {
+    for (int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
     }
     return;
@@ -477,7 +471,7 @@ private:
                          const Sex& sex) {
     organism to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
-    for(int i = 0; i < number_added; ++i) {
+    for (int i = 0; i < number_added; ++i) {
       population.push_back(to_add);
     }
   }
@@ -486,7 +480,7 @@ private:
                          int number_added,
                          tag<organism_emp>,
                          const Sex& sex) {
-    for(int i = 0; i < number_added; ++i) {
+    for (int i = 0; i < number_added; ++i) {
       organism_emp to_add = draw_pure();
       to_add.set_sex(sex);
       population.emplace_back(to_add);
@@ -503,28 +497,28 @@ private:
 
     std::vector< ANIMAL > population(params.pop_size);
 
-    for(int i = 0; i < params.pop_size; ++i) {
+    for (int i = 0; i < params.pop_size; ++i) {
       ANIMAL parent1 = base_indiv;
       ANIMAL parent2 = base_indiv;
 
       float freq_focal = rndgen.normal_positive(params.starting_freq,
                                                  params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_focal) {
+      if (rndgen.uniform() < freq_focal) {
         parent1 = target_indiv;
       }
 
       freq_focal = rndgen.normal_positive(params.starting_freq,
                                            params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_focal) {
+      if (rndgen.uniform() < freq_focal) {
         parent2 = target_indiv;
       }
 
       double init_prob_female = 0.5;
 
       population[i] = ANIMAL(parent1.gamete(params.morgan, rndgen),
-                           parent2.gamete(params.morgan ,rndgen),
+                           parent2.gamete(params.morgan, rndgen),
                            init_prob_female, rndgen);
     }
     return population;
@@ -536,28 +530,28 @@ private:
 
     std::vector< ANIMAL > population(params.pop_size);
 
-    for(int i = 0; i < params.pop_size; ++i) {
+    for (int i = 0; i < params.pop_size; ++i) {
       ANIMAL parent1 = base_indiv;
       ANIMAL parent2 = base_indiv;
 
       float freq_focal = rndgen.normal_positive(params.starting_freq,
                                                  params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_focal) {
+      if (rndgen.uniform() < freq_focal) {
         parent1 = target_indiv;
       }
 
       freq_focal = rndgen.normal_positive(params.starting_freq,
                                            params.sd_starting_freq);
 
-      if(rndgen.uniform() < freq_focal) {
+      if (rndgen.uniform() < freq_focal) {
         parent2 = target_indiv;
       }
 
       double init_prob_female = 0.5;
 
       population[i] = ANIMAL(parent1.gamete(params.morgan, rndgen),
-                           parent2.gamete(params.morgan ,rndgen),
+                           parent2.gamete(params.morgan, rndgen),
                            init_prob_female, rndgen);
     }
 
@@ -569,10 +563,11 @@ private:
         int index2 = rndgen.random_number(params.pop_size);
         while(index2 == index1) index2 = rndgen.random_number(params.pop_size);
 
-        new_population[i] = ANIMAL(population[index1].gamete(params.morgan, rndgen),
-                                 population[index2].gamete(params.morgan, rndgen),
-                                 0.5,
-                                 rndgen);
+        new_population[i] =
+          ANIMAL(population[index1].gamete(params.morgan, rndgen),
+                 population[index2].gamete(params.morgan, rndgen),
+                 0.5,
+                 rndgen);
       }
       population.swap(new_population);
     }

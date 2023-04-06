@@ -1,19 +1,18 @@
 #pragma once
 
+#include "rand_t.h"
 #include <tuple>
 #include <stdio.h>
 #include <vector>
 #include <algorithm>
 #include <utility>
-#include "rand_t.h"
-
 
 struct junction {
     long double pos;
     int right;
 
     junction() {};
-    junction(long double loc, int B) ;
+    junction(long double loc, int B);
     junction(const junction& other);
     junction& operator=(const junction& other);
 };
@@ -24,7 +23,6 @@ using chrom = std::vector< junction >;
 using genome = std::vector< chrom >;
 
 struct organism {
-
     organism();
     organism(double init_freq, size_t num_chromosomes);
     organism(const genome& c1,
@@ -51,7 +49,7 @@ struct organism {
     const Sex& get_sex() const noexcept {return sex;}
     int age;
 
-private:
+ private:
     genome chromosome1;
     genome chromosome2;
     Sex sex;
@@ -60,18 +58,19 @@ private:
 };
 
 struct organism_simple {
-
     organism_simple();
     organism_simple(double initLoc, size_t num_chromosomes);
 
-    organism_simple(double chrom1, double chrom2, double prob_male, rnd_t& rndgen);
+    organism_simple(double chrom1, double chrom2,
+                    double prob_male, rnd_t& rndgen);
     organism_simple(const organism_simple& other);
     organism_simple& operator=(const organism_simple& other);
 
     void set_nonrandom_sex(double prob_male, rnd_t& rndgen);
     void set_sex(Sex s) {sex = s;}
 
-    double gamete(const std::vector<double>& morgan, rnd_t& rndgen) const noexcept;
+    double gamete(const std::vector<double>& morgan,
+                  rnd_t& rndgen) const noexcept;
 
     const double& get_chromosome1() const noexcept {return chromosome1;}
     const double& get_chromosome2() const noexcept {return chromosome2;}
@@ -79,7 +78,8 @@ struct organism_simple {
     const Sex& get_sex() const noexcept {return sex;}
 
     int age;
-private:
+
+ private:
     double chromosome1;
     double chromosome2;
     double freq_anc;

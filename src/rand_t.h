@@ -11,7 +11,7 @@ struct rnd_t {
     rndgen = rndgen_t;
   }
 
-  rnd_t(size_t seed) {
+  explicit rnd_t(size_t seed) {
     std::mt19937 rndgen_t(seed);
     rndgen = rndgen_t;
   }
@@ -20,7 +20,7 @@ struct rnd_t {
     std::uniform_real_distribution<float>(0.0f, 1.0f);
 
   int random_number(int n)    {
-    if(n <= 1) return 0;
+    if (n <= 1) return 0;
     return std::uniform_int_distribution<> (0, n - 1)(rndgen);
   }
 
@@ -50,7 +50,7 @@ struct rnd_t {
   double normal_positive(double m, double s) {
     std::normal_distribution<double> norm_dist(m, s);
     double  output = norm_dist(rndgen);
-    while(output < 0.0) output = norm_dist(rndgen);
+    while (output < 0.0) output = norm_dist(rndgen);
     return output;
   }
 };

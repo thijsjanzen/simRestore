@@ -6,11 +6,9 @@
 //
 //
 
-#include "./organism.h"
+#include "organism.h"
 #include <algorithm>
 #include <cassert>
-
-#include <Rcpp.h>
 
 std::vector<junction> recombine(const std::vector<junction>& chromosome1,
                                 const std::vector<junction>& chromosome2,
@@ -97,11 +95,11 @@ organism::organism(double init_freq, size_t num_chromosomes)    {
         age = 0;
       } else if (init_freq == 0.0) {
         junction left(0.0, 0);
-        junction right(1,  -1);
-        chrom1.push_back( left  );
-        chrom1.push_back( right );
-        chrom2.push_back( left  );
-        chrom2.push_back( right );
+        junction right(1, -1);
+        chrom1.push_back(left);
+        chrom1.push_back(right);
+        chrom2.push_back(left);
+        chrom2.push_back(right);
 
         freq_anc = init_freq;
         age = 0;

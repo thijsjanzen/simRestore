@@ -1,11 +1,8 @@
 #pragma once
 
-#include "organism.h"
+#include "./organism.h"
 #include <vector>
 #include <array>
-#include <Rcpp.h>
-using namespace Rcpp;
-
 
 struct output_entry {
   int replicate;
@@ -18,8 +15,7 @@ struct output_entry {
   size_t num_females;
 
   output_entry() {
-
-  }
+    }
 
   output_entry(int r, size_t time, double f, double f_m, double f_f,
                size_t n, size_t n_m, size_t n_f) :
@@ -56,18 +52,17 @@ struct output_data {
                  size_t n,
                  size_t n_m,
                  size_t n_f) {
-    data_.emplace_back(output_entry(replicate, t, f[0], f[1], f[2], n, n_m, n_f));
+    data_.emplace_back(
+      output_entry(replicate, t, f[0], f[1], f[2], n, n_m, n_f));
   }
 
   const std::vector< output_entry>& data() const noexcept {return data_;}
   const int size() const noexcept {return data_.size();}
 
-  const output_entry operator[](size_t i){ return data_[i];}
+  const output_entry operator[](size_t i) {return data_[i];}
 
-private:
+ private:
   std::vector< output_entry > data_;
 };
-
-
 
 void force_output();
