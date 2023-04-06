@@ -1,3 +1,14 @@
+// Copyright 2023 Thijs Janzen
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
 #pragma once
 
 #include <vector>
@@ -111,24 +122,24 @@ struct parameters {
 };
 
 template <class ANIMAL>
-std::array<double, 3> calc_freq_focal(std::vector< ANIMAL >& f,
-                                      std::vector< ANIMAL >& m) {
+std::array<double, 3> calc_freq_focal(std::vector< ANIMAL >* f,
+                                      std::vector< ANIMAL >* m) {
   std::array<double, 3> avg_freq = {0.0, 0.0, 0.0};
 
-  for (auto& i : f) {
+  for (auto& i : *f) {
     double freq_i = i.get_freq_anc();
     avg_freq[2] += freq_i;
     avg_freq[0] += freq_i;
   }
-  for (auto& i : m) {
+  for (auto& i : *m) {
     double freq_i = i.get_freq_anc();
     avg_freq[1] += freq_i;
     avg_freq[0] += freq_i;
   }
 
-  avg_freq[0] *= 1.0 / (f.size() + m.size());
-  avg_freq[1] *= 1.0 / (m.size());
-  avg_freq[2] *= 1.0 / (f.size());
+  avg_freq[0] *= 1.0 / ((*f).size() + (*m).size());
+  avg_freq[1] *= 1.0 / ((*m).size());
+  avg_freq[2] *= 1.0 / ((*f).size());
 
   return avg_freq;
 }
@@ -224,7 +235,7 @@ class analysis {
     }
 
     output_data frequencies;
-    std::array<double, 3> f1 = calc_freq_focal<ANIMAL>(females, males);
+    std::array<double, 3> f1 = calc_freq_focal<ANIMAL>(&females, &males);
 
     frequencies.add_slice(replicate, 0, f1,
                           static_cast<int>(females.size() + males.size()),
@@ -232,8 +243,8 @@ class analysis {
                           females.size());
 
     for (int t = 1; t < params.number_of_generations; ++t) {
-      update_pop(females,
-                 males,
+      update_pop(&females,
+                 &males,
                  introductions[t],
                  removal[t]);
 
@@ -256,7 +267,7 @@ class analysis {
         cul_population(females, 1e6);
       }
 
-      std::array<double, 3> f2 = calc_freq_focal< ANIMAL >(males, females);
+      std::array<double, 3> f2 = calc_freq_focal< ANIMAL >(&males, &females);
 
       frequencies.add_slice(replicate, t, f2,
                             static_cast<int>(males.size() + females.size() ),
@@ -274,25 +285,25 @@ class analysis {
     return frequencies;
   }
 
-  void additional_death(std::vector< ANIMAL>& ANIMALs,
+  void additional_death(std::vector< ANIMAL>* ANIMALs,
                         double death_rate,
                         int max_num) {
-    if (max_num > ANIMALs.size()) max_num = ANIMALs.size();
+    if (max_num > (*ANIMALs).size()) max_num = (*ANIMALs).size();
     int num_dead = rndgen.binomial(max_num, death_rate);
     if (num_dead <= 0) return;
     for (int i = 0; i < num_dead; ++i) {
-      int index = rndgen.random_number(ANIMALs.size());
-      ANIMALs[index] = ANIMALs.back();
-      ANIMALs.pop_back();
+      int index = rndgen.random_number((*ANIMALs).size());
+      (*ANIMALs)[index] = (*ANIMALs).back();
+      (*ANIMALs).pop_back();
     }
     return;
   }
 
-  void update_pop(std::vector< ANIMAL >& females,
-                  std::vector< ANIMAL >& males,
+  void update_pop(std::vector< ANIMAL >* females,
+                  std::vector< ANIMAL >* males,
                   int number_added,
                   int number_removed) {
-    size_t pop_size = females.size() + males.size();
+    size_t pop_size = (*females).size() + (*males).size();
 
     double density_dependent_death_rate = calculate_death_rate(pop_size);
 
@@ -310,63 +321,63 @@ class analysis {
                         number_removed * params.sex_ratio_pull,
                         males_added);
 
-    if (females.empty() && males.empty()) {
+    if ((*females).empty() && (*males).empty()) {
        return;
     }
 
     std::vector< ANIMAL > offspring_male;
     std::vector< ANIMAL > offspring_female;
 
-    pop_size = males.size() + females.size();
+    pop_size = (*males).size() + (*females).size();
     double density_dependent_offspring_rate = calculate_death_rate(pop_size);
 
-    if (males.size() < females.size()) {
+    if ((*males).size() < (*females).size()) {
       // not all females are mated, females should be shuffled
-      std::shuffle(females.begin(), females.end(), rndgen.rndgen);
+      std::shuffle((*females).begin(), (*females).end(), rndgen.rndgen);
     } else {
       // not all males are mated, males should be shuffled
-      std::shuffle(males.begin(), males.end(), rndgen.rndgen);
+      std::shuffle((*males).begin(), (*males).end(), rndgen.rndgen);
     }
 
-    for (int i = 0, j = 0; i < females.size() && j < males.size(); ++i, ++j) {
+    for (int i = 0, j = 0; i < (*females).size() && j < (*males).size(); ++i, ++j) {
       // now, mated females and females experience additional death
       if (rndgen.bernouilli(params.female_death_rate)) {
-        females[i] = females.back();
-        females.pop_back();
+        (*females)[i] = (*females).back();
+        (*females).pop_back();
         --i;
       } else {
-        generate_offspring(offspring_male,
-                           offspring_female,
-                           females[i],
-                           males[j],
+        generate_offspring(&offspring_male,
+                           &offspring_female,
+                           (*females)[i],
+                           (*males)[j],
                            density_dependent_offspring_rate,
                            params.clutch_size_mean,
                            params.clutch_size_sd,
                            params.sex_ratio_offspring);
         if (rndgen.bernouilli(params.male_death_rate)) {
-          males[j] = males.back();
-          males.pop_back();
+          (*males)[j] = (*males).back();
+          (*males).pop_back();
           --j;
         }
       }
     }
 
     if (!offspring_male.empty()) {
-      males.insert(males.end(),
-                   offspring_male.begin(), offspring_male.end());
+      (*males).insert((*males).end(),
+                      offspring_male.begin(), offspring_male.end());
     }
 
 
     if (!offspring_female.empty()) {
-      females.insert(females.end(),
+      (*females).insert((*females).end(),
                      offspring_female.begin(), offspring_female.end());
     }
 
     return;
   }
 
-  void generate_offspring(std::vector< ANIMAL >& offspring_male,
-                          std::vector< ANIMAL >& offspring_female,
+  void generate_offspring(std::vector< ANIMAL >* offspring_male,
+                          std::vector< ANIMAL >* offspring_female,
                           const ANIMAL& mama,
                           const ANIMAL& papa,
                           double offspring_death_rate,
@@ -387,9 +398,9 @@ class analysis {
                      rndgen);
 
           if (chick.get_sex() == female) {
-            offspring_female.push_back(std::move(chick));
+            (*offspring_female).push_back(std::move(chick));
           } else {
-            offspring_male.push_back(std::move(chick));
+            (*offspring_male).push_back(std::move(chick));
           }
         }
       }
@@ -416,28 +427,28 @@ class analysis {
     }
   }
 
-  void update_start_season(std::vector< ANIMAL >& input_pop,
+  void update_start_season(std::vector< ANIMAL >* input_pop,
                            double death_rate,
                            int number_removed,
                            int number_added) {
     // first, regular death due to old age
-    old_age(input_pop);
+    old_age(*input_pop);
 
     // then, death due to survival:
     additional_death(input_pop,
                      death_rate,
-                     input_pop.size());
+                     (*input_pop).size());
 
     // then, they can be killed (until number removed is reached)
     if (number_removed > 0) {
-      if (number_removed >= input_pop.size()) {
-        input_pop.clear();
+      if (number_removed >= (*input_pop).size()) {
+        (*input_pop).clear();
       } else {
         for (int i = 0; i < number_removed; ++i) {
-          int unlucky_indiv = rndgen.random_number(input_pop.size());
-          input_pop[unlucky_indiv] = input_pop.back();
-          input_pop.pop_back();
-          if (input_pop.empty()) break;
+          int unlucky_indiv = rndgen.random_number((*input_pop).size());
+          (*input_pop)[unlucky_indiv] = (*input_pop).back();
+          (*input_pop).pop_back();
+          if ((*input_pop).empty()) break;
         }
       }
     }
@@ -447,40 +458,40 @@ class analysis {
       add_to_population(input_pop,
                         number_added,
                         tag<ANIMAL>{},
-                        input_pop.back().get_sex());
+                        (*input_pop).back().get_sex());
     }
     return;
   }
 
-  void add_to_population(std::vector<organism_simple>& population,
+  void add_to_population(std::vector<organism_simple>* population,
                          int number_added, tag<organism_simple>,
                          const Sex& sex) {
     organism_simple to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
     for (int i = 0; i < number_added; ++i) {
-      population.push_back(to_add);
+      (*population).push_back(to_add);
     }
     return;
   }
 
-  void add_to_population(std::vector<organism>& population,
+  void add_to_population(std::vector<organism>* population,
                          int number_added, tag<organism>,
                          const Sex& sex) {
     organism to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);
     for (int i = 0; i < number_added; ++i) {
-      population.push_back(to_add);
+      (*population).push_back(to_add);
     }
   }
 
-  void add_to_population(std::vector<organism_emp>& population,
+  void add_to_population(std::vector<organism_emp>* population,
                          int number_added,
                          tag<organism_emp>,
                          const Sex& sex) {
     for (int i = 0; i < number_added; ++i) {
       organism_emp to_add = draw_pure();
       to_add.set_sex(sex);
-      population.emplace_back(to_add);
+      (*population).emplace_back(to_add);
     }
   }
 

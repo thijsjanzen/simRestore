@@ -1,7 +1,7 @@
 context("simulate simple and nonsimple")
 
 test_that("compare use", {
-  vx <- simulate_policy(initial_population_size = 1000,
+  vx <- simRestore::simulate_policy(initial_population_size = 1000,
                         K = 400,
                         num_generations = 20,
                         pull = 0,
@@ -12,7 +12,7 @@ test_that("compare use", {
                         use_simplified_model = FALSE,
                         verbose = FALSE)
 
-  vy <- simulate_policy(initial_population_size = 1000,
+  vy <- simRestore::simulate_policy(initial_population_size = 1000,
                         K = 400,
                         num_generations = 20,
                         pull = 0,
