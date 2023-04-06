@@ -39,10 +39,12 @@ optimize_static <- function(target_frequency = 0.99,
                             sex_ratio_offspring = 0.5,
                             ancestry_put = 1.0,
                             use_simplified_model = TRUE,
-                            verbose = FALSE) {
+                            verbose = FALSE,
+                            return_genetics = FALSE) {
 
   fit_adding <- function(param,
-                         return_results = FALSE) {
+                         return_results = FALSE,
+                         return_gens = FALSE) {
     result <- simulate_policy(initial_population_size = initial_population_size,
                               reproduction_success_rate =
                                 reproduction_success_rate,
@@ -66,7 +68,8 @@ optimize_static <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               use_simplified_model = use_simplified_model,
-                              verbose = verbose)
+                              verbose = verbose,
+                              return_genetics = return_gens)
 
     b <- subset(result$results, result$results$t == num_generations)
     freq <- mean(b$freq_focal_ancestry)
@@ -77,12 +80,13 @@ optimize_static <- function(target_frequency = 0.99,
     if (!return_results) {
       return(fit)
     } else {
-      return(result$results)
+      return(result)
     }
   }
 
   fit_killing <- function(param,
-                          return_results = FALSE) {
+                          return_results = FALSE,
+                          return_gen = FALSE) {
 
     result <- simulate_policy(initial_population_size = initial_population_size,
                               reproduction_success_rate =
@@ -107,8 +111,8 @@ optimize_static <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               use_simplified_model = use_simplified_model,
-                              verbose = verbose)
-
+                              verbose = verbose,
+                              return_genetics = return_gen)
 
     b <- subset(result$results, result$results$t == num_generations)
     if (length(b$replicate) < 1) {
@@ -123,12 +127,13 @@ optimize_static <- function(target_frequency = 0.99,
     if (!return_results) {
       return(fit)
     } else {
-      return(result$results)
+      return(result)
     }
   }
 
   fit_both <- function(param,
-                       return_results = FALSE) {
+                       return_results = FALSE,
+                       return_gen = FALSE) {
     # normal fit is < 1, this is equal to infinite, but without warning
     if (param[[1]] < 0) return(Inf)
     if (param[[2]] < 0) return(Inf)
@@ -158,7 +163,8 @@ optimize_static <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               use_simplified_model = use_simplified_model,
-                              verbose = verbose)
+                              verbose = verbose,
+                              return_genetics = return_gen)
 
     b <- subset(result$results, result$results$t == num_generations)
     if (length(b$replicate) < 1) {
@@ -173,7 +179,7 @@ optimize_static <- function(target_frequency = 0.99,
     if (!return_results) {
       return(fit)
     } else {
-      return(result$results)
+      return(result)
     }
   }
 
@@ -187,7 +193,12 @@ optimize_static <- function(target_frequency = 0.99,
                                                   reltol = 0.01))
     result$pull <- (10^fit_result$par[[1]])
     result$put  <- (10^fit_result$par[[2]])
-    result$results <- fit_both(fit_result$par, return_results = TRUE)
+
+    all_res <- fit_both(fit_result$par, return_results = TRUE,
+                        return_gen = return_genetics)
+
+    result$results <- all_res$results
+    if (return_genetics) result$genetics <- all_res$genetics
 
     result$curve   <- tibble::tibble(t = 1:num_generations,
                                      pull = rep(result$pull, num_generations),
@@ -211,7 +222,13 @@ optimize_static <- function(target_frequency = 0.99,
 
     result$put <- floor(10^fit_result$minimum[[1]])
     result$pull <- abs(optimize_pull)
-    result$results <- fit_adding(fit_result$minimum, return_results = TRUE)
+
+    all_res <- fit_adding(fit_result$minimum,
+                          return_results = TRUE,
+                          return_gen = return_genetics)
+
+    result$results <- all_res$results
+    if (return_genetics) result$genetics <- all_res$genetics
     result$curve   <- tibble::tibble(t = 1:num_generations,
                                      put = rep(result$put,
                                                num_generations),
@@ -244,7 +261,13 @@ optimize_static <- function(target_frequency = 0.99,
 
     result$pull <- floor(fit_result$minimum[[1]])
     result$put  <- abs(optimize_put)
-    result$results <- fit_killing(fit_result$minimum, return_results = TRUE)
+    all_res <- fit_killing(fit_result$minimum, return_results = TRUE,
+                           return_gen = return_genetics)
+
+    result$results <- all_res$results
+    if (return_genetics) result$genetics <- all_res$genetics
+
+
     if (length(result$results) == 1) {
       warning("No optimum found, most likely the population is extinct")
       result$pull <- NA

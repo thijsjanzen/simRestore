@@ -98,3 +98,33 @@ test_that("error", {
   testthat::expect_true(is.na(vx$curve))
   testthat::expect_true(is.na(vx$final_freq))
 })
+
+
+test_that("genetics", {
+  vx <- simRestore::optimize_static(num_generations = 5,
+                                    target_frequency = 0.99,
+                                    optimize_put = TRUE,
+                                    optimize_pull = FALSE,
+                                    num_replicates = 1,
+                                    return_genetics = TRUE)
+  # just check it is there:
+  testthat::expect_true(inherits(vx$genetics, "tbl_df"))
+
+  vx <- simRestore::optimize_static(num_generations = 5,
+                                    target_frequency = 0.99,
+                                    optimize_put = FALSE,
+                                    optimize_pull = TRUE,
+                                    num_replicates = 1,
+                                    return_genetics = TRUE)
+  # just check it is there:
+  testthat::expect_true(inherits(vx$genetics, "tbl_df"))
+
+  vx <- simRestore::optimize_static(num_generations = 5,
+                                    target_frequency = 0.99,
+                                    optimize_put = TRUE,
+                                    optimize_pull = TRUE,
+                                    num_replicates = 1,
+                                    return_genetics = TRUE)
+  # just check it is there:
+  testthat::expect_true(inherits(vx$genetics, "tbl_df"))
+})

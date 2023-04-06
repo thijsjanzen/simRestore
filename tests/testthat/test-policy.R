@@ -89,7 +89,7 @@ test_that("genetics output", {
   num_indiv <- tail(vx$results$num_individuals, 1)
   testthat::expect_equal(length(unique(vx$genetics$individual)), num_indiv)
 
-  num_males <- tail(vx$results$num_males, 1);
+  num_males <- tail(vx$results$num_males, 1)
   num_females <- tail(vx$results$num_females, 1)
   count_sex <- c(0, 0)
   for (x in unique(vx$genetics$individual)) {
@@ -118,7 +118,7 @@ test_that("genetics output", {
   num_indiv <- tail(vx$results$num_individuals, 1)
   testthat::expect_equal(length(unique(vx$genetics$individual)), num_indiv)
 
-  num_males <- tail(vx$results$num_males, 1);
+  num_males <- tail(vx$results$num_males, 1)
   num_females <- tail(vx$results$num_females, 1)
   count_sex <- c(0, 0)
   for (x in unique(vx$genetics$individual)) {

@@ -67,10 +67,12 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               sex_ratio_offspring = 0.5,
                               ancestry_put = 1.0,
                               use_simplified_model = TRUE,
-                              verbose = FALSE) {
+                              verbose = FALSE,
+                              return_genetics = FALSE) {
 
   optim_adding <- function(param, # function to optimize putting
-                           return_results = FALSE) {
+                           return_results = FALSE,
+                           return_gen = FALSE) {
     if (min(param) < 0) return(Inf)
 
     decay_curve <- get_decay_curve(optimize_put, param, num_generations)
@@ -100,7 +102,8 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               sex_ratio_pull = sex_ratio_pull,
                               sex_ratio_offspring = sex_ratio_offspring,
                               use_simplified_model = use_simplified_model,
-                              verbose = FALSE)
+                              verbose = FALSE,
+                              return_genetics = return_gen)
 
     b <- subset(result$results, result$results$t == num_generations)
     freq <- mean(b$freq_focal_ancestry)
@@ -114,12 +117,14 @@ optimize_adaptive <- function(target_frequency = 0.99,
       return_val <- c()
       return_val$results <- result$result
       return_val$curve <- decay_curve
+      if (return_gen) return_val$genetics <- result$genetics
       return(return_val)
     }
   }
 
   optim_adding2 <- function(param,  # function to optimize pulling
-                            return_results = FALSE) {
+                            return_results = FALSE,
+                            return_gen = FALSE) {
     if (min(param) < 0) return(Inf)
     decay_curve <- get_decay_curve(optimize_pull, param, num_generations)
 
@@ -148,7 +153,8 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               use_simplified_model = use_simplified_model,
-                              verbose = FALSE)
+                              verbose = FALSE,
+                              return_genetics = return_gen)
 
     b <- subset(result$results, result$results$t == num_generations)
     freq <- mean(b$freq_focal_ancestry)
@@ -162,12 +168,14 @@ optimize_adaptive <- function(target_frequency = 0.99,
       return_val <- c()
       return_val$results <- result$result
       return_val$curve <- decay_curve
+      if (return_gen) return_val$genetics <- result$genetics
       return(return_val)
     }
   }
 
   optim_adding3 <- function(param,  # function to optimize pulling and putting
-                            return_results = FALSE) {
+                            return_results = FALSE,
+                            return_gen = FALSE) {
     if (min(param) < 0) return(Inf)
     decay_curve <- get_decay_curve(optimize_put, c(param[[1]], param[[2]]),
                                    num_generations)
@@ -199,7 +207,8 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               use_simplified_model = use_simplified_model,
-                              verbose = FALSE)
+                              verbose = FALSE,
+                              return_genetics = return_gen)
 
     b <- subset(result$results, result$results$t == num_generations)
     freq <- mean(b$freq_focal_ancestry)
@@ -214,6 +223,7 @@ optimize_adaptive <- function(target_frequency = 0.99,
       return_val <- c()
       return_val$results <- result$result
       return_val$curve <- cbind(decay_curve, decay_curve2)
+      if (return_gen) return_val$genetics <- result$genetics
       return(return_val)
     }
   }
@@ -228,13 +238,15 @@ optimize_adaptive <- function(target_frequency = 0.99,
 
     result$put <- get_decay_curve(optimize_put, fit_result$par, num_generations)
     result$pull <- optimize_pull
-    interm_result <- optim_adding(fit_result$par, return_results = TRUE)
+    interm_result <- optim_adding(fit_result$par, return_results = TRUE,
+                                  return_gen = return_genetics)
     result$results <- interm_result$results
     result$curve   <- tibble::tibble(t = 1:num_generations,
                                      put = interm_result$curve)
     result$final_freq <- mean(
       subset(result$results,
              result$results$t == num_generations)$freq_focal_ancestry)
+    if (return_genetics) result$genetics <- interm_result$genetics
   }
 
   if (optimize_put == 0 && optimize_pull > 0) {
@@ -246,13 +258,15 @@ optimize_adaptive <- function(target_frequency = 0.99,
     result$pull <- get_decay_curve(optimize_pull, fit_result$par,
                                    num_generations)
     result$put  <- optimize_put
-    interm_result <- optim_adding2(fit_result$par, return_results = TRUE)
+    interm_result <- optim_adding2(fit_result$par, return_results = TRUE,
+                                   return_gen = return_genetics)
     result$results <- interm_result$results
     result$curve   <- tibble::tibble(t = 1:num_generations,
                                      pull = interm_result$curve)
     result$final_freq <- mean(
       subset(result$results,
              result$results$t == num_generations)$freq_focal_ancestry)
+    if (return_genetics) result$genetics <- interm_result$genetics
   }
 
   if (optimize_put > 0 && optimize_pull > 0) {
@@ -268,7 +282,8 @@ optimize_adaptive <- function(target_frequency = 0.99,
     result$put  <- get_decay_curve(optimize_put,
                                    fit_result$par[3:4],
                                    num_generations)
-    interm_result <- optim_adding3(fit_result$par, return_results = TRUE)
+    interm_result <- optim_adding3(fit_result$par, return_results = TRUE,
+                                   return_gen = return_genetics)
     result$results <- interm_result$results
     result$curve   <- tibble::tibble(t = 1:num_generations,
                                      put = interm_result$curve[, 1],
@@ -276,6 +291,7 @@ optimize_adaptive <- function(target_frequency = 0.99,
     result$final_freq <- mean(
       subset(result$results,
              result$results$t == num_generations)$freq_focal_ancestry)
+    if (return_genetics) result$genetics <- interm_result$genetics
   }
 
   return(result)

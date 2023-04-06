@@ -59,3 +59,32 @@ testthat::expect_output(
                                               verbose = TRUE)
 )
 })
+
+test_that("genetics", {
+  vx <- simRestore::optimize_adaptive(num_generations = 5,
+                                      target_frequency = 0.99,
+                                      optimize_put = 100,
+                                      optimize_pull = 0,
+                                      num_replicates = 1,
+                                      return_genetics = TRUE)
+  # just check it is there:
+  testthat::expect_true(inherits(vx$genetics, "tbl_df"))
+
+  vx <- simRestore::optimize_adaptive(num_generations = 5,
+                                      target_frequency = 0.99,
+                                      optimize_put = 0,
+                                      optimize_pull = 100,
+                                      num_replicates = 1,
+                                      return_genetics = TRUE)
+  # just check it is there:
+  testthat::expect_true(inherits(vx$genetics, "tbl_df"))
+
+  vx <- simRestore::optimize_adaptive(num_generations = 5,
+                                      target_frequency = 0.99,
+                                      optimize_put = 100,
+                                      optimize_pull = 30,
+                                      num_replicates = 1,
+                                      return_genetics = TRUE)
+  # just check it is there:
+  testthat::expect_true(inherits(vx$genetics, "tbl_df"))
+})

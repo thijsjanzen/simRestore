@@ -33,7 +33,8 @@ optimize_adaptive(
   sex_ratio_offspring = 0.5,
   ancestry_put = 1,
   use_simplified_model = TRUE,
-  verbose = FALSE
+  verbose = FALSE,
+  return_genetics = FALSE
 )
 }
 \arguments{
@@ -126,6 +127,14 @@ This speeds up simulation considerably, and should be preferred when not
 interested in high detail genetic changes. Default is TRUE.}
 
 \item{verbose}{provides verbose output if TRUE.}
+
+\item{return_genetics}{returns a tibble containing all local ancestry
+information for all individuals. This tibble contains the following
+informative columns: 1) time (the last generation), 2) replicate,
+3) individual, 4) sex (0 = male, 1 = female), 5) Linkage Group
+(if use_simplified_model == FALSE), 6) chromosome (1 or 2,
+returning phased results), 7) position (if use_simplified_model == FALSE) and
+8) local ancestry (0 or 1).}
 }
 \value{
 tibble
