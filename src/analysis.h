@@ -18,6 +18,7 @@
 
 #include "rand_t.h" // NOLINT [build/include_subdir]
 #include "main_functions.h" // NOLINT [build/include_subdir]
+#include "util.h" // NOLINT [build/include_subdir]
 
 template <typename> struct tag { };
 
@@ -218,6 +219,32 @@ class analysis {
     return run_result;
   }
 
+  void export_genetics(Rcpp::NumericMatrix* output_genetics) {
+    std::vector< std::vector< double >> all_info;
+    size_t cnt = 0;
+    for (const auto& indiv : output_pop) {
+      auto indiv_info = indiv.get_genomic_info(params.number_of_generations,
+                                               replicate,
+                                               cnt);
+      all_info.insert(all_info.end(),
+                      indiv_info.begin(), indiv_info.end());
+      cnt++;
+    }
+
+    if (output_genetics->nrow() > 0) {
+      // there is previous data here, from previous replicates
+      std::vector< std::vector< double >> prev_vec;
+      numericmatrix_to_vector(output_genetics, &prev_vec);
+      prev_vec.insert(prev_vec.end(), all_info.begin(), all_info.end());
+      all_info = prev_vec;
+    }
+
+    // convert to numeric matrix
+    vector_to_numericmatrix(all_info,
+                            output_genetics);
+    return;
+  }
+
  private:
   int replicate;
 
@@ -229,9 +256,11 @@ class analysis {
 
     for (int i = 0; i < num_females; ++i) {
       females.push_back(base_pop[i]);
+      females.back().set_sex(female);
     }
     for (int i = num_females; i < base_pop.size(); ++i) {
       males.push_back(base_pop[i]);
+      males.back().set_sex(male);
     }
 
     output_data frequencies;
@@ -528,8 +557,8 @@ class analysis {
       double init_prob_female = 0.5;
 
       population[i] = ANIMAL(parent1.gamete(params.morgan, &rndgen),
-                           parent2.gamete(params.morgan, &rndgen),
-                           init_prob_female, &rndgen);
+                             parent2.gamete(params.morgan, &rndgen),
+                             init_prob_female, &rndgen);
     }
     return population;
   }

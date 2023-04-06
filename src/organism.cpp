@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <cassert>
 
+#include <iostream>
+
 std::vector<junction> recombine(const std::vector<junction>& chromosome1,
                                 const std::vector<junction>& chromosome2,
                                 const std::vector<double>& recom_positions) {
@@ -127,6 +129,7 @@ organism::organism(double init_freq,
 
     freq_anc = init_freq;
     age = 0;
+    sex = female;
     return;
 }
 
@@ -248,9 +251,9 @@ organism_simple::organism_simple(double initLoc, size_t num_chromosomes) {
 }
 
 organism_simple::organism_simple(double chrom1,
-                         double chrom2,
-                         double prob_female,
-                         rnd_t* rndgen) :
+                                 double chrom2,
+                                 double prob_female,
+                                 rnd_t* rndgen) :
     chromosome1(chrom1), chromosome2(chrom2) {
     freq_anc = 0.5 * (chromosome1 + chromosome2);
     set_nonrandom_sex(prob_female, rndgen);
@@ -288,4 +291,69 @@ double organism_simple::gamete(const std::vector<double>& morgan,
   const noexcept {
     // recombine chromosomes:
     return 0.5 * (chromosome1 + chromosome2);
+}
+
+std::vector< std::vector<double> >
+  organism_simple::get_genomic_info(int t,
+                                    int replicate,
+                                    int indiv) const {
+  std::vector< std::vector<double> > genome_info;
+
+  double focal_sex = 0.0;
+  if (sex == female) focal_sex = 1.0;
+
+  genome_info.push_back({static_cast<double>(t),
+                         static_cast<double>(replicate),
+                         static_cast<double>(indiv),
+                         focal_sex,
+                         1.0,
+                         chromosome1});
+  genome_info.push_back({static_cast<double>(t),
+                         static_cast<double>(replicate),
+                         static_cast<double>(indiv),
+                         focal_sex,
+                         2.0,
+                         chromosome2});
+
+  return genome_info;
+}
+
+
+std::vector< std::vector<double> >
+  organism::get_genomic_info(int t,
+                             int replicate,
+                             int indiv) const {
+
+  double focal_sex = 0.0;
+  if (sex == female) focal_sex = 1.0;
+
+  std::vector< std::vector<double> > genome_info;
+  for (int i = 0; i < chromosome1.size(); ++i) {
+    for (const auto& j : chromosome1[i]) {
+
+      genome_info.push_back(
+          {static_cast<double>(t),
+           static_cast<double>(replicate),
+           static_cast<double>(indiv),
+           focal_sex,
+           static_cast<double>(i),
+           1.0,
+           static_cast<double>(j.pos),
+           static_cast<double>(j.right)});
+    }
+  }
+  for (int i = 0; i < chromosome2.size(); ++i) {
+    for (const auto& j : chromosome2[i]) {
+      genome_info.push_back(
+      {static_cast<double>(t),
+       static_cast<double>(replicate),
+       static_cast<double>(indiv),
+       focal_sex,
+       static_cast<double>(i),
+       2.0,
+       static_cast<double>(j.pos),
+       static_cast<double>(j.right)});
+    }
+  }
+  return genome_info;
 }

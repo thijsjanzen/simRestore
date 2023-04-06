@@ -117,6 +117,14 @@ interested in high detail genetic changes. Default is TRUE.}
 result of breeding (e.g. as a result of protecting the offspring against
 predators). Provide as a vector where the first index indicates the risk for
 females, the second the risk for males.}
+
+\item{return_genetics}{returns a tibble containing all local ancestry
+information for all individuals. This tibble contains the following
+informative columns: 1) time (the last generation), 2) replicate,
+3) individual, 4) sex (0 = male, 1 = female), 5) Linkage Group
+(if use_simplified_model == FALSE), 6) chromosome (1 or 2,
+returning phased results), 7) position (if use_simplified_model == FALSE) and
+8) local ancestry (0 or 1).}
 }
 \value{
 Nothing

@@ -60,6 +60,9 @@ struct organism {
     const Sex& get_sex() const noexcept {return sex;}
     int age;
 
+    std::vector<std::vector<double>> get_genomic_info(int t, int replicate,
+                                                      int indiv) const;
+
  private:
     genome chromosome1;
     genome chromosome2;
@@ -89,6 +92,9 @@ struct organism_simple {
     const Sex& get_sex() const noexcept {return sex;}
 
     int age;
+
+    std::vector<std::vector<double>> get_genomic_info(int t, int replicate,
+                                                      int indiv) const;
 
  private:
     double chromosome1;

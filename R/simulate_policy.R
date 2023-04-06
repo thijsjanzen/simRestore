@@ -38,7 +38,8 @@ simulate_policy <- function(initial_population_size = 400,
                             sex_ratio_offspring = 0.5,
                             ancestry_put = 1.0,
                             use_simplified_model = TRUE,
-                            verbose = FALSE) {
+                            verbose = FALSE,
+                            return_genetics = FALSE) {
 
   shooting <- update_vector(pull, num_generations)
   addition <- update_vector(put, num_generations)
@@ -85,12 +86,28 @@ simulate_policy <- function(initial_population_size = 400,
                               sex_ratio_put,
                               sex_ratio_pull,
                               sex_ratio_offspring,
-                              ancestry_put)
+                              ancestry_put,
+                              return_genetics)
+
+
 
   colnames(output$results) <- c("replicate", "t", "freq_focal_ancestry",
                                 "freq_ancestry_males", "freq_ancestry_females",
                                 "num_individuals",
                                 "num_males", "num_females")
   output$results <- tibble::as_tibble(output$results)
+
+  if (return_genetics) {
+    if (use_simplified_model) {
+      colnames(output$genetics) <- c("generation", "replicate", "individual",
+                                     "sex", "chromosome", "ancestry")
+    } else {
+      colnames(output$genetics) <- c("generation", "replicate", "individual",
+                                     "sex", "Linkage_Group", "chromosome",
+                                     "position", "ancestry")
+    }
+    output$genetics <- tibble::as_tibble(output$genetics)
+  }
+
   return(output)
 }

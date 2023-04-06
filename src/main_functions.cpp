@@ -47,7 +47,8 @@ Rcpp::List simulate_complete(int pop_size,
                              double sex_ratio_put,
                              double sex_ratio_pull,
                              double sex_ratio_offspring,
-                             double put_ancestry) {
+                             double put_ancestry,
+                             bool return_genetics) {
   try {
     if (verbose) {
       Rcpp::Rcout << "performing a simple model: " << use_simple << "\n";
@@ -85,6 +86,8 @@ Rcpp::List simulate_complete(int pop_size,
     std::vector< std::vector< double >> anc_inf_dummy;
     Rcpp::NumericVector base_markers;
 
+    Rcpp::NumericMatrix genetic_output;
+
     if (use_simple) {
       analysis<organism_simple> main_analysis(params,
                                               introductions,
@@ -110,6 +113,9 @@ Rcpp::List simulate_complete(int pop_size,
              static_cast<double>(run_result[t].num_males),
              static_cast<double>(run_result[t].num_females)};
           results.emplace_back(temp);
+        }
+        if (return_genetics) {
+          main_analysis.export_genetics(&genetic_output);
         }
         main_analysis.increase_replicate();
       }
@@ -142,6 +148,9 @@ Rcpp::List simulate_complete(int pop_size,
              static_cast<double>(run_result[t].num_females)};
           results.push_back(temp);
         }
+        if (return_genetics) {
+          main_analysis.export_genetics(&genetic_output);
+        }
 
         main_analysis.increase_replicate();
       }
@@ -159,8 +168,14 @@ Rcpp::List simulate_complete(int pop_size,
       output(i, 7) = results[i][7];
     }
 
-    Rcpp::List output_list =
-      Rcpp::List::create(Rcpp::Named("results") = output);
+    Rcpp::List output_list;
+
+    if (return_genetics) {
+      output_list = Rcpp::List::create(Rcpp::Named("results")  = output,
+                         Rcpp::Named("genetics") = genetic_output);
+    } else {
+      output_list = Rcpp::List::create(Rcpp::Named("results")  = output);
+    }
     return(output_list);
   } catch(std::exception &ex) {
     forward_exception_to_r(ex);
