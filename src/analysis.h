@@ -5,8 +5,8 @@
 #include <utility>
 #include <Rcpp.h>
 
-#include "rand_t.h"
-#include "main_functions.h"
+#include "rand_t.h" // NOLINT [build/include_subdir]
+#include "main_functions.h" // NOLINT [build/include_subdir]
 
 template <typename> struct tag { };
 
@@ -277,7 +277,6 @@ class analysis {
   void additional_death(std::vector< ANIMAL>& ANIMALs,
                         double death_rate,
                         int max_num) {
-
     if (max_num > ANIMALs.size()) max_num = ANIMALs.size();
     int num_dead = rndgen.binomial(max_num, death_rate);
     if (num_dead <= 0) return;
@@ -293,7 +292,6 @@ class analysis {
                   std::vector< ANIMAL >& males,
                   int number_added,
                   int number_removed) {
-
     size_t pop_size = females.size() + males.size();
 
     double density_dependent_death_rate = calculate_death_rate(pop_size);
@@ -422,7 +420,6 @@ class analysis {
                            double death_rate,
                            int number_removed,
                            int number_added) {
-
     // first, regular death due to old age
     old_age(input_pop);
 
@@ -556,12 +553,11 @@ class analysis {
     }
 
     for (size_t t = 0; t < params.number_of_generations; ++t) {
-
       std::vector< ANIMAL > new_population(params.pop_size);
       for (size_t i = 0; i < params.pop_size; ++i) {
         int index1 = rndgen.random_number(params.pop_size);
         int index2 = rndgen.random_number(params.pop_size);
-        while(index2 == index1) index2 = rndgen.random_number(params.pop_size);
+        while (index2 == index1) index2 = rndgen.random_number(params.pop_size);
 
         new_population[i] =
           ANIMAL(population[index1].gamete(params.morgan, rndgen),

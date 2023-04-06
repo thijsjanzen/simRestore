@@ -1,17 +1,17 @@
 #pragma once
 
-#include "rand_t.h"
-#include <tuple>
-#include <stdio.h>
-#include <vector>
-#include <algorithm>
+#include "rand_t.h" // NOLINT [build/include_subdir]
 #include <utility>
+#include <stdio.h>
+#include <algorithm>
+#include <tuple>
+#include <vector>
 
 struct junction {
     long double pos;
     int right;
 
-    junction() {};
+    junction() {}
     junction(long double loc, int B);
     junction(const junction& other);
     junction& operator=(const junction& other);

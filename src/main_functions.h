@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./organism.h"
+#include "organism.h" // NOLINT [build/include_subdir]
 #include <vector>
 #include <array>
 
@@ -41,9 +41,7 @@ struct output_entry {
   }
 };
 
-
 struct output_data {
-
   output_data() {}
 
   void add_slice(int replicate,

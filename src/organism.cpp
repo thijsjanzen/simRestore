@@ -6,7 +6,7 @@
 //
 //
 
-#include "organism.h"
+#include "organism.h" // NOLINT [build/include_subdir]
 #include <algorithm>
 #include <cassert>
 
@@ -208,9 +208,9 @@ double calc_freq_chrom(const std::vector< junction >& chrom) {
     double freq = 0.0;
     if (chrom.size() < 2) return 0.0;
 
-    for (size_t i = 1; i < chrom.size(); ++i) {
-        double stretch = chrom[i].pos - chrom[i - 1].pos;
-        freq += stretch * chrom[i - 1].right;
+    for (int i = 1; i < static_cast<int>(chrom.size()); ++i) {
+        double stretch = chrom[i].pos - chrom[i-1].pos;
+        freq += stretch * chrom[i-1].right;
     }
     return freq;
 }
