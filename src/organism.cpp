@@ -217,8 +217,7 @@ double calc_freq_chrom(const std::vector< junction >& chrom) {
     if (chrom.size() < 2) return 0.0;
 
     for (int i = 1; i < static_cast<int>(chrom.size()); ++i) {
-        double stretch = chrom[i].pos - chrom[i-1].pos;
-        freq += stretch * chrom[i-1].right;
+        freq += (chrom[i].pos - chrom[i-1].pos) * chrom[i-1].right;
     }
     return freq;
 }
@@ -323,14 +322,12 @@ std::vector< std::vector<double> >
   organism::get_genomic_info(int t,
                              int replicate,
                              int indiv) const {
-
   double focal_sex = 0.0;
   if (sex == female) focal_sex = 1.0;
 
   std::vector< std::vector<double> > genome_info;
   for (int i = 0; i < chromosome1.size(); ++i) {
     for (const auto& j : chromosome1[i]) {
-
       genome_info.push_back(
           {static_cast<double>(t),
            static_cast<double>(replicate),

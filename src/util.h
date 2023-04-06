@@ -16,7 +16,6 @@
 
 void vector_to_numericmatrix(const std::vector< std::vector< double >>& v,
                              Rcpp::NumericMatrix* m) {
-
   int n_rows = v.size();
   int n_cols = v[0].size();
   *m = Rcpp::NumericMatrix(n_rows, n_cols);
@@ -30,9 +29,9 @@ void vector_to_numericmatrix(const std::vector< std::vector< double >>& v,
 
 void numericmatrix_to_vector(Rcpp::NumericMatrix* m,
                              std::vector< std::vector< double >>* v) {
-
   *v = std::vector< std::vector< double> >((*m).nrow(),
-                                           std::vector<double>((*m).ncol(), 0.0));
+                                           std::vector<double>((*m).ncol(),
+                                                               0.0));
   for (size_t i = 0; i < (*m).nrow(); ++i) {
     std::vector<double> row((*m).ncol(), 0.0);
     for (size_t j = 0; j < (*m).ncol(); ++j) {
