@@ -325,6 +325,10 @@ server <- function(input, output, session) {
                                 max_age = input$max_age,
                                 mean_number_of_offspring = input$clutch_size,
                                 sd_number_of_offspring = input$clutch_sd,
+                                genetic_model =
+                                  ifelse(input$model_used_single == 1,
+                                                       "junctions",
+                                                       "simplified"),
                                 smin = ifelse(input$density_model == "Manual",
                                               input$smin, 0.5),
                                 smax = ifelse(input$density_model == "Manual",
@@ -340,7 +344,6 @@ server <- function(input, output, session) {
                                 sex_ratio_put = input$sex_ratio_put,
                                 sex_ratio_pull = input$sex_ratio_pull,
                                 sex_ratio_offspring = input$sex_ratio_offspring,
-                                use_simplified_model = 1 - input$model_used_single,
                              return_genetics = TRUE)
     })
 
@@ -760,9 +763,6 @@ get_optim_data_static <- function(initial_population_size,
     }
   }
 
-  use_simple_model <- TRUE
-  if (use_complex_model == TRUE) use_simple_model <- FALSE
-
   return(simRestore::optimize_static(initial_population_size =
                                        initial_population_size,
                                      reproduction_success_rate = reproduction_success_rate,
@@ -770,7 +770,6 @@ get_optim_data_static <- function(initial_population_size,
                                      num_generations = num_generations,
                                      K = K,
                                      num_replicates = num_replicates,
-                                     use_simplified_model = use_simple_model,
                                      target_frequency = target_frequency,
                                      optimize_pull = opt_pull,
                                      optimize_put = opt_put,
@@ -779,6 +778,10 @@ get_optim_data_static <- function(initial_population_size,
                                      max_age = max_age,
                                      mean_number_of_offspring = mean_number_of_offspring,
                                      sd_number_of_offspring = sd_number_of_offspring,
+                                     genetic_model =
+                                       ifelse(use_complex_model == TRUE,
+                                              "junctions",
+                                              "simplified"),
                                      smin = smin,
                                      smax = smax,
                                      b = b,
@@ -813,9 +816,6 @@ get_optim_data_adaptive <- function(initial_population_size,
                                    sex_ratio_pull,
                                    sex_ratio_offspring) {
 
-  use_simple_model <- TRUE
-  if (use_complex_model == TRUE) use_simple_model <- FALSE
-
   return(simRestore::optimize_adaptive(
     initial_population_size = initial_population_size,
     reproduction_success_rate = reproduction_success_rate,
@@ -823,7 +823,6 @@ get_optim_data_adaptive <- function(initial_population_size,
     num_generations = num_generations,
     K = K,
     num_replicates = num_replicates,
-    use_simplified_model = use_simple_model,
     target_frequency = target_frequency,
     optimize_pull = total_pull,
     optimize_put = total_put,
@@ -832,6 +831,10 @@ get_optim_data_adaptive <- function(initial_population_size,
     max_age = max_age,
     mean_number_of_offspring = mean_number_of_offspring,
     sd_number_of_offspring = sd_number_of_offspring,
+    genetic_model =
+      ifelse(use_complex_model == TRUE,
+             "junctions",
+             "simplified"),
     smin = smin,
     smax = smax,
     b = b,
