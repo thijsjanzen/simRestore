@@ -260,7 +260,7 @@ sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
                                        num_generations = 50,
                                        put = 10,
                                        starting_freq = 0.2,
-                                       use_simplified_model = TRUE,
+                                       genetic_model = "simplified",
                                        num_replicates = 100,
                                        K = 400)
 
@@ -268,7 +268,7 @@ sim_pop2 <- simRestore::simulate_policy(initial_population_size = 100,
                                        num_generations = 50,
                                        put = 10,
                                        starting_freq = 0.2,
-                                       use_simplified_model = FALSE,
+                                       genetic_model = "junctions",
                                        num_replicates = 100,
                                        K = 400)
 # prepare data frame for plotting:
