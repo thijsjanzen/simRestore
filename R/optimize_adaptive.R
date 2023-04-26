@@ -58,6 +58,7 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               max_age = 6,
                               mean_number_of_offspring = 6,
                               sd_number_of_offspring = 1,
+                              genetic_model = "simplified",
                               smin = 0.5,
                               smax = 0.9,
                               b = -2,
@@ -66,7 +67,6 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               sex_ratio_pull = 0.5,
                               sex_ratio_offspring = 0.5,
                               ancestry_put = 1.0,
-                              use_simplified_model = TRUE,
                               verbose = FALSE,
                               return_genetics = FALSE) {
 
@@ -101,7 +101,7 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_pull = sex_ratio_pull,
                               sex_ratio_offspring = sex_ratio_offspring,
-                              use_simplified_model = use_simplified_model,
+                              genetic_model = genetic_model,
                               verbose = FALSE,
                               return_genetics = return_gen)
 
@@ -152,7 +152,7 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
-                              use_simplified_model = use_simplified_model,
+                              genetic_model = genetic_model,
                               verbose = FALSE,
                               return_genetics = return_gen)
 
@@ -206,7 +206,7 @@ optimize_adaptive <- function(target_frequency = 0.99,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
-                              use_simplified_model = use_simplified_model,
+                              genetic_model = genetic_model,
                               verbose = FALSE,
                               return_genetics = return_gen)
 

@@ -30,6 +30,7 @@ optimize_static <- function(target_frequency = 0.99,
                             max_age = 6,
                             mean_number_of_offspring = 6,
                             sd_number_of_offspring = 1,
+                            genetic_model = "simplified",
                             smin = 0.5,
                             smax = 0.9,
                             b = -2,
@@ -38,9 +39,9 @@ optimize_static <- function(target_frequency = 0.99,
                             sex_ratio_pull = 0.5,
                             sex_ratio_offspring = 0.5,
                             ancestry_put = 1.0,
-                            use_simplified_model = TRUE,
                             verbose = FALSE,
                             return_genetics = FALSE) {
+
 
   fit_adding <- function(param,
                          return_results = FALSE,
@@ -67,7 +68,7 @@ optimize_static <- function(target_frequency = 0.99,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
-                              use_simplified_model = use_simplified_model,
+                              genetic_model = genetic_model,
                               verbose = verbose,
                               return_genetics = return_gens)
 
@@ -110,7 +111,7 @@ optimize_static <- function(target_frequency = 0.99,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
-                              use_simplified_model = use_simplified_model,
+                              genetic_model = genetic_model,
                               verbose = verbose,
                               return_genetics = return_gen)
 
@@ -162,7 +163,7 @@ optimize_static <- function(target_frequency = 0.99,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
-                              use_simplified_model = use_simplified_model,
+                              genetic_model = genetic_model,
                               verbose = verbose,
                               return_genetics = return_gen)
 
@@ -182,6 +183,9 @@ optimize_static <- function(target_frequency = 0.99,
       return(result)
     }
   }
+
+
+
 
   result <- c()
 
@@ -225,7 +229,7 @@ optimize_static <- function(target_frequency = 0.99,
 
     all_res <- fit_adding(fit_result$minimum,
                           return_results = TRUE,
-                          return_gen = return_genetics)
+                          return_gens = return_genetics)
 
     result$results <- all_res$results
     if (return_genetics) result$genetics <- all_res$genetics
@@ -266,8 +270,6 @@ optimize_static <- function(target_frequency = 0.99,
 
     result$results <- all_res$results
     if (return_genetics) result$genetics <- all_res$genetics
-
-
     if (length(result$results) == 1) {
       warning("No optimum found, most likely the population is extinct")
       result$pull <- NA

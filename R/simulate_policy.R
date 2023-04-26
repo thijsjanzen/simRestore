@@ -23,12 +23,13 @@ simulate_policy <- function(initial_population_size = 400,
                             starting_freq = 0.5,
                             sd_starting_freq = 0.05,
                             morgan = c(1),
-                            establishment_burnin = 30,
-                            num_replicates = 1,
-                            seed = NULL,
                             max_age = 6,
                             mean_number_of_offspring = 6,
                             sd_number_of_offspring = 1,
+                            genetic_model = "simplified",
+                            establishment_burnin = 30,
+                            num_replicates = 1,
+                            seed = NULL,
                             smin = 0.5,
                             smax = 0.9,
                             b = -2,
@@ -37,7 +38,6 @@ simulate_policy <- function(initial_population_size = 400,
                             sex_ratio_pull = 0.5,
                             sex_ratio_offspring = 0.5,
                             ancestry_put = 1.0,
-                            use_simplified_model = TRUE,
                             verbose = FALSE,
                             return_genetics = FALSE) {
 
@@ -59,6 +59,11 @@ simulate_policy <- function(initial_population_size = 400,
 
   if (length(morgan) == 1) {
     morgan <- c(morgan)
+  }
+
+  use_simplified_model <- TRUE
+  if (genetic_model == "junctions") {
+    use_simplified_model <- FALSE
   }
 
   output <- simulate_complete(initial_population_size,
@@ -98,15 +103,19 @@ simulate_policy <- function(initial_population_size = 400,
   output$results <- tibble::as_tibble(output$results)
 
   if (return_genetics) {
-    if (use_simplified_model) {
-      colnames(output$genetics) <- c("generation", "replicate", "individual",
-                                     "sex", "chromosome", "ancestry")
+    if (ncol(output$genetics) > 0) {
+      if (use_simplified_model) {
+        colnames(output$genetics) <- c("generation", "replicate", "individual",
+                                       "sex", "chromosome", "ancestry")
+      } else {
+        colnames(output$genetics) <- c("generation", "replicate", "individual",
+                                       "sex", "Linkage_Group", "chromosome",
+                                       "position", "ancestry")
+      }
+      output$genetics <- tibble::as_tibble(output$genetics)
     } else {
-      colnames(output$genetics) <- c("generation", "replicate", "individual",
-                                     "sex", "Linkage_Group", "chromosome",
-                                     "position", "ancestry")
+      output$genetics <- "extinct"
     }
-    output$genetics <- tibble::as_tibble(output$genetics)
   }
 
   return(output)

@@ -239,9 +239,11 @@ class analysis {
       all_info = prev_vec;
     }
 
+    if (!all_info.empty()) {
     // convert to numeric matrix
-    vector_to_numericmatrix(all_info,
-                            output_genetics);
+      vector_to_numericmatrix(all_info,
+                              output_genetics);
+    }
     return;
   }
 

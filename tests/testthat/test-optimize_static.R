@@ -1,7 +1,6 @@
 context("optimize policy")
 
 test_that("simple optimization", {
-
   vx <- simRestore::optimize_static(num_generations = 20,
                                     target_frequency = 0.99,
                                     optimize_put = TRUE,
@@ -61,7 +60,6 @@ test_that("simple optimization", {
 })
 
 test_that("fixed optimization", {
-
   fixed_level <- 10
   vx <- simRestore::optimize_static(num_generations = 20,
                                     target_frequency = 0.99,
@@ -98,7 +96,6 @@ test_that("error", {
   testthat::expect_true(is.na(vx$curve))
   testthat::expect_true(is.na(vx$final_freq))
 })
-
 
 test_that("genetics", {
   vx <- simRestore::optimize_static(num_generations = 5,

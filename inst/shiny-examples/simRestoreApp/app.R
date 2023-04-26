@@ -1,6 +1,7 @@
 require(magrittr)
 require(ggplot2)
 require(shinyBS)
+require(simRestore)
 
 data_storage <- c()
 

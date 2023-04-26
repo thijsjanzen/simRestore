@@ -9,7 +9,7 @@ test_that("compare use", {
                         num_replicates = 100,
                         starting_freq = 0.2,
                         seed = 42,
-                        use_simplified_model = FALSE,
+                        genetic_model = "junctions",
                         verbose = FALSE)
 
   vy <- simRestore::simulate_policy(initial_population_size = 1000,
@@ -20,7 +20,7 @@ test_that("compare use", {
                         num_replicates = 100,
                         starting_freq = 0.2,
                         seed = 42,
-                        use_simplified_model = TRUE,
+                        genetic_model = "simplified",
                         verbose = FALSE)
 
   for (tt in unique(vx$results$t)) {
@@ -46,7 +46,7 @@ test_that("check introduction frequency", {
                           num_replicates = 1,
                           starting_freq = 0.2,
                           seed = 42,
-                          use_simplified_model = TRUE,
+                          genetic_model = "simplified",
                           ancestry_put = 1,
                           verbose = FALSE)
     a1 <- tail(vx$results$freq_focal_ancestry, 1)
@@ -62,15 +62,13 @@ test_that("check introduction frequency", {
                           num_replicates = 1,
                           starting_freq = 0.2,
                           seed = 42,
-                          use_simplified_model = FALSE,
+                          genetic_model = "junctions",
                           ancestry_put = 1,
                           verbose = FALSE)
     a1 <- tail(vx$results$freq_focal_ancestry, 1)
     testthat::expect_equal(a1, 1, tolerance = 0.01)
   }
 })
-
-
 
 test_that("genetics output", {
   vx <- simRestore::simulate_policy(initial_population_size = 100,
@@ -81,7 +79,7 @@ test_that("genetics output", {
                                     num_replicates = 1,
                                     starting_freq = 0.2,
                                     seed = 42,
-                                    use_simplified_model = FALSE,
+                                    genetic_model = "junctions",
                                     verbose = FALSE,
                                     return_genetics = TRUE)
 
@@ -110,7 +108,7 @@ test_that("genetics output", {
                                     num_replicates = 1,
                                     starting_freq = 0.2,
                                     seed = 42,
-                                    use_simplified_model = TRUE,
+                                    genetic_model = "simplified",
                                     verbose = FALSE,
                                     return_genetics = TRUE)
 

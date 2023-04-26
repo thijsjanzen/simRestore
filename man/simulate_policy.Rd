@@ -15,12 +15,13 @@ simulate_policy(
   starting_freq = 0.5,
   sd_starting_freq = 0.05,
   morgan = c(1),
-  establishment_burnin = 30,
-  num_replicates = 1,
-  seed = NULL,
   max_age = 6,
   mean_number_of_offspring = 6,
   sd_number_of_offspring = 1,
+  genetic_model = "simplified",
+  establishment_burnin = 30,
+  num_replicates = 1,
+  seed = NULL,
   smin = 0.5,
   smax = 0.9,
   b = -2,
@@ -29,7 +30,6 @@ simulate_policy(
   sex_ratio_pull = 0.5,
   sex_ratio_offspring = 0.5,
   ancestry_put = 1,
-  use_simplified_model = TRUE,
   verbose = FALSE,
   return_genetics = FALSE
 )
@@ -65,18 +65,24 @@ females, the second the risk for males.}
 
 \item{morgan}{vector sizes of chromosomes in Morgan}
 
-\item{establishment_burnin}{number of generations before establishment}
-
-\item{num_replicates}{number of replicates}
-
-\item{seed}{random number seed, if left open, current time is used.}
-
 \item{max_age}{maximum age an individual can reach.}
 
 \item{mean_number_of_offspring}{mean number of offspring per female}
 
 \item{sd_number_of_offspring}{standard deviation of number of offspring per
 female (assuming the number of offspring is always 0 or larger).}
+
+\item{genetic_model}{The model can either use a simplified model
+("simplified") of underlying genetics, which speeds up simulation
+considerably, but underestimates genetic variation. Alternatively, a more
+detailed genetic model is available, making use of the theory of junctions,
+this can be accessed using the option "junctions". Default is "simplified".}
+
+\item{establishment_burnin}{number of generations before establishment}
+
+\item{num_replicates}{number of replicates}
+
+\item{seed}{random number seed, if left open, current time is used.}
 
 \item{smin}{minimum survival rate}
 
@@ -112,10 +118,6 @@ supplementation. If the target is high focal ancestry (e.g. aiming for
 focal ancestry of 1.0), ancestry put should reflect this and be set to 1.0 (
 which is the default value). When supplementing with non-pure individuals,
 this value can consequently be lowered.}
-
-\item{use_simplified_model}{use a simplified model of underlying genetics?
-This speeds up simulation considerably, and should be preferred when not
-interested in high detail genetic changes. Default is TRUE.}
 
 \item{verbose}{provides verbose output if TRUE.}
 
