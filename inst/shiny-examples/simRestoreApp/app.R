@@ -202,10 +202,10 @@ ui <- fluidPage(
                                                          "Breeding risk for males, caused by for instance increased predation in defending offspring"),
 
                                       numericInput(inputId = 'nest_succes_rate',
-                                                   label = "Mating Succes Rate",
+                                                   label = "Reproduction Succes Rate",
                                                    value = 0.387, min = 0, max = 1, step = 0.01),
                                       shinyBS::bsTooltip("nest_succes_rate",
-                                                         "Rate of successfully producing offspring per mating"),
+                                                         "Success rate of producing offspring per mating"),
 
                                       numericInput(inputId = 'morgan',
                                                    label = "Size of Genome (in Morgan)",

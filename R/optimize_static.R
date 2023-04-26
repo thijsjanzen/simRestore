@@ -117,7 +117,11 @@ optimize_static <- function(target_frequency = 0.99,
 
     b <- subset(result$results, result$results$t == num_generations)
     if (length(b$replicate) < 1) {
-      return(100)
+      if (!return_results) {
+        return(100)
+      } else {
+        return(result)
+      }
     }
 
     freq <- mean(b$freq_focal_ancestry)
@@ -268,7 +272,7 @@ optimize_static <- function(target_frequency = 0.99,
     all_res <- fit_killing(fit_result$minimum, return_results = TRUE,
                            return_gen = return_genetics)
 
-    result$results <- all_res$results
+
     if (return_genetics) result$genetics <- all_res$genetics
     if (length(result$results) == 1) {
       warning("No optimum found, most likely the population is extinct")
@@ -277,6 +281,8 @@ optimize_static <- function(target_frequency = 0.99,
       result$curve <- NA
       result$final_freq <- NA
       return(result)
+    } else {
+      result$results <- all_res$results
     }
 
     result$curve   <- tibble::tibble(t = 1:num_generations,
