@@ -20,7 +20,7 @@ test_that("compare use", {
                         num_replicates = 100,
                         starting_freq = 0.2,
                         seed = 42,
-                        genetic_model = "simplified",
+                        genetic_model = "point",
                         verbose = FALSE)
 
   for (tt in unique(vx$results$t)) {
@@ -46,7 +46,7 @@ test_that("check introduction frequency", {
                           num_replicates = 1,
                           starting_freq = 0.2,
                           seed = 42,
-                          genetic_model = "simplified",
+                          genetic_model = "point",
                           ancestry_put = 1,
                           verbose = FALSE)
     a1 <- tail(vx$results$freq_focal_ancestry, 1)
@@ -108,7 +108,7 @@ test_that("genetics output", {
                                     num_replicates = 1,
                                     starting_freq = 0.2,
                                     seed = 42,
-                                    genetic_model = "simplified",
+                                    genetic_model = "point",
                                     verbose = FALSE,
                                     return_genetics = TRUE)
 
