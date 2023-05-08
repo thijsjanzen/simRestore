@@ -114,11 +114,11 @@ result of breeding (e.g. as a result of protecting the offspring against
 predators). Provide as a vector where the first index indicates the risk for
 females, the second the risk for males.}
 
-\item{genetic_model}{The model can either use a simplified model
-("simplified") of underlying genetics, which speeds up simulation
+\item{genetic_model}{The model can either use the point ancestry model
+("point") of underlying genetics, which speeds up simulation
 considerably, but underestimates genetic variation. Alternatively, a more
 detailed genetic model is available, making use of the theory of junctions,
-this can be accessed using the option "junctions". Default is "simplified".}
+this can be accessed using the option "junctions". Default is "point".}
 
 \item{return_genetics}{returns a tibble containing all local ancestry
 information for all individuals. This tibble contains the following

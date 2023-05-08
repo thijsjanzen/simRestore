@@ -18,7 +18,7 @@ simulate_policy(
   max_age = 6,
   mean_number_of_offspring = 6,
   sd_number_of_offspring = 1,
-  genetic_model = "simplified",
+  genetic_model = "point",
   establishment_burnin = 30,
   num_replicates = 1,
   seed = NULL,
@@ -72,11 +72,11 @@ females, the second the risk for males.}
 \item{sd_number_of_offspring}{standard deviation of number of offspring per
 female (assuming the number of offspring is always 0 or larger).}
 
-\item{genetic_model}{The model can either use a simplified model
-("simplified") of underlying genetics, which speeds up simulation
+\item{genetic_model}{The model can either use the point ancestry model
+("point") of underlying genetics, which speeds up simulation
 considerably, but underestimates genetic variation. Alternatively, a more
 detailed genetic model is available, making use of the theory of junctions,
-this can be accessed using the option "junctions". Default is "simplified".}
+this can be accessed using the option "junctions". Default is "point".}
 
 \item{establishment_burnin}{number of generations before establishment}
 

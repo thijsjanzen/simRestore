@@ -55,11 +55,11 @@
 #' focal ancestry of 1.0), ancestry put should reflect this and be set to 1.0 (
 #' which is the default value). When supplementing with non-pure individuals,
 #' this value can consequently be lowered.
-#' @param genetic_model The model can either use a simplified model
-#' ("simplified") of underlying genetics, which speeds up simulation
+#' @param genetic_model The model can either use the point ancestry model
+#' ("point") of underlying genetics, which speeds up simulation
 #' considerably, but underestimates genetic variation. Alternatively, a more
 #' detailed genetic model is available, making use of the theory of junctions,
-#' this can be accessed using the option "junctions". Default is "simplified".
+#' this can be accessed using the option "junctions". Default is "point".
 #' @param return_genetics returns a tibble containing all local ancestry
 #' information for all individuals. This tibble contains the following
 #' informative columns: 1) time (the last generation), 2) replicate,
