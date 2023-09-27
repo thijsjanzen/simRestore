@@ -3,9 +3,9 @@
 #' intended management policy on the genetic composition of a focal population.
 #' The population is assumed to have overlapping generations, and the user can
 #' specify two genetic models, either using a simplified average ancestry
-#' representation (use_simplified_model = TRUE), or a more detailed model
-#' tracking explicit recombination among chromosomes, setting
-#' use_simplified_model = FALSE.
+#' representation (genetic_model = "point"), or a more detailed model
+#' tracking explicit recombination among chromosomes, using genetic_model =
+#' "junctions".
 #' @inheritParams default_params_doc
 #'
 #' @param verbose provides verbose output if TRUE.
@@ -16,6 +16,10 @@
 #' of ancestry across all males, 5) average frequency of ancestry across all
 #' females, 6) number of individuals, 7) number of males and 8) number of
 #' females
+#' if return_genetics = TRUE, the output is a list containing the above
+#' mentioned tibble, called 'results', and a second tibble called 'genetics',
+#' with the local ancestry in long format, split out per generation, replicate,
+#' individual, sex, linkage group and chromosome (1 or 2).
 #' @examples
 #' sim_pop <- simulate_policy(initial_population_size = 100,
 #'                            num_generations = 20,
@@ -119,10 +123,10 @@ simulate_policy <- function(initial_population_size = 400,
     if (ncol(output$genetics) > 0) {
       if (use_simplified_model) {
         colnames(output$genetics) <- c("generation", "replicate", "individual",
-                                       "sex", "chromosome", "ancestry")
+                                       "sex", "linkage_group", "chromosome", "ancestry")
       } else {
         colnames(output$genetics) <- c("generation", "replicate", "individual",
-                                       "sex", "Linkage_Group", "chromosome",
+                                       "sex", "linkage_group", "chromosome",
                                        "position", "ancestry")
       }
       output$genetics <- tibble::as_tibble(output$genetics)

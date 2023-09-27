@@ -281,7 +281,7 @@ class analysis {
 
       if (males.empty() && females.empty()) {
         if (verbose) {
-           Rcpp::Rcout << "population went extinct\n"; force_output();
+           Rcpp::Rcout << "population went extinct\n";
         }
         break;
       }
@@ -306,7 +306,7 @@ class analysis {
                             females.size());
         if (verbose) {
             Rcpp::Rcout << t << " " << f2[0] << "\t" <<
-              males.size()  << "\t" <<  females.size() << "\n"; force_output();
+              males.size()  << "\t" <<  females.size() << "\n";
         }
     }
     output_pop = males;
@@ -592,8 +592,8 @@ class analysis {
       double init_prob_female = 0.5;
 
       population[i] = ANIMAL(parent1.gamete(params.morgan, &rndgen),
-                           parent2.gamete(params.morgan, &rndgen),
-                           init_prob_female, &rndgen);
+                             parent2.gamete(params.morgan, &rndgen),
+                             init_prob_female, &rndgen);
     }
 
     for (size_t t = 0; t < params.number_of_generations; ++t) {

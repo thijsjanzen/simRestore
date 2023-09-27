@@ -58,7 +58,9 @@ reproduction failure rate = 1 - reproduction_success_rate /
 
 \item{sd_starting_freq}{variation in initial frequency of target ancestry.}
 
-\item{morgan}{vector sizes of chromosomes in Morgan}
+\item{morgan}{a vector with the size of each chromosome in morgan, e.g. if
+a single chromosome is to be simulated a single number will suffice, but
+for two chromosomes of a size of 1 Morgan, a vector like: c(1, 1) will work.}
 
 \item{establishment_burnin}{number of generations before establishment}
 

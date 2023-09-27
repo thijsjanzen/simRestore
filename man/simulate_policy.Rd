@@ -64,7 +64,9 @@ females, the second the risk for males.}
 
 \item{sd_starting_freq}{variation in initial frequency of target ancestry.}
 
-\item{morgan}{vector sizes of chromosomes in Morgan}
+\item{morgan}{a vector with the size of each chromosome in morgan, e.g. if
+a single chromosome is to be simulated a single number will suffice, but
+for two chromosomes of a size of 1 Morgan, a vector like: c(1, 1) will work.}
 
 \item{max_age}{maximum age an individual can reach.}
 
@@ -142,9 +144,9 @@ Using this function, the user can simulate the effect of an
 intended management policy on the genetic composition of a focal population.
 The population is assumed to have overlapping generations, and the user can
 specify two genetic models, either using a simplified average ancestry
-representation (use_simplified_model = TRUE), or a more detailed model
-tracking explicit recombination among chromosomes, setting
-use_simplified_model = FALSE.
+representation (genetic_model = "point"), or a more detailed model
+tracking explicit recombination among chromosomes, using genetic_model =
+"junctions".
 }
 \examples{
 sim_pop <- simulate_policy(initial_population_size = 100,

@@ -51,8 +51,7 @@ Rcpp::List simulate_complete(int pop_size,
                              bool return_genetics) {
   try {
     if (verbose) {
-      Rcpp::Rcout << "performing a simple model: " << use_simple << "\n";
-      force_output();
+      Rcpp::Rcout << "performing the point model: " << use_simple << "\n";
     }
 
     emp_genome dummy_genome;
@@ -64,21 +63,21 @@ Rcpp::List simulate_complete(int pop_size,
                       K,
                       morgan,
                       nesting_risk[0],
-                                  nesting_risk[1],
-                                              nest_failure_rate,
-                                              establishment_burnin,
-                                              max_age,
-                                              dummy_genome,
-                                              clutch_size_mean,
-                                              clutch_size_sd,
-                                              smin,
-                                              smax,
-                                              p,
-                                              b,
-                                              sex_ratio_put,
-                                              sex_ratio_pull,
-                                              sex_ratio_offspring,
-                                              put_ancestry);
+                      nesting_risk[1],
+                      nest_failure_rate,
+                      establishment_burnin,
+                      max_age,
+                      dummy_genome,
+                      clutch_size_mean,
+                      clutch_size_sd,
+                      smin,
+                      smax,
+                      p,
+                      b,
+                      sex_ratio_put,
+                      sex_ratio_pull,
+                      sex_ratio_offspring,
+                      put_ancestry);
 
     std::vector< std::vector< double > > results;
 
@@ -183,11 +182,4 @@ Rcpp::List simulate_complete(int pop_size,
     ::Rf_error("c++ exception (unknown reason)");
   }
   return NA_REAL;
-}
-
-void force_output() {
-  std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  R_FlushConsole();
-  R_ProcessEvents();
-  R_CheckUserInterrupt();
 }

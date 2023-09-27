@@ -244,17 +244,24 @@ organism_simple::organism_simple() {
 
 organism_simple::organism_simple(double initLoc, size_t num_chromosomes) {
     freq_anc = initLoc;
-    chromosome1 = initLoc;
-    chromosome2 = initLoc;
+    chromosome1 = std::vector<double>(num_chromosomes, initLoc);
+    chromosome2 = std::vector<double>(num_chromosomes, initLoc);
     age = 0;
 }
 
-organism_simple::organism_simple(double chrom1,
-                                 double chrom2,
+double organism_simple::calc_freq_chrom(const std::vector<double>& chrom) {
+  double s = std::accumulate(chrom.begin(), chrom.end(), 0.0);
+  return s * 1.0 / chrom.size();
+}
+
+organism_simple::organism_simple(const std::vector<double>& chrom1,
+                                 const std::vector<double>& chrom2,
                                  double prob_female,
                                  rnd_t* rndgen) :
     chromosome1(chrom1), chromosome2(chrom2) {
-    freq_anc = 0.5 * (chromosome1 + chromosome2);
+
+    freq_anc = 0.5 * (calc_freq_chrom(chromosome1) +
+                      calc_freq_chrom(chromosome2));
     set_nonrandom_sex(prob_female, rndgen);
     age = 0;
 }
@@ -285,11 +292,14 @@ void organism_simple::set_nonrandom_sex(double prob_male,
   return;
 }
 
-double organism_simple::gamete(const std::vector<double>& morgan,
+std::vector<double> organism_simple::gamete(const std::vector<double>& morgan,
                                rnd_t* rndgen)
   const noexcept {
-    // recombine chromosomes:
-    return 0.5 * (chromosome1 + chromosome2);
+  std::vector<double> output(morgan.size());
+  for (size_t i = 0; i < morgan.size(); ++i) {
+    output[i] = 0.5 * (chromosome1[i] + chromosome2[i]);
+  }
+  return output;
 }
 
 std::vector< std::vector<double> >
@@ -301,19 +311,23 @@ std::vector< std::vector<double> >
   double focal_sex = 0.0;
   if (sex == female) focal_sex = 1.0;
 
-  genome_info.push_back({static_cast<double>(t),
-                         static_cast<double>(replicate),
-                         static_cast<double>(indiv),
-                         focal_sex,
-                         1.0,
-                         chromosome1});
-  genome_info.push_back({static_cast<double>(t),
-                         static_cast<double>(replicate),
-                         static_cast<double>(indiv),
-                         focal_sex,
-                         2.0,
-                         chromosome2});
+  for (size_t m = 0; m < chromosome1.size(); ++m) {
 
+    genome_info.push_back({static_cast<double>(t),
+                           static_cast<double>(replicate),
+                           static_cast<double>(indiv),
+                           focal_sex,
+                           static_cast<double>(m),
+                           1.0,
+                           chromosome1[m]});
+    genome_info.push_back({static_cast<double>(t),
+                           static_cast<double>(replicate),
+                           static_cast<double>(indiv),
+                           focal_sex,
+                           static_cast<double>(m),
+                           2.0,
+                           chromosome2[m]});
+    }
   return genome_info;
 }
 

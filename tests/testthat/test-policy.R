@@ -1,4 +1,4 @@
-context("simulate simple and nonsimple")
+context("simulate point and junctions")
 
 test_that("compare use", {
   vx <- simRestore::simulate_policy(initial_population_size = 1000,
@@ -129,4 +129,37 @@ test_that("genetics output", {
 
   focal_anc <- tail(vx$results$freq_focal_ancestry, 1)
   testthat::expect_equal(focal_anc, mean(vx$genetics$ancestry))
+})
+
+
+test_that("multiple chromosomes", {
+  vx <- simRestore::simulate_policy(initial_population_size = 100,
+                                    K = 100,
+                                    num_generations = 20,
+                                    pull = 0,
+                                    put = 0,
+                                    morgan = c(1, 2, 3),
+                                    num_replicates = 1,
+                                    starting_freq = 0.2,
+                                    seed = 42,
+                                    genetic_model = "junctions",
+                                    verbose = FALSE,
+                                    return_genetics = TRUE)
+
+  testthat::expect_equal(length(unique(vx$genetics$linkage_group)), 3)
+
+  vx <- simRestore::simulate_policy(initial_population_size = 100,
+                                    K = 100,
+                                    num_generations = 20,
+                                    pull = 0,
+                                    put = 0,
+                                    morgan = c(1, 2, 3),
+                                    num_replicates = 1,
+                                    starting_freq = 0.2,
+                                    seed = 42,
+                                    genetic_model = "point",
+                                    verbose = FALSE,
+                                    return_genetics = TRUE)
+
+  testthat::expect_equal(length(unique(vx$genetics$linkage_group)), 3)
 })

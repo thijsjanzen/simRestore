@@ -74,5 +74,3 @@ struct output_data {
  private:
   std::vector< output_entry > data_;
 };
-
-void force_output();

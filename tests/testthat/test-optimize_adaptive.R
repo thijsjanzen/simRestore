@@ -1,6 +1,6 @@
 context("optimize policy decay")
 
-test_that("simple optimization", {
+test_that("point optimization", {
   total_put <- 100
   vx <- simRestore::optimize_adaptive(num_generations = 20,
                                               target_frequency = 0.99,

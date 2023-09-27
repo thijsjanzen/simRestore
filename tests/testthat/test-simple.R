@@ -1,6 +1,6 @@
-context("simulate simple")
+context("simulate point")
 
-test_that("simple use", {
+test_that("point use", {
   vx <- simulate_policy(initial_population_size = 100,
                         K = 400,
                         num_generations = 10,

@@ -75,19 +75,21 @@ struct organism_simple {
     organism_simple();
     organism_simple(double initLoc, size_t num_chromosomes);
 
-    organism_simple(double chrom1, double chrom2,
+    organism_simple(const std::vector<double>& chrom1,
+                    const std::vector<double>& chrom2,
                     double prob_male, rnd_t* rndgen);
+
     organism_simple(const organism_simple& other);
     organism_simple& operator=(const organism_simple& other);
 
     void set_nonrandom_sex(double prob_male, rnd_t* rndgen);
     void set_sex(Sex s) {sex = s;}
 
-    double gamete(const std::vector<double>& morgan,
+    std::vector<double>  gamete(const std::vector<double>& morgan,
                   rnd_t* rndgen) const noexcept;
 
-    const double& get_chromosome1() const noexcept {return chromosome1;}
-    const double& get_chromosome2() const noexcept {return chromosome2;}
+    const std::vector<double>& get_chromosome1() const noexcept {return chromosome1;}
+    const std::vector<double>& get_chromosome2() const noexcept {return chromosome2;}
     const double& get_freq_anc() const noexcept {return freq_anc;}
     const Sex& get_sex() const noexcept {return sex;}
 
@@ -97,10 +99,12 @@ struct organism_simple {
                                                       int indiv) const;
 
  private:
-    double chromosome1;
-    double chromosome2;
+    std::vector<double> chromosome1;
+    std::vector<double> chromosome2;
     double freq_anc;
     Sex sex;
+
+    double calc_freq_chrom(const std::vector<double>& chrom);
 };
 
 struct emp_genome {
