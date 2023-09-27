@@ -12,7 +12,21 @@
 #'
 #' @inheritParams default_params_doc
 #'
-#' @return tibble
+#' @return list with five elements: 1) put: optimal number of individuals to
+#' put (0 if not estimated), 2) pull: optimal number of individuals to pull
+#' (0 if not estimated), 3) results tibble
+#' (see \code{\link{simulate_policy}()}), 4) curve tibble with three columns,
+#' indicating the realized number of put/pull per generation, with column 1)
+#' time in generations, column 2) number of individuals to put in generation t
+#' and 3) number of individuals to pull in generation t. The last element of
+#' the list contains the final obtained frequency for the best fit.
+#' @examples
+#' opt_res <- optimize_static(target_frequency = 0.99,
+#'                            optimize_put = TRUE,
+#'                            num_generations = 20,
+#'                            starting_freq = 0.2,
+#'                            initial_population_size = 100)
+#' opt_res$put
 #' @export
 optimize_static <- function(target_frequency = 0.99,
                             initial_population_size = 400,

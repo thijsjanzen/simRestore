@@ -11,7 +11,17 @@
 #' @param verbose provides verbose output if TRUE.
 #' @rawNamespace useDynLib(simRestore)
 #' @rawNamespace import(Rcpp)
-#' @return tibble
+#' @return tibble with 8 columns: 1) replicate, 2) time (in generations), 3)
+#' average frequency of ancestry across all individuals 4) average frequency
+#' of ancestry across all males, 5) average frequency of ancestry across all
+#' females, 6) number of individuals, 7) number of males and 8) number of
+#' females
+#' @examples
+#' sim_pop <- simulate_policy(initial_population_size = 100,
+#'                            num_generations = 20,
+#'                            starting_freq = 0.2,
+#'                            K = 400)
+#' plot(sim_pop$results$num_individuals ~ sim_pop$results$t)
 #' @export
 simulate_policy <- function(initial_population_size = 400,
                             reproduction_success_rate = 0.387,
@@ -62,8 +72,11 @@ simulate_policy <- function(initial_population_size = 400,
   }
 
   use_simplified_model <- TRUE
-  if (genetic_model == "junctions") {
+  if (genetic_model == "junctions" || genetic_model == "junction") {
     use_simplified_model <- FALSE
+  }
+  if (!(genetic_model %in% c("point", "junctions", "junction"))) {
+    stop("Invalid genetic model specified. Did you mean junctions?")
   }
 
   output <- simulate_complete(initial_population_size,

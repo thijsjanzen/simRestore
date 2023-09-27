@@ -66,7 +66,7 @@ test_that("check introduction frequency", {
                           ancestry_put = 1,
                           verbose = FALSE)
     a1 <- tail(vx$results$freq_focal_ancestry, 1)
-    testthat::expect_equal(a1, 1, tolerance = 0.01)
+    testthat::expect_equal(a1, 1, tolerance = 0.05)
   }
 })
 

@@ -9,13 +9,14 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width = 6)
-require(simRestore)
-require(ggplot2)
-require(magrittr)
-require(tidyr)
-require(dplyr)
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 7)
+
+library(simRestore)
+library(ggplot2)
+library(magrittr)
+library(tidyr)
+library(dplyr)
 ```
 
 # Using simRestore
@@ -33,10 +34,10 @@ generations, density dependent survival and random mating. We can
 simulate such a population as follows:
 
 ```{r simulate}
-sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
-                                       num_generations = 20,
-                                       starting_freq = 0.2,
-                                       K = 400)
+sim_pop <- simulate_policy(initial_population_size = 100,
+                           num_generations = 20,
+                           starting_freq = 0.2,
+                           K = 400)
 ```
 
 This returns a large tibble, and we can use that to plot several
@@ -72,11 +73,11 @@ interventions: putting and pulling. In putting, we add individuals with
 randomly from the population. We'll first simulate pulling:
 
 ```{r simulate_pull}
-sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
-                                       num_generations = 20,
-                                       pull = 20,
-                                       starting_freq = 0.2,
-                                       K = 400)
+sim_pop <- simulate_policy(initial_population_size = 100,
+                           num_generations = 20,
+                           pull = 20,
+                           starting_freq = 0.2,
+                           K = 400)
 ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
   ylim(0, 1) +
@@ -89,11 +90,11 @@ Because pulling happens at random, the average frequency does not
 change. When we add individuals however, we do see a genetic response:
 
 ```{r simulate_put1}
-sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
-                                       num_generations = 20,
-                                       put = 20,
-                                       starting_freq = 0.2,
-                                       K = 400)
+sim_pop <- simulate_policy(initial_population_size = 100,
+                           num_generations = 20,
+                           put = 20,
+                           starting_freq = 0.2,
+                           K = 400)
 ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
   ylim(0, 1) +
@@ -108,12 +109,12 @@ case we do not have access to individuals with high focal ancestry, or
 if we are targeting another ancestry level:
 
 ```{r simulate_put2}
-sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
-                                       num_generations = 20,
-                                       put = 20,
-                                       K = 400,
-                                       starting_freq = 0.2,
-                                       ancestry_put = 0.0)
+sim_pop <- simulate_policy(initial_population_size = 100,
+                           num_generations = 20,
+                           put = 20,
+                           K = 400,
+                           starting_freq = 0.2,
+                           ancestry_put = 0.0)
 ggplot(sim_pop$results, aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
   ylim(0, 1) +
@@ -135,11 +136,11 @@ frequency. For instance, if we want to reach 0.99 ancestry within 20
 generations:
 
 ```{r static_optimization}
-opt_res <- simRestore::optimize_static(target_frequency = 0.99,
-                                       optimize_put = TRUE,
-                                       num_generations = 20,
-                                       starting_freq = 0.2,
-                                       initial_population_size = 100)
+opt_res <- optimize_static(target_frequency = 0.99,
+                           optimize_put = TRUE,
+                           num_generations = 20,
+                           starting_freq = 0.2,
+                           initial_population_size = 100)
 opt_res$put
 ```
 We find that approximately 50 individuals need to be supplanted per generation. 
@@ -163,11 +164,11 @@ be put / pulled. The distribution is fit using a beta distribution, hence
 only two parameters need to be optimized. We can do so like this:
 
 ```{r adaptive_optimization}
-opt_res <- simRestore::optimize_adaptive(target_frequency = 0.99,
-                                       optimize_put = 1000,
-                                       num_generations = 20,
-                                       starting_freq = 0.2,
-                                       initial_population_size = 100)
+opt_res <- optimize_adaptive(target_frequency = 0.99,
+                             optimize_put = 1000,
+                             num_generations = 20,
+                             starting_freq = 0.2,
+                             initial_population_size = 100)
 ```
 
 Again, we can plot a sample simulation, but this time we can also plot the 
@@ -196,12 +197,12 @@ ggplot(opt_res$curve,
 We can do a similar analysis for pulling as well:
 
 ```{r adaptive_pull}
-opt_res <- simRestore::optimize_adaptive(target_frequency = 0.99,
-                                       optimize_pull = 1000,
-                                       optimize_put = 0,
-                                       num_generations = 20,
-                                       starting_freq = 0.2,
-                                       initial_population_size = 100)
+opt_res <- optimize_adaptive(target_frequency = 0.99,
+                             optimize_pull = 1000,
+                             optimize_put = 0,
+                             num_generations = 20,
+                             starting_freq = 0.2,
+                             initial_population_size = 100)
 ggplot(opt_res$results,
        aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
@@ -222,12 +223,12 @@ As before, pulling does not move the needle. But if we also add a little bit
 of putting, we find a much better solution:
 
 ```{r adaptive_both}
-opt_res <- simRestore::optimize_adaptive(target_frequency = 0.99,
-                                       optimize_pull = 1000,
-                                       optimize_put = 100,
-                                       num_generations = 20,
-                                       starting_freq = 0.2,
-                                       initial_population_size = 100)
+opt_res <- optimize_adaptive(target_frequency = 0.99,
+                             optimize_pull = 1000,
+                             optimize_put = 100,
+                             num_generations = 20,
+                             starting_freq = 0.2,
+                             initial_population_size = 100)
 ggplot(opt_res$results,
        aes(x = t, y = freq_focal_ancestry)) +
   geom_line() +
@@ -256,21 +257,21 @@ larger degree of variation in outcomes, but on average results are highly
 similar:
 
 ```{r compare models}
-sim_pop <- simRestore::simulate_policy(initial_population_size = 100,
-                                       num_generations = 50,
-                                       put = 10,
-                                       starting_freq = 0.2,
-                                       genetic_model = "simplified",
-                                       num_replicates = 100,
-                                       K = 400)
+sim_pop <- simulate_policy(initial_population_size = 100,
+                           num_generations = 50,
+                           put = 10,
+                           starting_freq = 0.2,
+                           genetic_model = "point",
+                           num_replicates = 100,
+                           K = 400)
 
-sim_pop2 <- simRestore::simulate_policy(initial_population_size = 100,
-                                       num_generations = 50,
-                                       put = 10,
-                                       starting_freq = 0.2,
-                                       genetic_model = "junctions",
-                                       num_replicates = 100,
-                                       K = 400)
+sim_pop2 <- simulate_policy(initial_population_size = 100,
+                            num_generations = 50,
+                            put = 10,
+                            starting_freq = 0.2,
+                            genetic_model = "junctions",
+                            num_replicates = 100,
+                            K = 400)
 # prepare data frame for plotting:
 to_plot1 <- sim_pop$results
 to_plot1$model <- "simplified"

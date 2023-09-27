@@ -6,10 +6,11 @@
 #' at the end of the breeding season (e.g. a fraction of
 #' 1 - reproduction_success_rate of females. This is a joint effect of
 #' breeding females getting killed
-#' (see \code{female_death_rate}) and other sources of failure to complete a
-#' clutch. Other sources of failure are calculated from nest_success_rate and
-#' female_death_rate, such that reproduction failure rate =
-#' 1 - reproduction_success_rate / (1 - female breeding risk);
+#' (see \code{female_death_rate}) and other sources of failure to produce
+#' offspring. Other sources of failure are calculated from
+#' reproduction_success_rate and female_death_rate, such that the resulting
+#' reproduction failure rate = 1 - reproduction_success_rate /
+#' (1 - female breeding risk);
 #' @param reproductive_risk Additional death rate of males and females as a
 #' result of breeding (e.g. as a result of protecting the offspring against
 #' predators). Provide as a vector where the first index indicates the risk for

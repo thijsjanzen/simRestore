@@ -46,10 +46,11 @@ optimize_adaptive(
 at the end of the breeding season (e.g. a fraction of
 1 - reproduction_success_rate of females. This is a joint effect of
 breeding females getting killed
-(see \code{female_death_rate}) and other sources of failure to complete a
-clutch. Other sources of failure are calculated from nest_success_rate and
-female_death_rate, such that reproduction failure rate =
-1 - reproduction_success_rate / (1 - female breeding risk);}
+(see \code{female_death_rate}) and other sources of failure to produce
+offspring. Other sources of failure are calculated from
+reproduction_success_rate and female_death_rate, such that the resulting
+reproduction failure rate = 1 - reproduction_success_rate /
+(1 - female breeding risk);}
 
 \item{reproductive_risk}{Additional death rate of males and females as a
 result of breeding (e.g. as a result of protecting the offspring against
@@ -139,11 +140,26 @@ returning phased results), 7) position (if use_simplified_model == FALSE) and
 8) local ancestry (0 or 1).}
 }
 \value{
-tibble
+list with five elements: 1) put: optimal number of individuals to
+put (0 if not estimated), 2) pull: optimal number of individuals to pull
+(0 if not estimated), 3) results tibble
+(see \code{\link{simulate_policy}()}), 4) curve tibble with three columns,
+indicating the realized number of put/pull per generation, with column 1)
+time in generations, column 2) number of individuals to put in generation t
+and 3) number of individuals to pull in generation t. The last element of
+the list contains the final obtained frequency for the best fit.
 }
 \description{
 Optimize a policy assuming a fixed total sum across all generations of
 individuals that can be put or pulled (e.g. a fixed effort). This fixed total
 sum is distributed across the generations following a beta distribution, and
 the parameters of this beta distribution are fitted.
+}
+\examples{
+opt_res <- optimize_adaptive(target_frequency = 0.99,
+                             optimize_put = 1000,
+                             num_generations = 20,
+                             starting_freq = 0.2,
+                             initial_population_size = 100)
+opt_res$put
 }

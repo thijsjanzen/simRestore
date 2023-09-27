@@ -1,6 +1,3 @@
-#' update input vector
-#' @param v vector or single number
-#' @param num_generations number of generations
 #' @keywords internal
 update_vector <- function(v, num_generations) {
   if (length(v) == 1) {
@@ -16,9 +13,10 @@ update_vector <- function(v, num_generations) {
 
   return(v)
 }
+
 #' @keywords internal
-set_seed <- function(seed) {
-  seed <- sample(x = 1:1e8, size = 1)
+set_seed <- function(seed = NULL) {
+  if (is.null(seed)) seed <- sample(x = 1:1e8, size = 1)
   set.seed(seed)
   return(seed)
 }

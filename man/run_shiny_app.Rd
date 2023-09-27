@@ -9,3 +9,6 @@ run_shiny_app()
 \description{
 runs shiny version
 }
+\examples{
+run_shiny_app()
+}

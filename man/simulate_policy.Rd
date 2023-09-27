@@ -41,10 +41,11 @@ simulate_policy(
 at the end of the breeding season (e.g. a fraction of
 1 - reproduction_success_rate of females. This is a joint effect of
 breeding females getting killed
-(see \code{female_death_rate}) and other sources of failure to complete a
-clutch. Other sources of failure are calculated from nest_success_rate and
-female_death_rate, such that reproduction failure rate =
-1 - reproduction_success_rate / (1 - female breeding risk);}
+(see \code{female_death_rate}) and other sources of failure to produce
+offspring. Other sources of failure are calculated from
+reproduction_success_rate and female_death_rate, such that the resulting
+reproduction failure rate = 1 - reproduction_success_rate /
+(1 - female breeding risk);}
 
 \item{reproductive_risk}{Additional death rate of males and females as a
 result of breeding (e.g. as a result of protecting the offspring against
@@ -130,7 +131,11 @@ returning phased results), 7) position (if use_simplified_model == FALSE) and
 8) local ancestry (0 or 1).}
 }
 \value{
-tibble
+tibble with 8 columns: 1) replicate, 2) time (in generations), 3)
+average frequency of ancestry across all individuals 4) average frequency
+of ancestry across all males, 5) average frequency of ancestry across all
+females, 6) number of individuals, 7) number of males and 8) number of
+females
 }
 \description{
 Using this function, the user can simulate the effect of an
@@ -140,4 +145,11 @@ specify two genetic models, either using a simplified average ancestry
 representation (use_simplified_model = TRUE), or a more detailed model
 tracking explicit recombination among chromosomes, setting
 use_simplified_model = FALSE.
+}
+\examples{
+sim_pop <- simulate_policy(initial_population_size = 100,
+                           num_generations = 20,
+                           starting_freq = 0.2,
+                           K = 400)
+plot(sim_pop$results$num_individuals ~ sim_pop$results$t)
 }

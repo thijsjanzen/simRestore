@@ -1,9 +1,25 @@
 require(magrittr)
 require(ggplot2)
-require(shinyBS)
-require(simRestore)
 
-data_storage <- c()
+
+apply_theme <- function(plot_object) {
+  # this was adopted from the ggthemr package, palette 'earth'
+  plot_object <- plot_object +
+    theme(panel.background = element_rect(fill = "#36312C"),
+          legend.background = element_rect(fill = "#36312C",
+                                           colour = "#36312C"),
+          legend.key = element_rect(fill = "#36312C"),
+          legend.title = element_text(color = "white"),
+          legend.text = element_text(color = "white"),
+          axis.text.x = element_text(color = "white"),
+          axis.text.y = element_text(color = "white"),
+          axis.title.x = element_text(color = "white"),
+          axis.title.y = element_text(color = "white"),
+          panel.grid = element_line(color = "#504940"))
+  return(plot_object)
+}
+
+
 
 ui <- fluidPage(
   theme = shinythemes::shinytheme("slate"),
@@ -353,7 +369,7 @@ server <- function(input, output, session) {
 
     p1 <- to_plot$results %>%
       ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
-      geom_line() +
+      geom_line(colour = "#ffffff") +
       xlab("Number of generations") +
       ylab("Average focal ancestry") +
       ylim(0, 1) +
@@ -367,12 +383,13 @@ server <- function(input, output, session) {
     p1 <- p1 +
       annotate("text", x = max(to_plot$results$t), y = focal_y,
                label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
-               hjust = 1)
+               hjust = 1,
+               colour = "#ffffff")
 
     p2 <- ggplot(to_plot$results, aes(x = t,
                                       y = num_individuals,
                                       group = replicate)) +
-      geom_line() +
+      geom_line(colour = "#ffffff") +
       xlab("Number of generations") +
       ylab("Total number of individuals")
 
@@ -387,12 +404,17 @@ server <- function(input, output, session) {
            color = "Sex") +
       theme(legend.position = "top")
 
-    ggthemr::ggthemr(palette = "earth",
-                     type = "outer",
-                     spacing = 2)
+    #ggthemr::ggthemr(palette = "earth",
+    #                 type = "outer",
+    #                 spacing = 2)
+
+
+    ## old color: #36312C
+    p1 <- apply_theme(p1)
+    p2 <- apply_theme(p2)
+    p3 <- apply_theme(p3)
 
     egg::ggarrange(p1, p2, p3, nrow = 1)
-
   } , bg = "transparent")
 
   ########  OPTIMIZATION #####################################################
@@ -513,7 +535,7 @@ server <- function(input, output, session) {
 
     p1 <- to_plot$results %>%
       ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
-      geom_line() +
+      geom_line(colour = "white") +
       xlab("Number of generations") +
       ylab("Average focal ancestry") +
       ylim(0, 1) +
@@ -527,11 +549,12 @@ server <- function(input, output, session) {
     p1 <- p1 +
       annotate("text", x = max(to_plot$results$t), y = focal_y,
                label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
-               hjust = 1)
+               hjust = 1,
+               colour = "white")
 
     p2 <- ggplot(to_plot$results,
                  aes(x = t, y = num_individuals, group = replicate)) +
-      geom_line() +
+      geom_line(colour = "white") +
       xlab("Number of generations") +
       ylab("Total number of individuals")
 
@@ -552,9 +575,12 @@ server <- function(input, output, session) {
       ylab("Amount") +
       xlab("Number of Generations") +
       theme(legend.position = "top")
-    ggthemr::ggthemr(palette = "earth",
-                     type = "outer",
-                     spacing = 2)
+
+    p1 <- apply_theme(p1)
+    p2 <- apply_theme(p2)
+    p3 <- apply_theme(p3)
+    p4 <- apply_theme(p4)
+
     egg::ggarrange(p1, p2, p3, p4, nrow = 1)
 
   }, bg = "transparent")
@@ -618,7 +644,7 @@ server <- function(input, output, session) {
 
     p1 <- to_plot$results %>%
       ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
-      geom_line() +
+      geom_line(colour = "white") +
       xlab("Number of generations") +
       ylab("Average focal ancestry") +
       ylim(0, 1) +
@@ -632,12 +658,13 @@ server <- function(input, output, session) {
     p1 <- p1 +
       annotate("text", x = max(to_plot$results$t), y = focal_y,
                label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
-               hjust = 1)
+               hjust = 1,
+               colour = "white")
 
     p2 <- ggplot(to_plot$results, aes(x = t,
                                       y = num_individuals,
                                       group = replicate)) +
-      geom_line() +
+      geom_line(colour = "white") +
       xlab("Number of generations") +
       ylab("Total number of individuals")
 
@@ -658,9 +685,14 @@ server <- function(input, output, session) {
       ylab("Amount") +
       xlab("Number of Generations") +
       theme(legend.position = "top")
-    ggthemr::ggthemr(palette = "earth",
-                     type = "outer",
-                     spacing = 2)
+    #ggthemr::ggthemr(palette = "earth",
+    #                 type = "outer",
+    #                 spacing = 2)
+    p1 <- apply_theme(p1)
+    p2 <- apply_theme(p2)
+    p3 <- apply_theme(p3)
+    p4 <- apply_theme(p4)
+
     egg::ggarrange(p1, p2, p3, p4, nrow = 1)
 
   }, bg = "transparent")
