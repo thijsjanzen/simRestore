@@ -108,7 +108,7 @@ optimize_static <- function(target_frequency = 0.99,
 
   fit_killing <- function(param,
                           return_results = FALSE,
-                          return_gen = FALSE) {
+                          return_gens = FALSE) {
 
     result <- simulate_policy(initial_population_size = initial_population_size,
                               reproduction_success_rate =
@@ -138,7 +138,7 @@ optimize_static <- function(target_frequency = 0.99,
                               random_mating = random_mating,
                               extra_pair_copulation = extra_pair_copulation,
                               verbose = verbose,
-                              return_genetics = return_gen)
+                              return_genetics = return_gens)
 
     b <- subset(result$results, result$results$t == num_generations)
     if (length(b$replicate) < 1) {
@@ -163,7 +163,7 @@ optimize_static <- function(target_frequency = 0.99,
 
   fit_both <- function(param,
                        return_results = FALSE,
-                       return_gen = FALSE) {
+                       return_gens = FALSE) {
     # normal fit is < 1, this is equal to infinite, but without warning
     if (param[[1]] < 0) return(Inf)
     if (param[[2]] < 0) return(Inf)
@@ -198,7 +198,7 @@ optimize_static <- function(target_frequency = 0.99,
                               random_mating = random_mating,
                               extra_pair_copulation = extra_pair_copulation,
                               verbose = verbose,
-                              return_genetics = return_gen)
+                              return_genetics = return_gens)
 
     b <- subset(result$results, result$results$t == num_generations)
     if (length(b$replicate) < 1) {
@@ -232,7 +232,7 @@ optimize_static <- function(target_frequency = 0.99,
     result$put  <- (10^fit_result$par[[2]])
 
     all_res <- fit_both(fit_result$par, return_results = TRUE,
-                        return_gen = return_genetics)
+                        return_gens = return_genetics)
 
     result$results <- all_res$results
     if (return_genetics) result$genetics <- all_res$genetics
@@ -299,7 +299,7 @@ optimize_static <- function(target_frequency = 0.99,
     result$pull <- floor(fit_result$minimum[[1]])
     result$put  <- abs(optimize_put)
     all_res <- fit_killing(fit_result$minimum, return_results = TRUE,
-                           return_gen = return_genetics)
+                           return_gens = return_genetics)
 
 
     if (return_genetics) result$genetics <- all_res$genetics

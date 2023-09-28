@@ -108,7 +108,7 @@ test_that("genetics", {
   testthat::expect_true(inherits(vx$genetics, "tbl_df"))
 
   vx <- simRestore::optimize_static(num_generations = 5,
-                                    target_frequency = 0.5,
+                                    target_frequency = 0.2,
                                     optimize_put = FALSE,
                                     optimize_pull = TRUE,
                                     num_replicates = 1,
