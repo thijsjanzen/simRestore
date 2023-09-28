@@ -2,7 +2,6 @@ require(magrittr)
 require(ggplot2)
 require(shinyBS)
 
-
 apply_theme <- function(plot_object) {
   # this was adopted from the ggthemr package, palette 'earth'
   plot_object <- plot_object +
