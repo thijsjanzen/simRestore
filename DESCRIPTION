@@ -1,11 +1,11 @@
 Package: simRestore
 Type: Package
 Title: Simulate the Effect of Management Policies on Restoration Efforts
-Version: 1.0
+Version: 1.1
 Authors@R: c(person("Thijs","Janzen", 
              email = "thijsjanzen@gmail.com", 
              role=c("aut","cre")))
-Description: A collection of scripts to simulate the effect of management policies on restoration efforts, providing both raw simulation functions, and functions to optimize the management policy, given target objectives.
+Description: Tools to simulate the effect of management policies on restoration efforts, providing both raw simulation functions, and functions to optimize the management policy, given target objectives.
 License: GPL (>= 2)
 Encoding: UTF-8
 Imports: Rcpp,
