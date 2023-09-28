@@ -1,5 +1,6 @@
 require(magrittr)
 require(ggplot2)
+require(shinyBS)
 
 
 apply_theme <- function(plot_object) {
@@ -53,7 +54,6 @@ ui <- fluidPage(
                  tabsetPanel(type = "tabs", id = "tabs_settings",
                              tabPanel("Main", value = 1,
                                       conditionalPanel(condition = "input.tabs1==1",
-
                                                        sliderInput(inputId = 'init_pop_size_1',
                                                                    label = "Initial Population Size",
                                                                    value = 100, min = 2, max = 1000),
@@ -183,22 +183,25 @@ ui <- fluidPage(
                                                                    c("Weak", "Strong", "Manual")),
                                                        shinyBS::bsTooltip("density_model_3",
                                                                           "The user can pick between two pre-defined parameter sets that implement weak or strong density dependence. Alternatively the user can modify parameters manually in the corresponding tab."),
-
                                                        checkboxInput("model_used_c",
                                                                      "Use explicit recombination",
                                                                      value = FALSE),
                                                        shinyBS::bsTooltip("model_used_c",
                                                                           "When unchecked, a simplified genetic model is used. When checked, explicit recombination is modeled"),
-                                                       downloadButton("download_gen3", label = "Download Genetics"),
+                                                       downloadButton("download_gen3",
+                                                                      label = "Download Genetics"),
                                                        shinyBS::bsTooltip("download_gen3",
                                                                           "Download local ancestry information of the last generation as a tibble"),
-                                                       downloadButton("download_res3", label = "Download results"),
+                                                       downloadButton("download_res3",
+                                                                      label = "Download results"),
                                                        shinyBS::bsTooltip("download_res3",
                                                                           "Download results as text file")
 
                                       )
                              ),
                              tabPanel("Advanced", value = 2,
+                              fluidRow(
+                                column(5,
                                       numericInput(inputId = 'K',
                                                    label = "Carrying Capacity of ecosystem",
                                                    value = 400, min = 2, max = 1000, step = 50),
@@ -252,7 +255,8 @@ ui <- fluidPage(
                                                    value = 1, min = 0, max = 2, step = 0.1),
                                       shinyBS::bsTooltip("clutch_sd",
                                                          "Standard deviation of number of offspring generated per mated female"),
-
+                                  ),
+                                column(5,
                                       numericInput(inputId = 'sex_ratio_put',
                                                    label = "Sex Ratio of Put individuals (males / females)",
                                                    value = 0.5, min = 0, max = 1, step = 0.05),
@@ -276,7 +280,32 @@ ui <- fluidPage(
                                                    value = 0.999, min = 0, max = 1, step = 0.01),
                                       shinyBS::bsTooltip("target_frequency",
                                                          "The optimizer tries to optimize pull and or put to reach this frequency after the set number of generations."),
-                             ),
+
+                                      numericInput(inputId = 'ancestry_put',
+                                                   label = "Ancestry of put individuals",
+                                                   value = 1.0, min = 0, max = 1, step = 0.01),
+                                      shinyBS::bsTooltip("ancestry_put",
+                                                         "Ancestry of individuals used for putting"),
+
+                                      numericInput(inputId = 'ancestry_pull',
+                                                   label = "Maximum ancestry of pulled individuals",
+                                                   value = 1.0, min = 0, max = 1, step = 0.01),
+                                      shinyBS::bsTooltip("ancestry_pull",
+                                                         "Maximum ancestry of individuals used for pulling"),
+
+                                      numericInput(inputId = 'extra_pair_copulation',
+                                                   label = "Probability of extra pair copulation",
+                                                   value = 0.0, min = 0, max = 1, step = 0.01),
+                                      shinyBS::bsTooltip("extra_pair_copulation",
+                                                         "Probability per offspring to be the result of an extra pair copulation"),
+                                      checkboxInput("random_mating",
+                                                    "Use random mating",
+                                                    value = FALSE),
+                                      shinyBS::bsTooltip("random_mating",
+                                                         "When unchecked, females bond with a single male (if available), when checked, females randomly select a male, potentially causing some males to mate multiple times")
+
+                                )
+                             )),
                              tabPanel("Density Dependence", value = 3,
                                       numericInput(inputId = 'smin',
                                                    label = "Minimum Survival Rate",
@@ -360,7 +389,11 @@ server <- function(input, output, session) {
                                 sex_ratio_put = input$sex_ratio_put,
                                 sex_ratio_pull = input$sex_ratio_pull,
                                 sex_ratio_offspring = input$sex_ratio_offspring,
-                             return_genetics = TRUE)
+                                ancestry_put = input$ancestry_put,
+                                ancestry_pull = input$ancestry_pull,
+                                extra_pair_copulation = input$extra_pair_copulation,
+                                random_mating = input$random_mating,
+                                return_genetics = TRUE)
     })
 
   output$simple_plots <- renderPlot({
@@ -404,11 +437,6 @@ server <- function(input, output, session) {
            color = "Sex") +
       theme(legend.position = "top")
 
-    #ggthemr::ggthemr(palette = "earth",
-    #                 type = "outer",
-    #                 spacing = 2)
-
-
     ## old color: #36312C
     p1 <- apply_theme(p1)
     p2 <- apply_theme(p2)
@@ -448,7 +476,11 @@ server <- function(input, output, session) {
                                             0.45, 0.5)),
                           sex_ratio_put = input$sex_ratio_put,
                           sex_ratio_pull = input$sex_ratio_pull,
-                          sex_ratio_offspring = input$sex_ratio_offspring)
+                          sex_ratio_offspring = input$sex_ratio_offspring,
+                          ancestry_put = input$ancestry_put,
+                          ancestry_pull = input$ancestry_pull,
+                          extra_pair_copulation = input$extra_pair_copulation,
+                          random_mating = input$random_mating)
   })
 
   optim_data_complex <-  reactive({
@@ -481,15 +513,24 @@ server <- function(input, output, session) {
                                              0.45, 0.5)),
                            sex_ratio_put = input$sex_ratio_put,
                            sex_ratio_pull = input$sex_ratio_pull,
-                           sex_ratio_offspring = input$sex_ratio_offspring)
+                           sex_ratio_offspring = input$sex_ratio_offspring,
+                           ancestry_put = input$ancestry_put,
+                           ancestry_pull = input$ancestry_pull,
+                           extra_pair_copulation = input$extra_pair_copulation,
+                           random_mating = input$random_mating)
   })
-
 
   output$Optim_simple_plots <- renderPlot({
     to_plot <- optim_data_static()
     data_storage <<- to_plot
 
-    final_freq <- round(to_plot$final_freq, digits = 3)
+    final_freq <- to_plot$final_freq
+    if (is.numeric(final_freq)) {
+      final_freq <- round(to_plot$final_freq, digits = 3)
+      if (is.na(final_freq) || is.nan(final_freq)) final_freq <- 0.0
+    } else {
+      final_freq <- 0.0
+    }
 
     for_render_text <- c()
     for_render_text <- c(for_render_text,
@@ -590,7 +631,16 @@ server <- function(input, output, session) {
     data_storage <<- to_plot
     for_text <- to_plot$curve
     # tibble with t, pull, put
-    final_freq <- round(to_plot$final_freq, 3)
+
+    final_freq <- to_plot$final_freq
+
+    if (is.numeric(final_freq)) {
+      if (is.na(final_freq)) final_freq <- 0.0
+      final_freq <- round(to_plot$final_freq, digits = 3)
+    } else {
+      final_freq <- 0.0
+    }
+
     for_render_text <- c()
     for_render_text <- c(for_render_text,
                          " Target frequency was: ",
@@ -621,7 +671,7 @@ server <- function(input, output, session) {
     }
 
     for (i in seq_along(for_text$t)) {
-
+      add_text <- ""
       if (input$total_put > 0 && input$total_pull > 0) {
         add_text <- paste(round(for_text$t[i]), "\t\t\t",
                           round(for_text$put[i]), "\t",
@@ -651,13 +701,20 @@ server <- function(input, output, session) {
       theme(legend.position = "top")
 
     focal_y <- 1.03 * tail(to_plot$results$freq_focal_ancestry, 1)
-    if (round(tail(to_plot$results$freq_focal_ancestry, 1), 2) >= 0.99) {
+
+    if (is.numeric(to_plot$results$freq_focal_ancestry)) {
+      val <- round(tail(to_plot$results$freq_focal_ancestry, 1), 2)
+    } else {
+      val <- 0.0
+    }
+
+    if (val >= 0.99) {
       focal_y <- 0.95 * tail(to_plot$results$freq_focal_ancestry, 1)
     }
 
     p1 <- p1 +
       annotate("text", x = max(to_plot$results$t), y = focal_y,
-               label = round(tail(to_plot$results$freq_focal_ancestry, 1), 2),
+               label = val,
                hjust = 1,
                colour = "white")
 
@@ -774,7 +831,11 @@ get_optim_data_static <- function(initial_population_size,
                                   p,
                                   sex_ratio_put,
                                   sex_ratio_pull,
-                                  sex_ratio_offspring) {
+                                  sex_ratio_offspring,
+                                  ancestry_put,
+                                  ancestry_pull,
+                                  extra_pair_copulation,
+                                  random_mating) {
 
   opt_pull <- FALSE
   opt_put  <- FALSE
@@ -795,7 +856,7 @@ get_optim_data_static <- function(initial_population_size,
     }
   }
 
-  return(simRestore::optimize_static(initial_population_size =
+  res <- simRestore::optimize_static(initial_population_size =
                                        initial_population_size,
                                      reproduction_success_rate = reproduction_success_rate,
                                      reproductive_risk = reproductive_risk,
@@ -821,34 +882,64 @@ get_optim_data_static <- function(initial_population_size,
                                      sex_ratio_put = sex_ratio_put,
                                      sex_ratio_pull = sex_ratio_pull,
                                      sex_ratio_offspring = sex_ratio_offspring,
+                                     ancestry_put = ancestry_put,
+                                     ancestry_pull = ancestry_pull,
+                                     extra_pair_copulation = extra_pair_copulation,
+                                     random_mating = random_mating,
                                      verbose = FALSE,
-                                     return_genetics = TRUE))
+                                     return_genetics = TRUE)
+
+  if (is.null(res)) {
+    opt_res <- optimize_static(target_frequency = 0.99,
+                               optimize_put = TRUE,
+                               num_generations = num_generations,
+                               starting_freq = starting_freq,
+                               initial_population_size = initial_population_size)
+    opt_res$results$freq_focal_ancestry <- 0
+    opt_res$results$freq_ancestry_males <- 0
+    opt_res$results$freq_ancestry_females <- 0
+    opt_res$results$num_individuals <- 0
+    opt_res$results$num_males <- 0
+    opt_res$results$num_females <- 0
+    opt_res$put <- 0
+    opt_res$pull <- 0
+    opt_res$final_freq <- 0
+    opt_res$curve$put <- 0
+    opt_res$curve$pull <- 0
+    res <- opt_res
+  }
+  return(res)
 }
 
 get_optim_data_adaptive <- function(initial_population_size,
-                                   reproduction_success_rate,
-                                   reproductive_risk,
-                                   num_generations,
-                                   K,
-                                   num_replicates,
-                                   target_frequency,
-                                   total_put,
-                                   total_pull,
-                                   morgan,
-                                   starting_freq,
-                                   use_complex_model,
-                                   max_age,
-                                   mean_number_of_offspring,
-                                   sd_number_of_offspring,
-                                   smin,
-                                   smax,
-                                   b,
-                                   p,
-                                   sex_ratio_put,
-                                   sex_ratio_pull,
-                                   sex_ratio_offspring) {
+                                    reproduction_success_rate,
+                                    reproductive_risk,
+                                    num_generations,
+                                    K,
+                                    num_replicates,
+                                    target_frequency,
+                                    total_put,
+                                    total_pull,
+                                    morgan,
+                                    starting_freq,
+                                    use_complex_model,
+                                    max_age,
+                                    mean_number_of_offspring,
+                                    sd_number_of_offspring,
+                                    smin,
+                                    smax,
+                                    b,
+                                    p,
+                                    sex_ratio_put,
+                                    sex_ratio_pull,
+                                    sex_ratio_offspring,
+                                    ancestry_put,
+                                    ancestry_pull,
+                                    extra_pair_copulation,
+                                    random_mating) {
 
-  return(simRestore::optimize_adaptive(
+  res <-
+    simRestore::optimize_adaptive(
     initial_population_size = initial_population_size,
     reproduction_success_rate = reproduction_success_rate,
     reproductive_risk = reproductive_risk,
@@ -874,8 +965,34 @@ get_optim_data_adaptive <- function(initial_population_size,
     sex_ratio_put = sex_ratio_put,
     sex_ratio_pull = sex_ratio_pull,
     sex_ratio_offspring = sex_ratio_offspring,
+    ancestry_put = ancestry_put,
+    ancestry_pull = ancestry_pull,
+    extra_pair_copulation = extra_pair_copulation,
+    random_mating = random_mating,
     verbose = FALSE,
-    return_genetics = TRUE))
+    return_genetics = TRUE)
+
+  if (is.null(res)) {
+        opt_res <- optimize_static(target_frequency = 0.99,
+                                   optimize_put = TRUE,
+                                   num_generations = num_generations,
+                                   starting_freq = starting_freq,
+                                   initial_population_size = initial_population_size)
+        opt_res$results$freq_focal_ancestry <- 0
+        opt_res$results$freq_ancestry_males <- 0
+        opt_res$results$freq_ancestry_females <- 0
+        opt_res$results$num_individuals <- 0
+        opt_res$results$num_males <- 0
+        opt_res$results$num_females <- 0
+        opt_res$put <- 0
+        opt_res$pull <- 0
+        opt_res$final_freq <- 0
+        opt_res$curve$put <- 0
+        opt_res$curve$pull <- 0
+        res <- opt_res
+  }
+
+  return(res)
 }
 
 shinyApp(ui = ui, server = server)

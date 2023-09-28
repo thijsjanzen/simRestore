@@ -129,8 +129,8 @@ struct parameters {
   double sex_ratio_pull;
   double sex_ratio_offspring;
 
-  double put_ancestry;  // ancestry used when putting
-  double pull_ancestry; // ancestry used when pulling
+  double put_ancestry;   // ancestry used when putting
+  double pull_ancestry;  // ancestry used when pulling
 
   double epc;
   bool random_mating;
@@ -371,13 +371,14 @@ class analysis {
         int k = 0;
         if (params.epc > 0.0) {
           k = rndgen.random_number((*males).size());
-          while(k == j) k = rndgen.random_number((*males).size());
+          while (k == j && (*males).size() > 1)
+            k = rndgen.random_number((*males).size());
         }
         generate_offspring(offspring_male,
                            offspring_female,
-                           (*females)[i], // mama
-                           (*males)[j],  // papa
-                           (*males)[k], // epc_papa
+                           (*females)[i],   // mama
+                           (*males)[j],     // papa
+                           (*males)[k],     // epc_papa
                            density_dependent_offspring_rate,
                            params.clutch_size_mean,
                            params.clutch_size_sd,
@@ -397,7 +398,6 @@ class analysis {
                    std::vector< ANIMAL >* offspring_female,
                    std::vector< ANIMAL >* offspring_male,
                    double density_dependent_offspring_rate) {
-
     for (int i = 0; i < (*females).size(); ++i) {
       // now, mated females and females experience additional death
       if (rndgen.bernouilli(params.female_death_rate)) {
@@ -409,13 +409,14 @@ class analysis {
         int k = 0;
         if (params.epc > 0.0) {
           k = rndgen.random_number((*males).size());
-          while(k == j) k = rndgen.random_number((*males).size());
+          while (k == j && (*males).size() > 1)
+            k = rndgen.random_number((*males).size());
         }
         generate_offspring(offspring_male,
                            offspring_female,
-                           (*females)[i], // mama
-                           (*males)[j],  // papa
-                           (*males)[k], // epc_papa
+                           (*females)[i],      // mama
+                           (*males)[j],        // papa
+                           (*males)[k],        // epc_papa
                            density_dependent_offspring_rate,
                            params.clutch_size_mean,
                            params.clutch_size_sd,
