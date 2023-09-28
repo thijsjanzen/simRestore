@@ -889,7 +889,7 @@ get_optim_data_static <- function(initial_population_size,
                                      return_genetics = TRUE)
 
   if (is.null(res)) {
-    opt_res <- optimize_static(target_frequency = 0.99,
+    opt_res <- simRestore::optimize_static(target_frequency = 0.99,
                                optimize_put = TRUE,
                                num_generations = num_generations,
                                starting_freq = starting_freq,
@@ -972,7 +972,7 @@ get_optim_data_adaptive <- function(initial_population_size,
     return_genetics = TRUE)
 
   if (is.null(res)) {
-        opt_res <- optimize_static(target_frequency = 0.99,
+        opt_res <- simRestore::optimize_static(target_frequency = 0.99,
                                    optimize_put = TRUE,
                                    num_generations = num_generations,
                                    starting_freq = starting_freq,
