@@ -31,6 +31,9 @@ optimize_static(
   sex_ratio_pull = 0.5,
   sex_ratio_offspring = 0.5,
   ancestry_put = 1,
+  ancestry_pull = 1,
+  random_mating = FALSE,
+  extra_pair_copulation = 0,
   verbose = FALSE,
   return_genetics = FALSE
 )
@@ -126,6 +129,20 @@ supplementation. If the target is high focal ancestry (e.g. aiming for
 focal ancestry of 1.0), ancestry put should reflect this and be set to 1.0 (
 which is the default value). When supplementing with non-pure individuals,
 this value can consequently be lowered.}
+
+\item{ancestry_pull}{Ancestry level below which individuals are allowed to
+be pulled - this can reduce the effective number of individuals pulled if
+none of the individuals in the population match this ancestry level. This can
+be used to selectively only remove those with low target ancestry.}
+
+\item{random_mating}{by default, simulations assume fixed pair bonding, e.g.
+each female mates with exactly one male (if available). Alternatively, if
+random_mating = TRUE, females will mate with a random male, introducing the
+possibility that some males mate multiple times.}
+
+\item{extra_pair_copulation}{probability of offspring to be fathered by
+another male. We assume that all offspring from one mother can have at most
+two fathers.}
 
 \item{verbose}{provides verbose output if TRUE.}
 

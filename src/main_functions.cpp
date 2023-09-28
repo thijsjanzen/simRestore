@@ -48,6 +48,9 @@ Rcpp::List simulate_complete(int pop_size,
                              double sex_ratio_pull,
                              double sex_ratio_offspring,
                              double put_ancestry,
+                             double pull_ancestry,
+                             bool use_random_mating,
+                             double extra_pair_copulation,
                              bool return_genetics) {
   try {
     if (verbose) {
@@ -77,7 +80,10 @@ Rcpp::List simulate_complete(int pop_size,
                       sex_ratio_put,
                       sex_ratio_pull,
                       sex_ratio_offspring,
-                      put_ancestry);
+                      put_ancestry,
+                      pull_ancestry,
+                      extra_pair_copulation,
+                      use_random_mating);
 
     std::vector< std::vector< double > > results;
 

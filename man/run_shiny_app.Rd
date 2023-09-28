@@ -2,13 +2,10 @@
 % Please edit documentation in R/run_shiny_app.R
 \name{run_shiny_app}
 \alias{run_shiny_app}
-\title{runs shiny version}
+\title{runs shiny app locally}
 \usage{
 run_shiny_app()
 }
 \description{
-runs shiny version
-}
-\examples{
-run_shiny_app()
+runs shiny app locally
 }

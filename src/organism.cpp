@@ -259,7 +259,6 @@ organism_simple::organism_simple(const std::vector<double>& chrom1,
                                  double prob_female,
                                  rnd_t* rndgen) :
     chromosome1(chrom1), chromosome2(chrom2) {
-
     freq_anc = 0.5 * (calc_freq_chrom(chromosome1) +
                       calc_freq_chrom(chromosome2));
     set_nonrandom_sex(prob_female, rndgen);
@@ -312,7 +311,6 @@ std::vector< std::vector<double> >
   if (sex == female) focal_sex = 1.0;
 
   for (size_t m = 0; m < chromosome1.size(); ++m) {
-
     genome_info.push_back({static_cast<double>(t),
                            static_cast<double>(replicate),
                            static_cast<double>(indiv),

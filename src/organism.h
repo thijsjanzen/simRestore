@@ -88,8 +88,10 @@ struct organism_simple {
     std::vector<double>  gamete(const std::vector<double>& morgan,
                   rnd_t* rndgen) const noexcept;
 
-    const std::vector<double>& get_chromosome1() const noexcept {return chromosome1;}
-    const std::vector<double>& get_chromosome2() const noexcept {return chromosome2;}
+    const std::vector<double>& get_chromosome1() const noexcept {
+      return chromosome1;}
+    const std::vector<double>& get_chromosome2() const noexcept {
+      return chromosome2;}
     const double& get_freq_anc() const noexcept {return freq_anc;}
     const Sex& get_sex() const noexcept {return sex;}
 

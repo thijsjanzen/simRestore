@@ -53,6 +53,9 @@ optimize_static <- function(target_frequency = 0.99,
                             sex_ratio_pull = 0.5,
                             sex_ratio_offspring = 0.5,
                             ancestry_put = 1.0,
+                            ancestry_pull = 1.0,
+                            random_mating = FALSE,
+                            extra_pair_copulation = 0.0,
                             verbose = FALSE,
                             return_genetics = FALSE) {
 
@@ -83,6 +86,10 @@ optimize_static <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               genetic_model = genetic_model,
+                              ancestry_put = ancestry_put,
+                              ancestry_pull = ancestry_pull,
+                              random_mating = random_mating,
+                              extra_pair_copulation = extra_pair_copulation,
                               verbose = verbose,
                               return_genetics = return_gens)
 
@@ -126,6 +133,10 @@ optimize_static <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               genetic_model = genetic_model,
+                              ancestry_put = ancestry_put,
+                              ancestry_pull = ancestry_pull,
+                              random_mating = random_mating,
+                              extra_pair_copulation = extra_pair_copulation,
                               verbose = verbose,
                               return_genetics = return_gen)
 
@@ -182,6 +193,10 @@ optimize_static <- function(target_frequency = 0.99,
                               sex_ratio_put = sex_ratio_put,
                               sex_ratio_offspring = sex_ratio_offspring,
                               genetic_model = genetic_model,
+                              ancestry_put = ancestry_put,
+                              ancestry_pull = ancestry_pull,
+                              random_mating = random_mating,
+                              extra_pair_copulation = extra_pair_copulation,
                               verbose = verbose,
                               return_genetics = return_gen)
 

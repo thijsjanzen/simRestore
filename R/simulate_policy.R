@@ -19,7 +19,10 @@
 #' if return_genetics = TRUE, the output is a list containing the above
 #' mentioned tibble, called 'results', and a second tibble called 'genetics',
 #' with the local ancestry in long format, split out per generation, replicate,
-#' individual, sex, linkage group and chromosome (1 or 2).
+#' individual, sex, linkage group and chromosome (1 or 2). Here, linkage group
+#' indicates the focal chromosome (linkage group), and 'chromosome' indicates
+#' which of the diploid pair of chromosomes is measured, allowing for phased
+#' output if required.
 #' @examples
 #' sim_pop <- simulate_policy(initial_population_size = 100,
 #'                            num_generations = 20,
@@ -52,6 +55,9 @@ simulate_policy <- function(initial_population_size = 400,
                             sex_ratio_pull = 0.5,
                             sex_ratio_offspring = 0.5,
                             ancestry_put = 1.0,
+                            ancestry_pull = 1.0,
+                            random_mating = FALSE,
+                            extra_pair_copulation = 0.0,
                             verbose = FALSE,
                             return_genetics = FALSE) {
 
@@ -109,9 +115,10 @@ simulate_policy <- function(initial_population_size = 400,
                               sex_ratio_pull,
                               sex_ratio_offspring,
                               ancestry_put,
+                              ancestry_pull,
+                              random_mating,
+                              extra_pair_copulation,
                               return_genetics)
-
-
 
   colnames(output$results) <- c("replicate", "t", "freq_focal_ancestry",
                                 "freq_ancestry_males", "freq_ancestry_females",

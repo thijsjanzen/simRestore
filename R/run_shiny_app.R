@@ -1,6 +1,4 @@
-#' runs shiny version
-#' @examples
-#' run_shiny_app()
+#' runs shiny app locally
 #' @export
 run_shiny_app <- function() {
   appDir <- system.file("shiny-examples",

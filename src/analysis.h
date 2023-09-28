@@ -22,6 +22,9 @@
 
 template <typename> struct tag { };
 
+enum mating_type {bonded, randomized};
+
+
 struct parameters {
   parameters() {
     pop_size = 100;
@@ -45,6 +48,9 @@ struct parameters {
     sex_ratio_pull = 0.5;
     sex_ratio_offspring = 0.5;
     put_ancestry = 1.0;
+    pull_ancestry = 1.0;
+    epc = 0.0;
+    random_mating = false;
   }
 
   parameters(int p,
@@ -68,7 +74,10 @@ struct parameters {
              double sex_ratio_add,
              double sex_ratio_remove,
              double sex_ratio_o,
-             double put_anc) :
+             double put_anc,
+             double pull_anc,
+             double extra_pair_c,
+             bool use_random_mating) :
   pop_size(p),
   starting_freq(f),
   sd_starting_freq(s_f),
@@ -90,6 +99,9 @@ struct parameters {
   sex_ratio_pull(sex_ratio_remove),
   sex_ratio_offspring(sex_ratio_o),
   put_ancestry(put_anc),
+  pull_ancestry(pull_anc),
+  epc(extra_pair_c),
+  random_mating(use_random_mating),
   empgen(emp_gen_in) {
   }
 
@@ -118,6 +130,10 @@ struct parameters {
   double sex_ratio_offspring;
 
   double put_ancestry;  // ancestry used when putting
+  double pull_ancestry; // ancestry used when pulling
+
+  double epc;
+  bool random_mating;
 
   emp_genome empgen;  // only used in molecular analysis
 };
@@ -330,6 +346,90 @@ class analysis {
     return;
   }
 
+  void mate_bonded(std::vector< ANIMAL >* females,
+                   std::vector< ANIMAL >* males,
+                   std::vector< ANIMAL >* offspring_female,
+                   std::vector< ANIMAL >* offspring_male,
+                   double density_dependent_offspring_rate) {
+    if ((*males).size() < (*females).size()) {
+      // not all females are mated, females should be shuffled
+      std::shuffle((*females).begin(), (*females).end(), rndgen.rndgen);
+    } else {
+      // not all males are mated, males should be shuffled
+      std::shuffle((*males).begin(), (*males).end(), rndgen.rndgen);
+    }
+
+    for (int i = 0, j = 0;
+         i < (*females).size() && j < (*males).size();
+         ++i, ++j) {
+      // now, mated females and females experience additional death
+      if (rndgen.bernouilli(params.female_death_rate)) {
+        (*females)[i] = (*females).back();
+        (*females).pop_back();
+        --i;
+      } else {
+        int k = 0;
+        if (params.epc > 0.0) {
+          k = rndgen.random_number((*males).size());
+          while(k == j) k = rndgen.random_number((*males).size());
+        }
+        generate_offspring(offspring_male,
+                           offspring_female,
+                           (*females)[i], // mama
+                           (*males)[j],  // papa
+                           (*males)[k], // epc_papa
+                           density_dependent_offspring_rate,
+                           params.clutch_size_mean,
+                           params.clutch_size_sd,
+                           params.sex_ratio_offspring,
+                           params.epc);
+        if (rndgen.bernouilli(params.male_death_rate)) {
+          (*males)[j] = (*males).back();
+          (*males).pop_back();
+          --j;
+        }
+      }
+      }
+  }
+
+  void mate_random(std::vector< ANIMAL >* females,
+                   std::vector< ANIMAL >* males,
+                   std::vector< ANIMAL >* offspring_female,
+                   std::vector< ANIMAL >* offspring_male,
+                   double density_dependent_offspring_rate) {
+
+    for (int i = 0; i < (*females).size(); ++i) {
+      // now, mated females and females experience additional death
+      if (rndgen.bernouilli(params.female_death_rate)) {
+        (*females)[i] = (*females).back();
+        (*females).pop_back();
+        --i;
+      } else {
+        int j = rndgen.random_number((*males).size());
+        int k = 0;
+        if (params.epc > 0.0) {
+          k = rndgen.random_number((*males).size());
+          while(k == j) k = rndgen.random_number((*males).size());
+        }
+        generate_offspring(offspring_male,
+                           offspring_female,
+                           (*females)[i], // mama
+                           (*males)[j],  // papa
+                           (*males)[k], // epc_papa
+                           density_dependent_offspring_rate,
+                           params.clutch_size_mean,
+                           params.clutch_size_sd,
+                           params.sex_ratio_offspring,
+                           params.epc);
+        if (rndgen.bernouilli(params.male_death_rate)) {
+          (*males)[j] = (*males).back();
+          (*males).pop_back();
+        }
+      }
+    }
+  }
+
+
   void update_pop(std::vector< ANIMAL >* females,
                   std::vector< ANIMAL >* males,
                   int number_added,
@@ -362,37 +462,18 @@ class analysis {
     pop_size = (*males).size() + (*females).size();
     double density_dependent_offspring_rate = calculate_death_rate(pop_size);
 
-    if ((*males).size() < (*females).size()) {
-      // not all females are mated, females should be shuffled
-      std::shuffle((*females).begin(), (*females).end(), rndgen.rndgen);
+    if (params.random_mating) {
+      mate_random(females,
+                  males,
+                  &offspring_female,
+                  &offspring_male,
+                  density_dependent_offspring_rate);
     } else {
-      // not all males are mated, males should be shuffled
-      std::shuffle((*males).begin(), (*males).end(), rndgen.rndgen);
-    }
-
-    for (int i = 0, j = 0;
-         i < (*females).size() && j < (*males).size();
-         ++i, ++j) {
-      // now, mated females and females experience additional death
-      if (rndgen.bernouilli(params.female_death_rate)) {
-        (*females)[i] = (*females).back();
-        (*females).pop_back();
-        --i;
-      } else {
-        generate_offspring(&offspring_male,
-                           &offspring_female,
-                           (*females)[i],
-                           (*males)[j],
-                           density_dependent_offspring_rate,
-                           params.clutch_size_mean,
-                           params.clutch_size_sd,
-                           params.sex_ratio_offspring);
-        if (rndgen.bernouilli(params.male_death_rate)) {
-          (*males)[j] = (*males).back();
-          (*males).pop_back();
-          --j;
-        }
-      }
+      mate_bonded(females,
+                  males,
+                  &offspring_female,
+                  &offspring_male,
+                  density_dependent_offspring_rate);
     }
 
     if (!offspring_male.empty()) {
@@ -413,30 +494,41 @@ class analysis {
                           std::vector< ANIMAL >* offspring_female,
                           const ANIMAL& mama,
                           const ANIMAL& papa,
+                          const ANIMAL& papa_epc,
                           double offspring_death_rate,
                           int clutch_size,
                           double clutch_sd,
-                          double prob_male) {
+                          double prob_male,
+                          double epc) {
       if (rndgen.bernouilli(1.0 - params.nest_failure_rate)) {
       // nest is not predated
-      int num_offspring = static_cast<int>(rndgen.normal_positive(clutch_size,
-                                                                  clutch_sd));
+        int num_offspring = static_cast<int>(rndgen.normal_positive(clutch_size,
+                                                                    clutch_sd));
+        for (int j = 0; j < num_offspring; ++j) {
+          // immediately check survival to next generation
+          if (rndgen.uniform() > offspring_death_rate) {
+            ANIMAL chick;
+            if (epc > 0.0) {
+              auto dad_gamete = rndgen.uniform() < epc ? papa_epc.gamete(params.morgan, &rndgen) :
+                                                         papa.gamete(params.morgan, &rndgen);
+              chick =  ANIMAL(mama.gamete(params.morgan, &rndgen),
+                              dad_gamete,
+                              prob_male,
+                              &rndgen);
+            } else {
+              chick =  ANIMAL(mama.gamete(params.morgan, &rndgen),
+                           papa.gamete(params.morgan, &rndgen),
+                           prob_male,
+                           &rndgen);
+            }
 
-      for (int j = 0; j < num_offspring; ++j) {
-        // immediately check survival to next generation
-        if (rndgen.uniform() > offspring_death_rate) {
-          ANIMAL chick(mama.gamete(params.morgan, &rndgen),
-                     papa.gamete(params.morgan, &rndgen),
-                     prob_male,
-                     &rndgen);
-
-          if (chick.get_sex() == female) {
-            (*offspring_female).push_back(std::move(chick));
-          } else {
-            (*offspring_male).push_back(std::move(chick));
+            if (chick.get_sex() == female) {
+              (*offspring_female).push_back(std::move(chick));
+            } else {
+              (*offspring_male).push_back(std::move(chick));
+            }
           }
         }
-      }
     }
     return;
   }
@@ -479,9 +571,12 @@ class analysis {
       } else {
         for (int i = 0; i < number_removed; ++i) {
           int unlucky_indiv = rndgen.random_number((*input_pop).size());
-          (*input_pop)[unlucky_indiv] = (*input_pop).back();
-          (*input_pop).pop_back();
-          if ((*input_pop).empty()) break;
+
+          if ((*input_pop)[unlucky_indiv].get_freq_anc() < params.pull_ancestry) {
+            (*input_pop)[unlucky_indiv] = (*input_pop).back();
+            (*input_pop).pop_back();
+            if ((*input_pop).empty()) break;
+          }
         }
       }
     }

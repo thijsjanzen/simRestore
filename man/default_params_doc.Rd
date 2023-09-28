@@ -117,6 +117,20 @@ result of breeding (e.g. as a result of protecting the offspring against
 predators). Provide as a vector where the first index indicates the risk for
 females, the second the risk for males.}
 
+\item{ancestry_pull}{Ancestry level below which individuals are allowed to
+be pulled - this can reduce the effective number of individuals pulled if
+none of the individuals in the population match this ancestry level. This can
+be used to selectively only remove those with low target ancestry.}
+
+\item{random_mating}{by default, simulations assume fixed pair bonding, e.g.
+each female mates with exactly one male (if available). Alternatively, if
+random_mating = TRUE, females will mate with a random male, introducing the
+possibility that some males mate multiple times.}
+
+\item{extra_pair_copulation}{probability of offspring to be fathered by
+another male. We assume that all offspring from one mother can have at most
+two fathers.}
+
 \item{genetic_model}{The model can either use the point ancestry model
 ("point") of underlying genetics, which speeds up simulation
 considerably, but underestimates genetic variation. Alternatively, a more

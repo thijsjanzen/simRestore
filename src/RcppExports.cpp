@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // simulate_complete
-Rcpp::List simulate_complete(int pop_size, float starting_freq, float sd_starting_freq, Rcpp::NumericVector introductions, Rcpp::NumericVector removal, int number_of_generations, int replicates, int K, std::vector<double> morgan, Rcpp::NumericVector nesting_risk, double nest_failure_rate, int establishment_burnin, int seed, int max_age, bool use_simple, bool verbose, double clutch_size_mean, double clutch_size_sd, double smin, double smax, double p, double b, double sex_ratio_put, double sex_ratio_pull, double sex_ratio_offspring, double put_ancestry, bool return_genetics);
-RcppExport SEXP _simRestore_simulate_complete(SEXP pop_sizeSEXP, SEXP starting_freqSEXP, SEXP sd_starting_freqSEXP, SEXP introductionsSEXP, SEXP removalSEXP, SEXP number_of_generationsSEXP, SEXP replicatesSEXP, SEXP KSEXP, SEXP morganSEXP, SEXP nesting_riskSEXP, SEXP nest_failure_rateSEXP, SEXP establishment_burninSEXP, SEXP seedSEXP, SEXP max_ageSEXP, SEXP use_simpleSEXP, SEXP verboseSEXP, SEXP clutch_size_meanSEXP, SEXP clutch_size_sdSEXP, SEXP sminSEXP, SEXP smaxSEXP, SEXP pSEXP, SEXP bSEXP, SEXP sex_ratio_putSEXP, SEXP sex_ratio_pullSEXP, SEXP sex_ratio_offspringSEXP, SEXP put_ancestrySEXP, SEXP return_geneticsSEXP) {
+Rcpp::List simulate_complete(int pop_size, float starting_freq, float sd_starting_freq, Rcpp::NumericVector introductions, Rcpp::NumericVector removal, int number_of_generations, int replicates, int K, std::vector<double> morgan, Rcpp::NumericVector nesting_risk, double nest_failure_rate, int establishment_burnin, int seed, int max_age, bool use_simple, bool verbose, double clutch_size_mean, double clutch_size_sd, double smin, double smax, double p, double b, double sex_ratio_put, double sex_ratio_pull, double sex_ratio_offspring, double put_ancestry, double pull_ancestry, bool use_random_mating, double extra_pair_copulation, bool return_genetics);
+RcppExport SEXP _simRestore_simulate_complete(SEXP pop_sizeSEXP, SEXP starting_freqSEXP, SEXP sd_starting_freqSEXP, SEXP introductionsSEXP, SEXP removalSEXP, SEXP number_of_generationsSEXP, SEXP replicatesSEXP, SEXP KSEXP, SEXP morganSEXP, SEXP nesting_riskSEXP, SEXP nest_failure_rateSEXP, SEXP establishment_burninSEXP, SEXP seedSEXP, SEXP max_ageSEXP, SEXP use_simpleSEXP, SEXP verboseSEXP, SEXP clutch_size_meanSEXP, SEXP clutch_size_sdSEXP, SEXP sminSEXP, SEXP smaxSEXP, SEXP pSEXP, SEXP bSEXP, SEXP sex_ratio_putSEXP, SEXP sex_ratio_pullSEXP, SEXP sex_ratio_offspringSEXP, SEXP put_ancestrySEXP, SEXP pull_ancestrySEXP, SEXP use_random_matingSEXP, SEXP extra_pair_copulationSEXP, SEXP return_geneticsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,14 +42,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type sex_ratio_pull(sex_ratio_pullSEXP);
     Rcpp::traits::input_parameter< double >::type sex_ratio_offspring(sex_ratio_offspringSEXP);
     Rcpp::traits::input_parameter< double >::type put_ancestry(put_ancestrySEXP);
+    Rcpp::traits::input_parameter< double >::type pull_ancestry(pull_ancestrySEXP);
+    Rcpp::traits::input_parameter< bool >::type use_random_mating(use_random_matingSEXP);
+    Rcpp::traits::input_parameter< double >::type extra_pair_copulation(extra_pair_copulationSEXP);
     Rcpp::traits::input_parameter< bool >::type return_genetics(return_geneticsSEXP);
-    rcpp_result_gen = Rcpp::wrap(simulate_complete(pop_size, starting_freq, sd_starting_freq, introductions, removal, number_of_generations, replicates, K, morgan, nesting_risk, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_pull, sex_ratio_offspring, put_ancestry, return_genetics));
+    rcpp_result_gen = Rcpp::wrap(simulate_complete(pop_size, starting_freq, sd_starting_freq, introductions, removal, number_of_generations, replicates, K, morgan, nesting_risk, nest_failure_rate, establishment_burnin, seed, max_age, use_simple, verbose, clutch_size_mean, clutch_size_sd, smin, smax, p, b, sex_ratio_put, sex_ratio_pull, sex_ratio_offspring, put_ancestry, pull_ancestry, use_random_mating, extra_pair_copulation, return_genetics));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_simRestore_simulate_complete", (DL_FUNC) &_simRestore_simulate_complete, 27},
+    {"_simRestore_simulate_complete", (DL_FUNC) &_simRestore_simulate_complete, 30},
     {NULL, NULL, 0}
 };
 
