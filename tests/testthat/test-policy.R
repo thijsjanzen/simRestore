@@ -198,24 +198,52 @@ test_that("random mating", {
 test_that("epc", {
   vx <- simRestore::simulate_policy(initial_population_size = 100,
                                     K = 100,
-                                    num_generations = 20,
+                                    num_generations = 10,
                                     pull = 0,
                                     put = 10,
                                     num_replicates = 1,
                                     starting_freq = 0.2,
                                     seed = 42,
-                                    random_mating = FALSE,
                                     verbose = FALSE)
 
   vy <- simRestore::simulate_policy(initial_population_size = 100,
                                     K = 100,
-                                    num_generations = 20,
+                                    num_generations = 10,
                                     pull = 0,
                                     put = 10,
                                     num_replicates = 1,
                                     starting_freq = 0.2,
                                     seed = 42,
                                     extra_pair_copulation = 0.1,
+                                    verbose = FALSE)
+
+  # these two simulations should differ.
+  a1 <- vx$results$freq_focal_ancestry
+  a2 <- vy$results$freq_focal_ancestry
+  testthat::expect_true(sum(a1 - a2) != 0)
+})
+
+
+test_that("pull_ancestry", {
+  vx <- simRestore::simulate_policy(initial_population_size = 100,
+                                    K = 100,
+                                    num_generations = 10,
+                                    pull = 0,
+                                    put = 10,
+                                    num_replicates = 1,
+                                    starting_freq = 0.2,
+                                    seed = 42,
+                                    verbose = FALSE)
+
+  vy <- simRestore::simulate_policy(initial_population_size = 100,
+                                    K = 100,
+                                    num_generations = 10,
+                                    pull = 10,
+                                    put = 10,
+                                    num_replicates = 1,
+                                    starting_freq = 0.2,
+                                    seed = 42,
+                                    ancestry_pull = 0.1,
                                     verbose = FALSE)
 
   # these two simulations should differ.

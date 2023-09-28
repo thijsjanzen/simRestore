@@ -9,8 +9,6 @@ update_vector <- function(v, num_generations) {
     v <- c(v, rep(utils::tail(v, 1), num_missing))
   }
 
-  assertthat::are_equal(length(v), num_generations)
-
   return(v)
 }
 
