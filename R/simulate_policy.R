@@ -130,7 +130,8 @@ simulate_policy <- function(initial_population_size = 400,
     if (ncol(output$genetics) > 0) {
       if (use_simplified_model) {
         colnames(output$genetics) <- c("generation", "replicate", "individual",
-                                       "sex", "linkage_group", "chromosome", "ancestry")
+                                       "sex", "linkage_group",
+                                       "chromosome", "ancestry")
       } else {
         colnames(output$genetics) <- c("generation", "replicate", "individual",
                                        "sex", "linkage_group", "chromosome",

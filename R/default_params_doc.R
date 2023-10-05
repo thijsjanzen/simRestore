@@ -10,7 +10,7 @@
 #' offspring. Other sources of failure are calculated from
 #' reproduction_success_rate and female_death_rate, such that the resulting
 #' reproduction failure rate = 1 - reproduction_success_rate /
-#' (1 - female breeding risk);
+#' (1 - female breeding risk)
 #' @param reproductive_risk Additional death rate of males and females as a
 #' result of breeding (e.g. as a result of protecting the offspring against
 #' predators). Provide as a vector where the first index indicates the risk for
@@ -86,7 +86,7 @@
 #' @keywords internal
 default_params_doc <- function(initial_population_size = 400,
                                reproduction_success_rate = 0.387,
-                               breeding_risk = c(0.2, 0.0),
+                               reproductive_risk = c(0.2, 0.0),
                                K = 400, # nolint
                                num_generations = 20,
                                pull = 0,
@@ -104,10 +104,15 @@ default_params_doc <- function(initial_population_size = 400,
                                smax = 0.9,
                                b = -2,
                                p = 0.5,
+                               genetic_model = "point",
                                sex_ratio_put = 0.5,
                                sex_ratio_pull = 0.5,
                                sex_ratio_offspring = 0.5,
                                ancestry_put = 1.0,
+                               ancestry_pull = 1.0,
+                               return_genetics = FALSE,
+                               random_mating = FALSE,
+                               extra_pair_copulation = 0.0,
                                use_simplified_model = TRUE,
                                verbose = TRUE) {
  # Nothing

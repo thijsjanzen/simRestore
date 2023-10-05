@@ -53,7 +53,7 @@ breeding females getting killed
 offspring. Other sources of failure are calculated from
 reproduction_success_rate and female_death_rate, such that the resulting
 reproduction failure rate = 1 - reproduction_success_rate /
-(1 - female breeding risk);}
+(1 - female breeding risk)}
 
 \item{reproductive_risk}{Additional death rate of males and females as a
 result of breeding (e.g. as a result of protecting the offspring against
