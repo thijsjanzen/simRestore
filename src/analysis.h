@@ -510,8 +510,9 @@ class analysis {
           if (rndgen.uniform() > offspring_death_rate) {
             ANIMAL chick;
             if (epc > 0.0) {
-              auto dad_gamete = rndgen.uniform() < epc ? papa_epc.gamete(params.morgan, &rndgen) :
-                                                         papa.gamete(params.morgan, &rndgen);
+             auto dad_gamete =
+              rndgen.uniform() < epc ? papa_epc.gamete(params.morgan, &rndgen) :
+                                       papa.gamete(params.morgan, &rndgen);
               chick =  ANIMAL(mama.gamete(params.morgan, &rndgen),
                               dad_gamete,
                               prob_male,
@@ -573,7 +574,8 @@ class analysis {
         for (int i = 0; i < number_removed; ++i) {
           int unlucky_indiv = rndgen.random_number((*input_pop).size());
 
-          if ((*input_pop)[unlucky_indiv].get_freq_anc() < params.pull_ancestry) {
+          if ((*input_pop)[unlucky_indiv].get_freq_anc() <
+              params.pull_ancestry) {
             (*input_pop)[unlucky_indiv] = (*input_pop).back();
             (*input_pop).pop_back();
             if ((*input_pop).empty()) break;
