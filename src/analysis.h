@@ -173,7 +173,6 @@ class analysis {
     verbose = false;
     using_molecular_data = false;
     base_genomes = {0};
-    anc_info = {0};
     rndgen = rnd_t();
     replicate = 0;
   }
