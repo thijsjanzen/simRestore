@@ -6,6 +6,11 @@
 \usage{
 run_shiny_app()
 }
+\value{
+No return value
+}
 \description{
-runs shiny app locally
+This function allows for local execution of the shiny app. Alternatively,
+an online version of this app
+\href{https://thijsjanzen.shinyapps.io/simRestoreApp/}{can be found here}.
 }
