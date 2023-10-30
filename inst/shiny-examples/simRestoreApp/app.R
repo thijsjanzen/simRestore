@@ -1,6 +1,9 @@
 require(magrittr)
 require(ggplot2)
 require(shinyBS)
+require(shinythemes)
+require(egg)
+require(shinyWidgets)
 
 apply_theme <- function(plot_object) {
   # this was adopted from the ggthemr package, palette 'earth'
@@ -353,7 +356,10 @@ ui <- fluidPage(
   )
 )
 
+data_storage <- c()
+
 server <- function(input, output, session) {
+  global <- reactiveValues(data_storage = NULL)
 
   simple_data <- reactive({
     simRestore::simulate_policy(initial_population_size = input$init_pop_size_1,
@@ -397,7 +403,7 @@ server <- function(input, output, session) {
 
   output$simple_plots <- renderPlot({
     to_plot <- simple_data()
-    data_storage <<- to_plot
+    global$data_storage <- to_plot
 
     p1 <- to_plot$results %>%
       ggplot(aes(x = t, y = freq_focal_ancestry, group = replicate)) +
@@ -521,7 +527,7 @@ server <- function(input, output, session) {
 
   output$Optim_simple_plots <- renderPlot({
     to_plot <- optim_data_static()
-    data_storage <<- to_plot
+    global$data_storage <- to_plot
 
     final_freq <- to_plot$final_freq
     if (is.numeric(final_freq)) {
@@ -627,7 +633,7 @@ server <- function(input, output, session) {
 
   output$Optim_complex_plots <- renderPlot({
     to_plot <- optim_data_complex()
-    data_storage <<- to_plot
+    global$data_storage <- to_plot
     for_text <- to_plot$curve
     # tibble with t, pull, put
 
@@ -759,7 +765,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       # stored_data <- read.table(input$data_for_download)
-      write.table(data_storage$results, file, quote = FALSE)
+      write.table(global$data_storage$results, file, quote = FALSE)
     }
   )
 
@@ -768,7 +774,7 @@ server <- function(input, output, session) {
       paste0("genetics_", Sys.Date(), ".txt")
     },
     content = function(file) {
-      write.table(data_storage$genetics, file, quote = FALSE)
+      write.table(global$data_storage$genetics, file, quote = FALSE)
     }
   )
 
@@ -778,7 +784,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       # stored_data <- read.table(input$data_for_download)
-      write.table(data_storage$results, file, quote = FALSE)
+      write.table(global$data_storage$results, file, quote = FALSE)
     }
   )
 
@@ -787,7 +793,7 @@ server <- function(input, output, session) {
       paste0("genetics_", Sys.Date(), ".txt")
     },
     content = function(file) {
-      write.table(data_storage$genetics, file, quote = FALSE)
+      write.table(global$data_storage$genetics, file, quote = FALSE)
     }
   )
 
@@ -796,7 +802,7 @@ server <- function(input, output, session) {
       paste0("dataset_", Sys.Date(), ".txt")
     },
     content = function(file) {
-      write.table(data_storage$results, file, quote = FALSE)
+      write.table(global$data_storage$results, file, quote = FALSE)
     }
   )
 
@@ -805,7 +811,7 @@ server <- function(input, output, session) {
       paste0("genetics_", Sys.Date(), ".txt")
     },
     content = function(file) {
-      write.table(data_storage$genetics, file, quote = FALSE)
+      write.table(global$data_storage$genetics, file, quote = FALSE)
     }
   )
 }
