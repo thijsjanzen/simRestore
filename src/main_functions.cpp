@@ -162,7 +162,7 @@ Rcpp::List simulate_complete(int pop_size,
     }
 
     Rcpp::NumericMatrix output(results.size(), 8);
-    for (int i = 0; i < results.size(); ++i) {
+    for (size_t i = 0; i < results.size(); ++i) {
       output(i, 0) = results[i][0];
       output(i, 1) = results[i][1];
       output(i, 2) = results[i][2];

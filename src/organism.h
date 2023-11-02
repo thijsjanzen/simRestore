@@ -68,6 +68,7 @@ struct organism {
     genome chromosome2;
     Sex sex;
     double freq_anc;
+
     void calc_freq_anc();
 };
 

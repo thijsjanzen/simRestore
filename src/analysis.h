@@ -275,7 +275,7 @@ class analysis {
       females.push_back(base_pop[i]);
       females.back().set_sex(female);
     }
-    for (int i = num_females; i < base_pop.size(); ++i) {
+    for (size_t i = num_females; i < base_pop.size(); ++i) {
       males.push_back(base_pop[i]);
       males.back().set_sex(male);
     }
@@ -358,7 +358,7 @@ class analysis {
       std::shuffle((*males).begin(), (*males).end(), rndgen.rndgen);
     }
 
-    for (int i = 0, j = 0;
+    for (size_t i = 0, j = 0;
          i < (*females).size() && j < (*males).size();
          ++i, ++j) {
       // now, mated females and females experience additional death
@@ -397,7 +397,7 @@ class analysis {
                    std::vector< ANIMAL >* offspring_female,
                    std::vector< ANIMAL >* offspring_male,
                    double density_dependent_offspring_rate) {
-    for (int i = 0; i < (*females).size(); ++i) {
+    for (size_t i = 0; i < (*females).size(); ++i) {
       // now, mated females and females experience additional death
       if (rndgen.bernouilli(params.female_death_rate)) {
         (*females)[i] = (*females).back();
@@ -567,7 +567,7 @@ class analysis {
 
     // then, they can be killed (until number removed is reached)
     if (number_removed > 0) {
-      if (number_removed >= (*input_pop).size()) {
+      if (number_removed >= static_cast<int>((*input_pop).size())) {
         (*input_pop).clear();
       } else {
         for (int i = 0; i < number_removed; ++i) {
@@ -673,7 +673,7 @@ class analysis {
       ANIMAL parent2 = base_indiv;
 
       float freq_focal = rndgen.normal_positive(params.starting_freq,
-                                                 params.sd_starting_freq);
+                                                params.sd_starting_freq);
 
       if (rndgen.uniform() < freq_focal) {
         parent1 = target_indiv;
@@ -693,9 +693,9 @@ class analysis {
                              init_prob_female, &rndgen);
     }
 
-    for (size_t t = 0; t < params.number_of_generations; ++t) {
+    for (int t = 0; t < params.number_of_generations; ++t) {
       std::vector< ANIMAL > new_population(params.pop_size);
-      for (size_t i = 0; i < params.pop_size; ++i) {
+      for (int i = 0; i < params.pop_size; ++i) {
         int index1 = rndgen.random_number(params.pop_size);
         int index2 = rndgen.random_number(params.pop_size);
         while (index2 == index1) index2 = rndgen.random_number(params.pop_size);

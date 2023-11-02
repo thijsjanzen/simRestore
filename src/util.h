@@ -32,9 +32,9 @@ void numericmatrix_to_vector(Rcpp::NumericMatrix* m,
   *v = std::vector< std::vector< double> >((*m).nrow(),
                                            std::vector<double>((*m).ncol(),
                                                                0.0));
-  for (size_t i = 0; i < (*m).nrow(); ++i) {
+  for (int i = 0; i < (*m).nrow(); ++i) {
     std::vector<double> row((*m).ncol(), 0.0);
-    for (size_t j = 0; j < (*m).ncol(); ++j) {
+    for (int j = 0; j < (*m).ncol(); ++j) {
       row[j] = (*m)(i, j);
     }
     (*v)[i] = row;
