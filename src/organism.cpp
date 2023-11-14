@@ -239,26 +239,27 @@ void organism::calc_freq_anc() {
     freq_anc = 0.5 * (freq1 + freq2);
 }
 
-organism_simple::organism_simple() {
-    freq_anc = -1.0;
-    age = 0;
-    chromosome1 = std::vector<double>(1, 0);
-    chromosome2 = std::vector<double>(1, 0);
-    sex = Sex::female;
-}
-
-organism_simple::organism_simple(double initLoc,
-                                 size_t num_chromosomes) {
-    freq_anc = initLoc;
-    chromosome1 = std::vector<double>(num_chromosomes, initLoc);
-    chromosome2 = std::vector<double>(num_chromosomes, initLoc);
-    sex = Sex::female;
-    age = 0;
-}
 
 double organism_simple::calc_freq_chrom(const std::vector<double>& chrom) {
   double s = std::accumulate(chrom.begin(), chrom.end(), 0.0);
   return s * 1.0 / chrom.size();
+}
+
+organism_simple::organism_simple() {
+  freq_anc = 0.0;
+  age = 0;
+  chromosome1 = std::vector<double>(1, 0.0);
+  chromosome2 = std::vector<double>(1, 0.0);
+  sex = Sex::female;
+}
+
+organism_simple::organism_simple(double initLoc,
+                                 int num_chromosomes) {
+  freq_anc = initLoc;
+  chromosome1 = std::vector<double>(num_chromosomes, initLoc);
+  chromosome2 = std::vector<double>(num_chromosomes, initLoc);
+  sex = Sex::female;
+  age = 0;
 }
 
 organism_simple::organism_simple(const std::vector<double>& chrom1,
@@ -271,25 +272,6 @@ organism_simple::organism_simple(const std::vector<double>& chrom1,
                       calc_freq_chrom(chromosome2));
     set_nonrandom_sex(prob_female, rndgen);
     age = 0;
-}
-
-organism_simple::organism_simple(const organism_simple& other)  {
-    freq_anc = other.get_freq_anc();
-    chromosome1 = other.get_chromosome1();
-    chromosome2 = other.get_chromosome2();
-    sex = other.sex;
-    age = other.age;
-}
-
-organism_simple& organism_simple::operator=(const organism_simple& other) {
-    if (this != &other) {
-      freq_anc = other.get_freq_anc();
-      chromosome1 = other.get_chromosome1();
-      chromosome2 = other.get_chromosome2();
-      sex = other.get_sex();
-      age = other.age;
-    }
-    return *this;
 }
 
 void organism_simple::set_nonrandom_sex(double prob_male,

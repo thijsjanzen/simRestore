@@ -334,7 +334,8 @@ class analysis {
   void additional_death(std::vector< ANIMAL>* ANIMALs,
                         double death_rate,
                         int max_num) {
-    if (max_num > (*ANIMALs).size()) max_num = (*ANIMALs).size();
+    if (max_num > static_cast<int>((*ANIMALs).size()))
+          max_num = static_cast<int>((*ANIMALs).size());
     int num_dead = rndgen.binomial(max_num, death_rate);
     if (num_dead <= 0) return;
     for (int i = 0; i < num_dead; ++i) {
@@ -370,7 +371,7 @@ class analysis {
         int k = 0;
         if (params.epc > 0.0) {
           k = rndgen.random_number((*males).size());
-          while (k == j && (*males).size() > 1)
+          while (k == static_cast<int>(j) && (*males).size() > 1)
             k = rndgen.random_number((*males).size());
         }
         generate_offspring(offspring_male,
@@ -543,7 +544,7 @@ class analysis {
   }
 
   void old_age(std::vector< ANIMAL >* pop) {
-    for (int i = 0; i < (*pop).size(); ++i) {
+    for (int i = 0; i < static_cast<int>((*pop).size()); ++i) {
       (*pop)[i].age++;
       if ((*pop)[i].age > params.max_age) {
         (*pop)[i] = (*pop).back();
@@ -594,9 +595,11 @@ class analysis {
   }
 
   void add_to_population(std::vector<organism_simple>* population,
-                         int number_added, tag<organism_simple>,
+                         int number_added,
+                         tag<organism_simple>,
                          const Sex& sex) {
-    organism_simple to_add(params.put_ancestry, params.morgan.size());
+    organism_simple to_add(params.put_ancestry,
+                           params.morgan.size());
     to_add.set_sex(sex);
     for (int i = 0; i < number_added; ++i) {
       (*population).push_back(to_add);
@@ -605,7 +608,8 @@ class analysis {
   }
 
   void add_to_population(std::vector<organism>* population,
-                         int number_added, tag<organism>,
+                         int number_added,
+                         tag<organism>,
                          const Sex& sex) {
     organism to_add(params.put_ancestry, params.morgan.size());
     to_add.set_sex(sex);

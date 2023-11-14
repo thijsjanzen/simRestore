@@ -74,14 +74,14 @@ struct organism {
 
 struct organism_simple {
     organism_simple();
-    organism_simple(double initLoc, size_t num_chromosomes);
+    organism_simple(double initLoc, int num_chromosomes);
 
     organism_simple(const std::vector<double>& chrom1,
                     const std::vector<double>& chrom2,
                     double prob_male, rnd_t* rndgen);
 
-    organism_simple(const organism_simple& other);
-    organism_simple& operator=(const organism_simple& other);
+    organism_simple(const organism_simple& other) = default;
+    organism_simple& operator=(const organism_simple& other) = default;
 
     void set_nonrandom_sex(double prob_male, rnd_t* rndgen);
     void set_sex(Sex s) {sex = s;}
@@ -96,11 +96,12 @@ struct organism_simple {
     const double& get_freq_anc() const noexcept {return freq_anc;}
     const Sex& get_sex() const noexcept {return sex;}
 
-    int age;
+
 
     std::vector<std::vector<double>> get_genomic_info(int t, int replicate,
                                                       int indiv) const;
 
+    int age;
  private:
     std::vector<double> chromosome1;
     std::vector<double> chromosome2;
