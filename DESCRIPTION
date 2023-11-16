@@ -1,7 +1,7 @@
 Type: Package
 Package: simRestore
 Title: Simulate the Effect of Management Policies on Restoration Efforts
-Version: 1.1.3
+Version: 1.1.4
 Authors@R: 
     person("Thijs", "Janzen", , "thijsjanzen@gmail.com", role = c("aut", "cre"))
 Description: Simulation methods to study the effect of management policies on

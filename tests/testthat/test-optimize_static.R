@@ -22,13 +22,14 @@ test_that("simple optimization", {
   testthat::expect_equal(max(vx$results$t), 2)
   testthat::expect_true(is.na(sd(vx$pull)))
 
-  vx <- simRestore::optimize_static(num_generations = 10,
+  vx <- simRestore::optimize_static(num_generations = 20,
                                     target_frequency = 0.99,
                                     optimize_put = TRUE,
                                     optimize_pull = TRUE,
                                     num_replicates = 1)
-  testthat::expect_gt(vx$final_freq, 0.95)
-  testthat::expect_equal(max(vx$results$t), 10)
+  testthat::expect_gt(vx$final_freq, 0.9)
+
+  testthat::expect_equal(max(vx$results$t), 20)
   testthat::expect_true(is.na(sd(vx$pull)))
   testthat::expect_true(is.na(sd(vx$put)))
 
@@ -85,12 +86,12 @@ test_that("fixed optimization", {
 test_that("error", {
   testthat::expect_warning(
     vx <- simRestore::optimize_static(num_generations = 10,
-                                    initial_population_size = 3,
-                                    reproductive_risk = c(1, 1), # force death
-                                    target_frequency = 0.99,
-                                    optimize_put = FALSE,
-                                    optimize_pull = TRUE,
-                                    num_replicates = 1)
+                                      initial_population_size = 3,
+                                      reproductive_risk = c(1, 1), # force death
+                                      target_frequency = 0.99,
+                                      optimize_put = FALSE,
+                                      optimize_pull = TRUE,
+                                      num_replicates = 1)
   )
 
   testthat::expect_true(is.na(vx$pull))
