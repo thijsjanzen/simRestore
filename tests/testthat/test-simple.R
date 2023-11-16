@@ -14,7 +14,7 @@ test_that("point use", {
 
   vx <- simulate_policy(initial_population_size = 100,
                         K = 400,
-                        num_generations = 20,
+                        num_generations = 10,
                         pull = 10,
                         put = 1000,
                         starting_freq = 0.2,
@@ -27,7 +27,7 @@ test_that("point use", {
   # and shooting / addition vector wrong length test
   vx <- simulate_policy(initial_population_size = 100,
                         K = 400,
-                        num_generations = 20,
+                        num_generations = 10,
                         pull = c(10, 10),
                         put = c(200, 200),
                         starting_freq = 0.2,

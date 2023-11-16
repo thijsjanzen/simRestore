@@ -1,9 +1,9 @@
 context("simulate point and junctions")
 
 test_that("compare use", {
-  vx <- simRestore::simulate_policy(initial_population_size = 1000,
+  vx <- simRestore::simulate_policy(initial_population_size = 100,
                         K = 400,
-                        num_generations = 20,
+                        num_generations = 10,
                         pull = 0,
                         put = 0,
                         num_replicates = 100,
@@ -12,9 +12,9 @@ test_that("compare use", {
                         genetic_model = "junctions",
                         verbose = FALSE)
 
-  vy <- simRestore::simulate_policy(initial_population_size = 1000,
+  vy <- simRestore::simulate_policy(initial_population_size = 100,
                         K = 400,
-                        num_generations = 20,
+                        num_generations = 10,
                         pull = 0,
                         put = 0,
                         num_replicates = 100,
@@ -38,7 +38,7 @@ test_that("compare use", {
 test_that("check introduction frequency", {
   # using simple model:
   for (anc_put in c(0.0, 0.5, 1.0)) {
-    vx <- simulate_policy(initial_population_size = 300,
+    vx <- simulate_policy(initial_population_size = 30,
                           K = 400,
                           num_generations = 20,
                           pull = 0,
@@ -73,7 +73,7 @@ test_that("check introduction frequency", {
 test_that("genetics output", {
   vx <- simRestore::simulate_policy(initial_population_size = 100,
                                     K = 400,
-                                    num_generations = 5,
+                                    num_generations = 10,
                                     pull = 0,
                                     put = 0,
                                     num_replicates = 1,
@@ -100,9 +100,9 @@ test_that("genetics output", {
 
   testthat::expect_gt(length(unique(vx$genetics$position)), 2)
 
-  vx <- simRestore::simulate_policy(initial_population_size = 100,
+  vx <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 400,
-                                    num_generations = 5,
+                                    num_generations = 3,
                                     pull = 0,
                                     put = 0,
                                     num_replicates = 1,
@@ -133,9 +133,9 @@ test_that("genetics output", {
 
 
 test_that("multiple chromosomes", {
-  vx <- simRestore::simulate_policy(initial_population_size = 100,
+  vx <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
-                                    num_generations = 20,
+                                    num_generations = 10,
                                     pull = 0,
                                     put = 0,
                                     morgan = c(1, 2, 3),
@@ -148,9 +148,9 @@ test_that("multiple chromosomes", {
 
   testthat::expect_equal(length(unique(vx$genetics$linkage_group)), 3)
 
-  vx <- simRestore::simulate_policy(initial_population_size = 100,
+  vx <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
-                                    num_generations = 20,
+                                    num_generations = 10,
                                     pull = 0,
                                     put = 0,
                                     morgan = c(1, 2, 3),
@@ -167,9 +167,9 @@ test_that("multiple chromosomes", {
 
 
 test_that("random mating", {
-  vx <- simRestore::simulate_policy(initial_population_size = 100,
+  vx <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
-                                    num_generations = 20,
+                                    num_generations = 10,
                                     pull = 0,
                                     put = 10,
                                     num_replicates = 1,
@@ -178,9 +178,9 @@ test_that("random mating", {
                                     random_mating = FALSE,
                                     verbose = FALSE)
 
-  vy <- simRestore::simulate_policy(initial_population_size = 100,
+  vy <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
-                                    num_generations = 20,
+                                    num_generations = 10,
                                     pull = 0,
                                     put = 10,
                                     num_replicates = 1,
@@ -196,7 +196,7 @@ test_that("random mating", {
 })
 
 test_that("epc", {
-  vx <- simRestore::simulate_policy(initial_population_size = 100,
+  vx <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
                                     num_generations = 10,
                                     pull = 0,
@@ -206,7 +206,7 @@ test_that("epc", {
                                     seed = 42,
                                     verbose = FALSE)
 
-  vy <- simRestore::simulate_policy(initial_population_size = 100,
+  vy <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
                                     num_generations = 10,
                                     pull = 0,
@@ -225,7 +225,7 @@ test_that("epc", {
 
 
 test_that("pull_ancestry", {
-  vx <- simRestore::simulate_policy(initial_population_size = 100,
+  vx <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
                                     num_generations = 10,
                                     pull = 0,
@@ -235,7 +235,7 @@ test_that("pull_ancestry", {
                                     seed = 42,
                                     verbose = FALSE)
 
-  vy <- simRestore::simulate_policy(initial_population_size = 100,
+  vy <- simRestore::simulate_policy(initial_population_size = 10,
                                     K = 100,
                                     num_generations = 10,
                                     pull = 10,

@@ -319,10 +319,6 @@ class analysis {
                             static_cast<int>(males.size() + females.size() ),
                             males.size(),
                             females.size());
-        if (verbose) {
-            Rcpp::Rcout << t << " " << f2[0] << "\t" <<
-              males.size()  << "\t" <<  females.size() << "\n";
-        }
     }
     output_pop = males;
     for (const auto& i : females) {
