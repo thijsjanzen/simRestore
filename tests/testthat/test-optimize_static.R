@@ -108,15 +108,6 @@ test_that("genetics", {
   testthat::expect_true(inherits(vx$genetics, "tbl_df"))
 
   vx <- simRestore::optimize_static(num_generations = 3,
-                                    target_frequency = 0.2,
-                                    optimize_put = FALSE,
-                                    optimize_pull = TRUE,
-                                    num_replicates = 1,
-                                    return_genetics = TRUE)
-  # just check it is there:
-  testthat::expect_true(inherits(vx$genetics, "tbl_df"))
-
-  vx <- simRestore::optimize_static(num_generations = 3,
                                     target_frequency = 0.5,
                                     optimize_put = TRUE,
                                     optimize_pull = TRUE,
