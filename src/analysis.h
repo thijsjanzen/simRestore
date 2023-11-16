@@ -446,12 +446,14 @@ class analysis {
     update_start_season(females,
                         density_dependent_death_rate,
                         number_removed * (1.0 - params.sex_ratio_pull),
-                        females_added);
+                        females_added,
+                        Sex::female);
 
     update_start_season(males,
                         density_dependent_death_rate,
                         number_removed * params.sex_ratio_pull,
-                        males_added);
+                        males_added,
+                        Sex::male);
 
     if ((*females).empty() && (*males).empty()) {
        return;
@@ -557,7 +559,10 @@ class analysis {
   void update_start_season(std::vector< ANIMAL >* input_pop,
                            double death_rate,
                            int number_removed,
-                           int number_added) {
+                           int number_added,
+                           Sex local_sex) {
+    // we need to input the local sex type, in case input_pop is empty
+
     // first, regular death due to old age
     old_age(input_pop);
 
@@ -589,7 +594,7 @@ class analysis {
       add_to_population(input_pop,
                         number_added,
                         tag<ANIMAL>{},
-                        (*input_pop).back().get_sex());
+                        local_sex);
     }
     return;
   }

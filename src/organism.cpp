@@ -262,7 +262,7 @@ std::vector< std::vector<double> >
   std::vector< std::vector<double> > genome_info;
 
   double focal_sex = 0.0;
-  if (sex == female) focal_sex = 1.0;
+  if (sex == Sex::female) focal_sex = 1.0;
 
   for (size_t m = 0; m < chromosome1.size(); ++m) {
     genome_info.push_back({static_cast<double>(t),
