@@ -133,38 +133,36 @@ test_that("genetics output", {
 
 
 test_that("multiple chromosomes", {
-  vx <- simRestore::simulate_policy(initial_population_size = 10,
-                                    K = 100,
-                                    num_generations = 10,
-                                    pull = 0,
-                                    put = 0,
-                                    morgan = c(1, 2, 3),
-                                    num_replicates = 1,
-                                    starting_freq = 0.2,
-                                    seed = 42,
-                                    genetic_model = "junctions",
-                                    verbose = FALSE,
-                                    return_genetics = TRUE)
+    vx <- simRestore::simulate_policy(initial_population_size = 200,
+                                      K = 500,
+                                      num_generations = 3,
+                                      pull = 0,
+                                      put = 0,
+                                      morgan = c(1, 2, 3),
+                                      num_replicates = 1,
+                                      starting_freq = 0.3,
+                                      seed = 42,
+                                      genetic_model = "junctions",
+                                      verbose = FALSE,
+                                      return_genetics = TRUE)
 
-  testthat::expect_equal(length(unique(vx$genetics$linkage_group)), 3)
+    testthat::expect_equal(length(unique(vx$genetics$linkage_group)), 3)
 
-  vx <- simRestore::simulate_policy(initial_population_size = 10,
-                                    K = 100,
-                                    num_generations = 10,
-                                    pull = 0,
-                                    put = 0,
-                                    morgan = c(1, 2, 3),
-                                    num_replicates = 1,
-                                    starting_freq = 0.2,
-                                    seed = 42,
-                                    genetic_model = "point",
-                                    verbose = FALSE,
-                                    return_genetics = TRUE)
+    vx <- simRestore::simulate_policy(initial_population_size = 300,
+                                      K = 500,
+                                      num_generations = 3,
+                                      pull = 0,
+                                      put = 0,
+                                      morgan = c(1, 2, 3),
+                                      num_replicates = 1,
+                                      starting_freq = 0.3,
+                                      seed = 42,
+                                      genetic_model = "point",
+                                      verbose = FALSE,
+                                      return_genetics = TRUE)
 
-  testthat::expect_equal(length(unique(vx$genetics$linkage_group)), 3)
+    testthat::expect_equal(length(unique(vx$genetics$linkage_group)), 3)
 })
-
-
 
 test_that("random mating", {
   vx <- simRestore::simulate_policy(initial_population_size = 10,

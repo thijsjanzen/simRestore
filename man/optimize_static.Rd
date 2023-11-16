@@ -171,7 +171,7 @@ is applied per generation.
 \examples{
 opt_res <- optimize_static(target_frequency = 0.99,
                            optimize_put = TRUE,
-                           num_generations = 20,
+                           num_generations = 10,
                            starting_freq = 0.2,
                            initial_population_size = 100)
 opt_res$put
