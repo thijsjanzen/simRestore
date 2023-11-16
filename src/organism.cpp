@@ -151,7 +151,6 @@ organism::organism(const genome& c1,
 
 void organism::set_nonrandom_sex(double prob_male,
                                  rnd_t* rndgen) {
-
   sex = (*rndgen).uniform() < prob_male ? male : female;
 }
 
@@ -245,9 +244,7 @@ void organism_simple::set_nonrandom_sex(double prob_male,
 }
 
 std::vector<double> organism_simple::gamete(const std::vector<double>& morgan,
-                               rnd_t* rndgen)
-  const noexcept {
-
+                               rnd_t* rndgen) const noexcept {
   std::vector<double> output(morgan.size());
   for (size_t i = 0; i < morgan.size(); ++i) {
     output[i] = 0.5 * (chromosome1[i] + chromosome2[i]);

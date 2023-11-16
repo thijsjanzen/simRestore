@@ -673,7 +673,8 @@ class analysis {
   }
 
   std::vector< ANIMAL > admix() {
-    // we can initialise with female sex, as mating down below is not sex specific
+    // we can initialise with female sex, as mating down below is not
+    // sex specific
     ANIMAL base_indiv(0.0, params.morgan.size(), Sex::female);
     ANIMAL target_indiv(1.0, params.morgan.size(), Sex::female);
 

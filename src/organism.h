@@ -102,6 +102,7 @@ struct organism_simple {
     std::vector<std::vector<double>> get_genomic_info(int t, int replicate,
                                                       int indiv) const;
     int age;
+
  private:
     std::vector<double> chromosome1;
     std::vector<double> chromosome2;
