@@ -35,18 +35,18 @@ using genome = std::vector< chrom >;
 
 struct organism {
     organism();
-    organism(double init_freq, size_t num_chromosomes);
+    organism(double init_freq, size_t num_chromosomes, Sex init_sex);
     organism(const genome& c1,
              const genome& c2,
              double prob_male,
              rnd_t* rndgen);
 
 
-    organism(const organism& other);
-    organism& operator=(const organism& other);
+    organism(const organism& other) = default;
+    organism& operator=(const organism& other) = default;
 
-    organism(organism&& other);
-    organism& operator=(organism&& other);
+    organism(organism&& other) = default;
+    organism& operator=(organism&& other) = default;
 
     void set_nonrandom_sex(double prob_male, rnd_t* rndgen);
     void set_sex(Sex s) {sex = s;}
@@ -74,7 +74,7 @@ struct organism {
 
 struct organism_simple {
     organism_simple();
-    organism_simple(double initLoc, int num_chromosomes);
+    organism_simple(double initLoc, int num_chromosomes, Sex init_sex);
 
     organism_simple(const std::vector<double>& chrom1,
                     const std::vector<double>& chrom2,
@@ -82,6 +82,9 @@ struct organism_simple {
 
     organism_simple(const organism_simple& other) = default;
     organism_simple& operator=(const organism_simple& other) = default;
+
+    organism_simple(organism_simple&& other) = default;
+    organism_simple& operator=(organism_simple&& other) = default;
 
     void set_nonrandom_sex(double prob_male, rnd_t* rndgen);
     void set_sex(Sex s) {sex = s;}
@@ -96,11 +99,8 @@ struct organism_simple {
     const double& get_freq_anc() const noexcept {return freq_anc;}
     const Sex& get_sex() const noexcept {return sex;}
 
-
-
     std::vector<std::vector<double>> get_genomic_info(int t, int replicate,
                                                       int indiv) const;
-
     int age;
  private:
     std::vector<double> chromosome1;

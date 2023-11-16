@@ -599,8 +599,9 @@ class analysis {
                          tag<organism_simple>,
                          const Sex& sex) {
     organism_simple to_add(params.put_ancestry,
-                           params.morgan.size());
-    to_add.set_sex(sex);
+                           params.morgan.size(),
+                           sex);
+
     for (int i = 0; i < number_added; ++i) {
       (*population).push_back(to_add);
     }
@@ -611,8 +612,8 @@ class analysis {
                          int number_added,
                          tag<organism>,
                          const Sex& sex) {
-    organism to_add(params.put_ancestry, params.morgan.size());
-    to_add.set_sex(sex);
+    organism to_add(params.put_ancestry, params.morgan.size(), sex);
+
     for (int i = 0; i < number_added; ++i) {
       (*population).push_back(to_add);
     }
@@ -634,8 +635,8 @@ class analysis {
   }
 
   std::vector<organism> create_base_pop(tag<organism>) {
-    ANIMAL base_indiv(0.0, params.morgan.size());
-    ANIMAL target_indiv(1.0, params.morgan.size());
+    ANIMAL base_indiv(0.0, params.morgan.size(), Sex::female);
+    ANIMAL target_indiv(1.0, params.morgan.size(), Sex::female);
 
     std::vector< ANIMAL > population(params.pop_size);
 
@@ -667,8 +668,9 @@ class analysis {
   }
 
   std::vector< ANIMAL > admix() {
-    ANIMAL base_indiv(0.0, params.morgan.size());
-    ANIMAL target_indiv(1.0, params.morgan.size());
+    // we can initialise with female sex, as mating down below is not sex specific
+    ANIMAL base_indiv(0.0, params.morgan.size(), Sex::female);
+    ANIMAL target_indiv(1.0, params.morgan.size(), Sex::female);
 
     std::vector< ANIMAL > population(params.pop_size);
 

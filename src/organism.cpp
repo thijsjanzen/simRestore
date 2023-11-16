@@ -90,7 +90,8 @@ junction& junction::operator=(const junction& other) {
 }
 
 organism::organism(double init_freq,
-                   size_t num_chromosomes)    {
+                   size_t num_chromosomes,
+                   Sex init_sex)    {
   for (size_t i = 0; i < num_chromosomes; ++i) {
       chrom chrom1;
       chrom chrom2;
@@ -134,7 +135,7 @@ organism::organism(double init_freq,
 
     freq_anc = init_freq;
     age = 0;
-    sex = female;
+    sex = init_sex;
     return;
 }
 
@@ -154,43 +155,6 @@ void organism::set_nonrandom_sex(double prob_male,
   sex = (*rndgen).uniform() < prob_male ? male : female;
 }
 
-organism::organism(const organism& other) :
-  age(other.age),
-  chromosome1(other.chromosome1),
-  chromosome2(other.chromosome2),
-  sex(other.sex),
-  freq_anc(other.freq_anc)  {
-}
-
-organism& organism::operator=(const organism& other) {
-    if (this != &other) {
-        chromosome1 = other.chromosome1;
-        chromosome2 = other.chromosome2;
-        sex = other.sex;
-        freq_anc = other.freq_anc;
-        age = other.age;
-    }
-    return *this;
-}
-
-organism::organism(organism&& other) {
-    chromosome1 = other.chromosome1;
-    chromosome2 = other.chromosome2;
-    sex = other.sex;
-    freq_anc = other.freq_anc;
-    age = other.age;
-}
-
-organism& organism::operator=(organism&& other) {
-    if (this != &other) {
-        chromosome1 = other.chromosome1;
-        chromosome2 = other.chromosome2;
-        sex = other.sex;
-        freq_anc = other.freq_anc;
-        age = other.age;
-    }
-    return *this;
-}
 
 genome organism::gamete(const std::vector<double>& morgan,
                         rnd_t* rndgen) const noexcept {
@@ -254,11 +218,12 @@ organism_simple::organism_simple() {
 }
 
 organism_simple::organism_simple(double initLoc,
-                                 int num_chromosomes) {
+                                 int num_chromosomes,
+                                 Sex init_sex) {
   freq_anc = initLoc;
   chromosome1 = std::vector<double>(num_chromosomes, initLoc);
   chromosome2 = std::vector<double>(num_chromosomes, initLoc);
-  sex = Sex::female;
+  sex = init_sex;
   age = 0;
 }
 
