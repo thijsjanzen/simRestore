@@ -1,6 +1,8 @@
 # simRestore
 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/simRestore)](https://cran.r-project.org/package=simRestore)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/simRestore)](https://cran.r-project.org/package=simRestore)
+[![](https://cranlogs.r-pkg.org/badges/simRestore)](https://cran.r-project.org/package=simRestore)
 [![R-CMD-check](https://github.com/thijsjanzen/simRestore/workflows/R-CMD-check/badge.svg)](https://github.com/thijsjanzen/simRestore/actions)
 
 Branch|CodeCov
