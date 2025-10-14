@@ -116,7 +116,7 @@ optimize_static <- function(target_frequency = 0.99,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
-                              pull = param[[1]],
+                              pull = floor(10^param[[1]]),
                               put = abs(optimize_put),
                               starting_freq = starting_freq,
                               morgan = morgan,
@@ -152,7 +152,7 @@ optimize_static <- function(target_frequency = 0.99,
     freq <- mean(b$freq_focal_ancestry)
     fit <- abs(freq - target_frequency) + param[[1]] / 1e6
     if (verbose)  {
-      cat(param[[1]], freq, fit, "\n")
+      cat(floor(10^param[[1]]), freq, fit, "\n")
     }
     if (!return_results) {
       return(fit)
@@ -175,8 +175,8 @@ optimize_static <- function(target_frequency = 0.99,
                               reproductive_risk = reproductive_risk,
                               K = K,
                               num_generations = num_generations,
-                              pull = (10^param[[1]]),
-                              put = (10^param[[2]]),
+                              pull = floor(10^param[[1]]),
+                              put = floor(10^param[[2]]),
                               starting_freq = starting_freq,
                               morgan = morgan,
                               establishment_burnin = establishment_burnin,
@@ -275,7 +275,7 @@ optimize_static <- function(target_frequency = 0.99,
   if (optimize_pull > 0 && optimize_put <= 0) {
     fit_result <- stats::optimize(f = fit_killing,
                                   interval = c(0,
-                                               0.9 * (initial_population_size)),
+                                        log10(0.9 * (initial_population_size))),
                                   maximum = FALSE)
     start_val <- initial_population_size
     while (fit_result$objective > 1) {
@@ -294,7 +294,7 @@ optimize_static <- function(target_frequency = 0.99,
       }
     }
 
-    result$pull <- floor(fit_result$minimum[[1]])
+    result$pull <- floor(10^fit_result$minimum[[1]])
     result$put  <- abs(optimize_put)
     all_res <- fit_killing(fit_result$minimum, return_results = TRUE,
                            return_gens = return_genetics)
