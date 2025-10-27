@@ -13,6 +13,8 @@
 #include "organism.h" // NOLINT [build/include_subdir]
 #include <algorithm>
 #include <cassert>
+#include <utility>
+#include <vector>
 
 #include <iostream>
 

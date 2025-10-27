@@ -131,7 +131,6 @@ Rcpp::List simulate_complete(int pop_size,
                                        seed);
 
       for (int r = 0; r < replicates; ++r) {
-
         output_data run_result = main_analysis.do_analysis();
 
         for (int t = 0; t < run_result.size(); ++t) {
