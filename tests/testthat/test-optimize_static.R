@@ -1,6 +1,10 @@
 context("optimize policy")
 
 test_that("simple optimization", {
+  # Seed and is.finite() check added by Claude (Anthropic AI assistant) (1.1.6): the test was
+  # stochastic and failed on CRAN when the pull-only scenario below went
+  # extinct, producing final_freq = NaN.
+  set.seed(42)
   vx <- simRestore::optimize_static(num_generations = 10,
                                     target_frequency = 0.99,
                                     optimize_put = TRUE,
@@ -18,6 +22,7 @@ test_that("simple optimization", {
                                     K = 500,
                                     num_replicates = 1)
 
+  testthat::expect_true(is.finite(vx$final_freq)) # added by Claude (Anthropic AI assistant)
   testthat::expect_lt(vx$final_freq, 0.999)
   testthat::expect_equal(length(vx$results$t), 5)
   testthat::expect_true(is.na(sd(vx$pull)))
@@ -118,4 +123,26 @@ test_that("genetics", {
                                     return_genetics = TRUE)
   # just check it is there:
   testthat::expect_true(inherits(vx$genetics, "tbl_df"))
+})
+
+# Test written by Claude (Anthropic AI assistant) (1.1.6): the same seed must give identical
+# results, and the returned simulation must cover all generations.
+test_that("seed reproducibility", {
+  run <- function(seed) {
+    simRestore::optimize_static(num_generations = 5,
+                                target_frequency = 0.5,
+                                optimize_put = FALSE,
+                                optimize_pull = TRUE,
+                                initial_population_size = 100,
+                                K = 500,
+                                num_replicates = 1,
+                                seed = seed)
+  }
+  vx1 <- run(seed = 7)
+  vx2 <- run(seed = 7)
+  testthat::expect_equal(vx1$pull, vx2$pull)
+  testthat::expect_equal(vx1$final_freq, vx2$final_freq)
+  testthat::expect_equal(vx1$results, vx2$results)
+  testthat::expect_equal(max(vx1$results$t), 5)
+  testthat::expect_true(is.finite(vx1$final_freq))
 })

@@ -10,7 +10,27 @@
 #' be optimized. When negative, the absolute value will be taken as a fixed
 #' contribution to each generation (but will not be optimized)
 #'
+#' @param seed random number seed. The same seed is used for every
+#' simulation evaluated during optimization (common random numbers), which
+#' makes the objective function deterministic and guarantees that the
+#' returned results are exactly the simulation that was evaluated for the
+#' best fit. If left at \code{NULL}, a seed is drawn from R's random number
+#' generator, so results can be made reproducible with \code{set.seed()}.
+#' (Argument added in version 1.1.6, written by Claude (Anthropic AI assistant).)
+#'
 #' @inheritParams default_params_doc
+#'
+#' @details
+#' Because the same seed is used for every evaluation, the optimum found is
+#' the optimum for one realisation of the stochastic simulation (or, when
+#' \code{num_replicates > 1}, for one fixed set of replicates). To assess the
+#' robustness of an optimum, repeat the optimization with different seeds.
+#'
+#' When only pulling is optimized and no pull level can be found for which the
+#' population survives until \code{num_generations}, a warning is issued and
+#' the elements \code{pull}, \code{results}, \code{curve} and
+#' \code{final_freq} are set to \code{NA}.
+#' (Details section written by Claude (Anthropic AI assistant) for version 1.1.6.)
 #'
 #' @return list with five elements: 1) put: optimal number of individuals to
 #' put (0 if not estimated), 2) pull: optimal number of individuals to pull
@@ -57,7 +77,17 @@ optimize_static <- function(target_frequency = 0.99,
                             random_mating = FALSE,
                             extra_pair_copulation = 0.0,
                             verbose = FALSE,
-                            return_genetics = FALSE) {
+                            return_genetics = FALSE,
+                            seed = NULL) {
+
+  # Written by Claude (Anthropic AI assistant), version 1.1.6:
+  # Use the same seed for every evaluation (common random numbers), such that
+  # the objective function is deterministic and the final re-run of the best
+  # fit reproduces exactly the simulation that was evaluated during
+  # optimization. Previously, the final re-run used fresh random numbers and
+  # could go extinct even though the evaluated simulation did not, which
+  # resulted in truncated results and final_freq = NaN (CRAN check failure).
+  seed <- set_seed(seed)
 
 
   fit_adding <- function(param,
@@ -72,6 +102,11 @@ optimize_static <- function(target_frequency = 0.99,
                               pull = abs(optimize_pull),
                               put = floor(10^param[[1]]),
                               starting_freq = starting_freq,
+                              # added by Claude (Anthropic AI assistant) (1.1.6):
+                              # sd_starting_freq was previously ignored, seed
+                              # ensures common random numbers.
+                              sd_starting_freq = sd_starting_freq,
+                              seed = seed,
                               morgan = morgan,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
@@ -84,6 +119,9 @@ optimize_static <- function(target_frequency = 0.99,
                               b = b,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
+                              # added by Claude (Anthropic AI assistant) (1.1.6):
+                              # sex_ratio_pull was previously ignored.
+                              sex_ratio_pull = sex_ratio_pull,
                               sex_ratio_offspring = sex_ratio_offspring,
                               genetic_model = genetic_model,
                               ancestry_put = ancestry_put,
@@ -119,6 +157,11 @@ optimize_static <- function(target_frequency = 0.99,
                               pull = floor(10^param[[1]]),
                               put = abs(optimize_put),
                               starting_freq = starting_freq,
+                              # added by Claude (Anthropic AI assistant) (1.1.6):
+                              # sd_starting_freq was previously ignored, seed
+                              # ensures common random numbers.
+                              sd_starting_freq = sd_starting_freq,
+                              seed = seed,
                               morgan = morgan,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
@@ -131,6 +174,9 @@ optimize_static <- function(target_frequency = 0.99,
                               b = b,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
+                              # added by Claude (Anthropic AI assistant) (1.1.6):
+                              # sex_ratio_pull was previously ignored.
+                              sex_ratio_pull = sex_ratio_pull,
                               sex_ratio_offspring = sex_ratio_offspring,
                               genetic_model = genetic_model,
                               ancestry_put = ancestry_put,
@@ -178,6 +224,11 @@ optimize_static <- function(target_frequency = 0.99,
                               pull = floor(10^param[[1]]),
                               put = floor(10^param[[2]]),
                               starting_freq = starting_freq,
+                              # added by Claude (Anthropic AI assistant) (1.1.6):
+                              # sd_starting_freq was previously ignored, seed
+                              # ensures common random numbers.
+                              sd_starting_freq = sd_starting_freq,
+                              seed = seed,
                               morgan = morgan,
                               establishment_burnin = establishment_burnin,
                               num_replicates = num_replicates,
@@ -191,6 +242,9 @@ optimize_static <- function(target_frequency = 0.99,
                               b = b,
                               p = p,
                               sex_ratio_put = sex_ratio_put,
+                              # added by Claude (Anthropic AI assistant) (1.1.6):
+                              # sex_ratio_pull was previously ignored.
+                              sex_ratio_pull = sex_ratio_pull,
                               sex_ratio_offspring = sex_ratio_offspring,
                               genetic_model = genetic_model,
                               ancestry_put = ancestry_put,
@@ -277,14 +331,21 @@ optimize_static <- function(target_frequency = 0.99,
                                   interval = c(0,
                                         log10(0.9 * (initial_population_size))),
                                   maximum = FALSE)
-    start_val <- initial_population_size
+    # Written by Claude (Anthropic AI assistant), version 1.1.6:
+    # The optimized parameter is log10(pull), so the upper bound of the search
+    # interval must be on log10 scale as well. Previously the bound was shrunk
+    # on the natural scale (starting at initial_population_size), which
+    # allowed the optimizer to search up to 10^initial_population_size and
+    # return nonsensical pull values (e.g. 1e71). When no surviving solution
+    # is found, the upper bound is reduced by 10% per iteration, until it
+    # drops below 0.05 (i.e. at most a single individual can be pulled), at
+    # which point we give up.
+    upper_val <- log10(0.9 * initial_population_size)
     while (fit_result$objective > 1) {
       # maximum is normally 1, larger indicates failure to converge
-      start_val <- start_val * 0.95
-      fit_result <- stats::optimize(f = fit_killing,
-                                    interval = c(0, start_val),
-                                    maximum = FALSE)
-      if (start_val < 1) {
+      # (fit_killing returns 1e6 when the population went extinct)
+      upper_val <- upper_val * 0.9
+      if (upper_val < 0.05) {
         warning("No optimum found, most likely pulling has no effect")
         result$pull <- NA
         result$results <- NA
@@ -292,6 +353,9 @@ optimize_static <- function(target_frequency = 0.99,
         result$final_freq <- NA
         return(result)
       }
+      fit_result <- stats::optimize(f = fit_killing,
+                                    interval = c(0, upper_val),
+                                    maximum = FALSE)
     }
 
     result$pull <- floor(10^fit_result$minimum[[1]])
@@ -299,18 +363,24 @@ optimize_static <- function(target_frequency = 0.99,
     all_res <- fit_killing(fit_result$minimum, return_results = TRUE,
                            return_gens = return_genetics)
 
-
-    if (return_genetics) result$genetics <- all_res$genetics
-    if (length(result$results) == 1) {
+    # Written by Claude (Anthropic AI assistant), version 1.1.6:
+    # Check for extinction on the simulation that was actually returned
+    # (all_res). Previously, result$results was checked before it had been
+    # assigned (it was always NULL), so the check never triggered and a
+    # truncated results tibble with final_freq = NaN could be returned.
+    # With common random numbers this should not happen anymore, but we keep
+    # the check as a safeguard.
+    if (max(all_res$results$t) < num_generations) {
       warning("No optimum found, most likely the population is extinct")
       result$pull <- NA
       result$results <- NA
       result$curve <- NA
       result$final_freq <- NA
       return(result)
-    } else {
-      result$results <- all_res$results
     }
+
+    result$results <- all_res$results
+    if (return_genetics) result$genetics <- all_res$genetics
 
     result$curve   <- tibble::tibble(t = 1:num_generations,
                                      pull = rep(result$pull,

@@ -51,3 +51,5 @@ rsconnect/
 *.o
 *.so
 *.dll
+*.dll
+*.patch

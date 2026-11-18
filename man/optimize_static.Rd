@@ -35,7 +35,8 @@ optimize_static(
   random_mating = FALSE,
   extra_pair_copulation = 0,
   verbose = FALSE,
-  return_genetics = FALSE
+  return_genetics = FALSE,
+  seed = NULL
 )
 }
 \arguments{
@@ -153,6 +154,14 @@ informative columns: 1) time (the last generation), 2) replicate,
 (if use_simplified_model == FALSE), 6) chromosome (1 or 2,
 returning phased results), 7) position (if use_simplified_model == FALSE) and
 8) local ancestry (0 or 1).}
+
+\item{seed}{random number seed. The same seed is used for every
+simulation evaluated during optimization (common random numbers), which
+makes the objective function deterministic and guarantees that the
+returned results are exactly the simulation that was evaluated for the
+best fit. If left at \code{NULL}, a seed is drawn from R's random number
+generator, so results can be made reproducible with \code{set.seed()}.
+(Argument added in version 1.1.6, written by Claude (Anthropic AI assistant).)}
 }
 \value{
 list with five elements: 1) put: optimal number of individuals to
@@ -167,6 +176,18 @@ the list contains the final obtained frequency for the best fit.
 \description{
 Optimize putting and/or pulling, where it is assumed that the same amount
 is applied per generation.
+}
+\details{
+Because the same seed is used for every evaluation, the optimum found is
+the optimum for one realisation of the stochastic simulation (or, when
+\code{num_replicates > 1}, for one fixed set of replicates). To assess the
+robustness of an optimum, repeat the optimization with different seeds.
+
+When only pulling is optimized and no pull level can be found for which the
+population survives until \code{num_generations}, a warning is issued and
+the elements \code{pull}, \code{results}, \code{curve} and
+\code{final_freq} are set to \code{NA}.
+(Details section written by Claude (Anthropic AI assistant) for version 1.1.6.)
 }
 \examples{
 opt_res <- optimize_static(target_frequency = 0.99,
